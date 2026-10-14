@@ -80,7 +80,9 @@ export function createState() {
     robot: {
       id: ROBOT_ID,
       storeId: STORE_ID,
-      status: 5,
+      // Working (AutomationPnpWorking), as in a store most of the day, so
+      // "enter the walk-in" shows the robot travelling to its rest position.
+      status: 3,
       opMode: 0,
       // `TeleopErrorCode` a teleoperation request carries; 10 FailedToGraspAtStock
       // is one staff may fix themselves.

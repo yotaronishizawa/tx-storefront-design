@@ -51,7 +51,10 @@ export function WalkInView({
       : "resting"
   // While the robot stops there is one thing to do: wait outside. Nothing
   // that only works once it has stopped (moving it, leaving) is shown yet.
-  const stoppingNow = checking && !blockingTask
+  // Only once there is a stop to wait for: a robot already at rest goes
+  // straight to the stopped screen instead of flashing this one.
+  const stoppingNow =
+    checking && !blockingTask && (robotMoving || stopping.phase === "moving")
   const pill = (
     <p
       role="status"
