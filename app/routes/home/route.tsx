@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react"
 
+import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router"
 
 import { ROUTES } from "~/config/routes"
 import {
+  readAppShellState,
   setIdleScreenEnabled,
   useBusyAction,
   useIdleScreenEnabled,
@@ -108,6 +110,7 @@ export default function HomePage() {
     useStuckAfter(attention?.cause ?? null, STUCK_AFTER_MS) ||
     searchParams.get("stuck") === "1"
   const navigate = useNavigate()
+  const { t } = useTranslation("app")
   const openEditLayout = useOpenEditLayout()
   const requestManualStart = useRequestManualStart()
   const manualReplenishmentAvailable = hasShelfClient(useSelectedStore())
@@ -118,6 +121,18 @@ export default function HomePage() {
     }
     void requestManualStart()
   }
+  // Going in stops the robot, so ask on Home first; the walk-in screen then
+  // opens already stopping it.
+  async function enterWalkIn() {
+    const choice = await readAppShellState().askOperator({
+      buttons: "stop-and-enter",
+      home: false,
+      message: t("workflow.walkIn.stopConfirm"),
+    })
+    if (choice === "confirm")
+      void navigate(`${ROUTES.walkIn().pathname}?start=1`)
+  }
+
   return (
     <HomeDashboardView
       busyAction={busyAction}
@@ -141,7 +156,7 @@ export default function HomePage() {
           ? robotActions.stopRobot()
           : robotActions.startRobot())
       }
-      onEnterWalkIn={() => navigate(ROUTES.walkIn().pathname)}
+      onEnterWalkIn={() => void enterWalkIn()}
       onShowDisplay={() => navigate(ROUTES.display().pathname)}
       onShowEdit={openEditLayout}
       onShowManualReplenishment={showManualReplenishment}

@@ -153,17 +153,17 @@ export function HomeObjectAction({
         </svg>
       </span>
       <span className="relative order-first flex w-full min-w-0 shrink-0 flex-col items-start px-4 pt-4 lg:px-5 lg:pt-5">
-        <span className="text-xl/tight font-bold">{label}</span>
+        <span className="text-[2rem]/tight font-bold">{label}</span>
         {/* The tag's row is always kept, so the illustration below stays the
             same size whether or not a task is open. */}
         <span
           aria-hidden={!inProgress}
           className={cn(
-            "mt-2 inline-flex items-center gap-2 rounded-full bg-default px-4 py-2 text-base font-bold text-primary",
+            "mt-2 inline-flex items-center gap-2.5 rounded-full bg-default px-5 py-2 text-xl font-bold text-primary",
             !inProgress && "invisible"
           )}
         >
-          <span className="size-3 animate-pulse rounded-full bg-success" />
+          <span className="size-3.5 animate-pulse rounded-full bg-success" />
           {inProgress ?? "\u00a0"}
         </span>
       </span>

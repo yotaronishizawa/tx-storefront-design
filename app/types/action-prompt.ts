@@ -16,6 +16,8 @@ export type PromptButtons =
   | "confirmed-cancel"
   | "restart-no"
   | "stop-confirmed"
+  | "stop-and-enter"
+  | "start-and-home"
   | "checklist-ok"
   | "return-to-manual"
   | "to-restocking"

@@ -8,6 +8,7 @@ export const WORK_STATUS = {
   standby: 2,
   automationPnpWorking: 3,
   restPosition: 5,
+  movingToRestPosition: 100,
   automationCapture3d: 6,
   requestingTeleoperation: 9,
   teleoperation: 10,
@@ -40,6 +41,23 @@ export function setRobotRestPosition() {
 export function setRobotStoppedByStore() {
   state.robot.status = WORK_STATUS.restPosition
   state.robot.opMode = OPERATION_MODE.stoppedByStore
+}
+
+// A real stop is not instant: the robot finishes its motion and travels to
+// the rest position first, for as long as its place on the rail takes. The
+// simulator spends a fixed while in `MovingToRestPosition` so the app's
+// "stopping" screen can be seen; already parked, it stops at once.
+const STOP_TRAVEL_MS = 12_000
+let stopTravelTimer
+
+export function stopRobotWithTravel() {
+  clearTimeout(stopTravelTimer)
+  if (Number(state.robot.status) === WORK_STATUS.restPosition) {
+    setRobotStoppedByStore()
+    return
+  }
+  state.robot.status = WORK_STATUS.movingToRestPosition
+  stopTravelTimer = setTimeout(setRobotStoppedByStore, STOP_TRAVEL_MS)
 }
 
 export function setRobotAutoPnp() {

@@ -1,9 +1,13 @@
 import { useEffect, useRef, useState } from "react"
 
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
+import { useNavigate, useSearchParams } from "react-router"
 
 import { getRobotStatus, getWorkflowRequests } from "~/api/opm"
+import {
+  ROBOT_MOVING_KINDS,
+  ROBOT_STATUS_LABELS,
+} from "~/components/robot/robot-status-label"
 import { ROUTES } from "~/config/routes"
 import { readAppShellState, useBusyAction } from "~/domains/app-shell"
 import {
@@ -17,6 +21,7 @@ import {
   readRobotState,
   useAutoPnpOperating,
   useRobotActions,
+  useRobotAttention,
   useRobotOperationMode,
   useRobotStatusStale,
   useRobotWorkStatus,
@@ -38,7 +43,7 @@ import {
 import { pollUntil } from "~/utils/poll"
 import { WalkInView } from "~/views/store/walk-in"
 
-import { useWorkflowRobotPosition } from "../_hooks/use-workflow-robot-position"
+import { useRobotArm } from "../_hooks/use-robot-arm"
 
 export default function WalkInPage() {
   const storeId = useSelectedStoreId()
@@ -46,6 +51,9 @@ export default function WalkInPage() {
   const session = useSession()
   return <WalkInSession key={`${storeId}:${robotId}:${session?.token ?? ""}`} />
 }
+
+const STOP_WAIT_POLLS = 300
+const STOP_SLOW_AFTER_MS = 90_000
 
 const WALK_IN_BLOCK_KEYS = {
   connection: "workflow.walkIn.notConfirmed",
@@ -69,9 +77,26 @@ function WalkInSession() {
   const restock = useRestockRequest()
   const manual = useManualReplenishmentRequest()
   const actions = useRobotActions()
-  const position = useWorkflowRobotPosition()
+  const arm = useRobotArm()
+  const [searchParams] = useSearchParams()
+  const attention = useRobotAttention()
   const [confirmed, setConfirmed] = useState(false)
   const [checking, setChecking] = useState(false)
+  // Where the stop has got to, for the stopping screen: the request going
+  // out, then the robot travelling to its rest position. No time is shown:
+  // how long the travel takes depends on where on the rail the robot is.
+  const [stopPhase, setStopPhase] = useState<"sending" | "moving">("sending")
+  // Past this with the robot still travelling, say it is taking a while.
+  // Shown as words only; the figure is provisional.
+  const [slow, setSlow] = useState(false)
+  useEffect(() => {
+    if (!checking || stopPhase !== "moving") {
+      setSlow(false)
+      return
+    }
+    const timer = window.setTimeout(() => setSlow(true), STOP_SLOW_AFTER_MS)
+    return () => window.clearTimeout(timer)
+  }, [checking, stopPhase])
   const inFlight = useRef(false)
   const mounted = useRef(true)
   useEffect(() => {
@@ -161,6 +186,7 @@ function WalkInSession() {
       return
     inFlight.current = true
     setChecking(true)
+    setStopPhase("sending")
     setConfirmed(false)
     try {
       if (!(await refreshBeforeCommand()) || !current()) return
@@ -183,8 +209,11 @@ function WalkInSession() {
           )
           return
         }
-        if (!(await actions.stopAutoPnpOperation()) || !current()) return
+        // Quiet: this screen watches the stop itself, so no "check it
+        // stopped" popup on top.
+        if (!(await actions.stopAutoPnpOperation(true)) || !current()) return
       }
+      setStopPhase("moving")
       const parked = await runBusy("refresh", async () => {
         const result = await pollUntil(
           async () => {
@@ -192,10 +221,11 @@ function WalkInSession() {
             const nextRobot = await readFreshRobot()
             return nextRobot?.status === "RestPosition"
           },
-          { retries: 12, intervalMs: 1000 }
+          // OPM itself waits up to five minutes for the rest position.
+          { retries: STOP_WAIT_POLLS, intervalMs: 1000 }
         )
         if (!current()) return false
-        if (!result) throw new Error(t("workflow.walkIn.notConfirmed"))
+        if (!result) throw new Error(t("workflow.walkIn.stopTimedOut"))
         return (await refreshWorkflowRequests()) && !workflowIsOpen()
       })
       if (parked && current()) setConfirmed(true)
@@ -209,6 +239,14 @@ function WalkInSession() {
     if (inFlight.current || busyAction || !ready) return
     inFlight.current = true
     try {
+      // The robot moves again once this goes through: have staff check
+      // nobody and nothing is left inside first.
+      const choice = await readAppShellState().askOperator({
+        buttons: "start-and-home",
+        home: false,
+        message: t("workflow.walkIn.leaveConfirm"),
+      })
+      if (choice !== "confirm" || !current()) return
       if (!(await refreshBeforeCommand()) || !current()) return
       const robot = await runBusy("refresh", readFreshRobot)
       if (!robot || !current()) return
@@ -229,6 +267,19 @@ function WalkInSession() {
     }
   }
 
+  // Home asked "the robot stops, all right?" before coming here, so a visit
+  // from Home (`?start=1`) starts stopping the robot at once.
+  const startOnOpen = searchParams.get("start") === "1"
+  const started = useRef(false)
+  useEffect(() => {
+    if (!startOnOpen || started.current) return
+    started.current = true
+    void prepare()
+    // Once, on arrival; prepare reads everything it needs fresh.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [startOnOpen])
+
+  const reachable = online && !stale && Boolean(robotId)
   return (
     <WalkInView
       ready={ready}
@@ -246,7 +297,22 @@ function WalkInSession() {
         ]
       )}
       blockingTask={blockingTask}
-      position={{ ...position, enabled: position.enabled && ready }}
+      statusLabel={t(
+        reachable || controls.kind === "noRobot"
+          ? ROBOT_STATUS_LABELS[controls.kind]
+          : ROBOT_STATUS_LABELS.unknown
+      )}
+      robotMoving={reachable && ROBOT_MOVING_KINDS.has(controls.kind)}
+      stopping={{
+        phase: stopPhase,
+        slow,
+        statusLost: !reachable,
+        hold:
+          attention?.cause && attention.cause !== "teleopFixable"
+            ? t(`workflow.home.cause.${attention.cause}`)
+            : "",
+      }}
+      arm={{ ...arm, enabled: arm.enabled && ready }}
       onPrepare={() => {
         void prepare()
       }}

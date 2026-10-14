@@ -1,5 +1,6 @@
 import {
   setRobotStoppedByStore,
+  stopRobotWithTravel,
   toRobot,
   WORK_STATUS,
 } from "../model/robot.mjs"
@@ -174,7 +175,7 @@ export const robotMethods = {
   ),
   StopRobotOperation2: withErrors(
     () => {
-      setRobotStoppedByStore()
+      stopRobotWithTravel()
       return { error: 0 }
     },
     STOP_ROBOT_OPERATION_ERRORS,

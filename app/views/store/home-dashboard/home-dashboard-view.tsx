@@ -170,6 +170,7 @@ export function HomeDashboardView({
               kind={controls.kind}
               available={available}
               attention={attention}
+              wide
             />
           }
           attention={cause !== null}

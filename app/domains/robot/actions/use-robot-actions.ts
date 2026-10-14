@@ -69,19 +69,27 @@ export function useRobotActions() {
     })
   }
 
-  function stopAutoPnpOperation(): Promise<boolean> {
+  /** `quiet` drops the "check it stopped" popup, for screens that watch the stop themselves. */
+  function stopAutoPnpOperation(quiet = false): Promise<boolean> {
     const storeId = selectedStore?.id
-    return runRobotCommand("stop-auto-pnp", async (robotId, token) => {
-      if (storeId) {
-        await setAllShelfLanesAvailable(storeId, token).catch((caught) =>
-          logger.warn("Turning the lanes back on before a stop failed.", caught)
-        )
-      }
-      const result = await stopRobotOperationWithFallback(robotId, token)
-      // So the stop button disables before the next poll.
-      await refreshRobotState(robotId, token)
-      return requireAccepted(result, "robotAutoPnpStopRejected")
-    })
+    return runRobotCommand(
+      "stop-auto-pnp",
+      async (robotId, token) => {
+        if (storeId) {
+          await setAllShelfLanesAvailable(storeId, token).catch((caught) =>
+            logger.warn(
+              "Turning the lanes back on before a stop failed.",
+              caught
+            )
+          )
+        }
+        const result = await stopRobotOperationWithFallback(robotId, token)
+        // So the stop button disables before the next poll.
+        await refreshRobotState(robotId, token)
+        return requireAccepted(result, "robotAutoPnpStopRejected")
+      },
+      !quiet
+    )
   }
 
   /** The start button: the shelf check, then booting the software or starting auto PNP. */

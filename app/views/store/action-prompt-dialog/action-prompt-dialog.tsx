@@ -61,6 +61,14 @@ export function ActionPromptDialog({
       dismiss: t("common:boolean.no"),
     },
     "stop-confirmed": { confirm: t("robotStopConfirmedButton") },
+    "start-and-home": {
+      confirm: t("workflow.walkIn.startAndHome"),
+      dismiss: t("common:actions.cancel"),
+    },
+    "stop-and-enter": {
+      confirm: t("workflow.walkIn.stopAndEnter"),
+      dismiss: t("common:actions.cancel"),
+    },
     "checklist-ok": { confirm: t("common:actions.ok") },
     "return-to-manual": {
       confirm: t("returnToManualReplenishment"),

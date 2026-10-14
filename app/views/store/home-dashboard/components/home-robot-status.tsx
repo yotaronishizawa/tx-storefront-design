@@ -19,11 +19,18 @@ export function HomeRobotStatus({
   kind,
   available,
   attention,
+  wide = false,
 }: {
   kind: RobotStatusKind
   available: boolean
   /** Detector and e-stop state; `undefined` until the app reads it from OPM. */
   attention?: RobotAttention
+  /**
+   * The idle screen has the whole width: the robot large beside the detectors,
+   * which then also say their state in words. Home's narrow column keeps one
+   * row of detectors in colour only, the robot below.
+   */
+  wide?: boolean
 }) {
   const { t } = useTranslation("app")
   const moving = available && ROBOT_MOVING_KINDS.has(kind)
@@ -45,6 +52,60 @@ export function HomeRobotStatus({
     document.addEventListener("visibilitychange", resume)
     return () => document.removeEventListener("visibilitychange", resume)
   }, [])
+  const detectors: DetectorItem[] = [
+    ...DETECTOR_ROWS.map(({ detector, key, Icon }): DetectorItem => {
+      const found = attention?.detected?.[detector]
+      return {
+        key: key,
+        Icon,
+        label: t(key),
+        state: found === undefined ? "unknown" : found ? "alert" : "ok",
+        value: t(
+          found === undefined
+            ? "workflow.home.v5.notReceived"
+            : found
+              ? "workflow.home.detect.found"
+              : "workflow.home.detect.clear"
+        ),
+      }
+    }),
+    {
+      key: "eStop",
+      Icon: OctagonX,
+      label: t("workflow.home.eStop"),
+      state: eStopState(attention?.eStop),
+      value: t(
+        !attention?.eStop || attention.eStop === "unknown"
+          ? "workflow.home.v5.notReceived"
+          : `workflow.home.eStop.${attention.eStop}`
+      ),
+    },
+  ]
+  const robotVideo = (
+    // Same split as the status pill: working, in trouble, or resting.
+    // Transparent clips: HEVC with alpha for Safari/iPad (listed first,
+    // since Chrome skips QuickTime), VP9 with alpha for Chrome.
+    <video
+      key={robotClip}
+      ref={robotVideoRef}
+      aria-hidden="true"
+      autoPlay
+      loop
+      muted
+      playsInline
+      disablePictureInPicture
+      className="pointer-events-none mx-auto h-full w-auto max-w-full object-contain object-bottom"
+    >
+      <source
+        src={`/assets/home-study-2026-10-06/robot-${robotClip}.mov`}
+        type='video/quicktime; codecs="hvc1"'
+      />
+      <source
+        src={`/assets/home-study-2026-10-06/robot-${robotClip}.webm`}
+        type="video/webm"
+      />
+    </video>
+  )
   return (
     <aside className="flex min-h-0 min-w-0 flex-col bg-subtle p-4 lg:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -54,7 +115,9 @@ export function HomeRobotStatus({
         <p
           role="status"
           className={cn(
-            "rounded-full px-4 py-2 text-xl/tight font-bold",
+            "rounded-full font-bold",
+            // Read from across the walk-in on the idle screen: 48 px there.
+            wide ? "px-7 py-3 text-display-lg" : "px-4 py-2 text-xl/tight",
             assist
               ? "bg-primary text-on-primary"
               : cause
@@ -78,57 +141,27 @@ export function HomeRobotStatus({
       <p className="mt-3 text-xs text-secondary lg:hidden">
         {t("workflow.home.v5.detectorsSummary")}
       </p>
-      <div className="mt-4 hidden shrink-0 items-center justify-between gap-4 rounded-xl border-2 bg-default p-4 lg:flex">
-        {DETECTOR_ROWS.map(({ detector, key, Icon }) => {
-          const found = attention?.detected?.[detector]
-          return (
-            <DetectorRow
-              key={key}
-              Icon={Icon}
-              label={t(key)}
-              state={found === undefined ? "unknown" : found ? "alert" : "ok"}
-            />
-          )
-        })}
-        <DetectorRow
-          Icon={OctagonX}
-          label={t("workflow.home.eStop")}
-          state={
-            !attention?.eStop || attention.eStop === "unknown"
-              ? "unknown"
-              : attention.eStop === "released"
-                ? "ok"
-                : "alert"
-          }
-        />
-      </div>
-      <div className="mt-6 hidden min-h-0 flex-1 flex-col lg:flex">
-        <div className="min-h-0 flex-1 overflow-hidden">
-          {/* Same split as the status pill: working, in trouble, or resting.
-              Transparent clips: HEVC with alpha for Safari/iPad (listed first,
-              since Chrome skips QuickTime), VP9 with alpha for Chrome. */}
-          <video
-            key={robotClip}
-            ref={robotVideoRef}
-            aria-hidden="true"
-            autoPlay
-            loop
-            muted
-            playsInline
-            disablePictureInPicture
-            className="pointer-events-none mx-auto h-full w-auto max-w-full object-contain object-bottom"
-          >
-            <source
-              src={`/assets/home-study-2026-10-06/robot-${robotClip}.mov`}
-              type='video/quicktime; codecs="hvc1"'
-            />
-            <source
-              src={`/assets/home-study-2026-10-06/robot-${robotClip}.webm`}
-              type="video/webm"
-            />
-          </video>
+      {wide ? (
+        <div className="mt-4 hidden min-h-0 flex-1 grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-center gap-8 lg:grid">
+          <div className="h-full min-h-0 overflow-hidden">{robotVideo}</div>
+          <ul className="grid gap-1 rounded-xl border-2 bg-default p-4">
+            {detectors.map(({ key, ...item }) => (
+              <DetectorRow key={key} {...item} wide />
+            ))}
+          </ul>
         </div>
-      </div>
+      ) : (
+        <>
+          <div className="mt-4 hidden shrink-0 items-center justify-between gap-4 rounded-xl border-2 bg-default p-4 lg:flex">
+            {detectors.map(({ key, ...item }) => (
+              <DetectorRow key={key} {...item} />
+            ))}
+          </div>
+          <div className="mt-6 hidden min-h-0 flex-1 flex-col lg:flex">
+            <div className="min-h-0 flex-1 overflow-hidden">{robotVideo}</div>
+          </div>
+        </>
+      )}
     </aside>
   )
 }
@@ -143,23 +176,67 @@ const DETECTOR_ROWS: {
   { detector: "fallenDrink", key: "workflow.home.v5.droppedDrink", Icon: Box },
 ]
 
+type DetectorState = "unknown" | "ok" | "alert"
+
+function eStopState(eStop: RobotAttention["eStop"] | undefined): DetectorState {
+  if (!eStop || eStop === "unknown") return "unknown"
+  return eStop === "released" ? "ok" : "alert"
+}
+
+type DetectorItem = {
+  key: string
+  Icon: typeof UserRound
+  label: string
+  state: DetectorState
+  value: string
+}
+
 function DetectorRow({
   Icon,
   label,
   state,
+  value,
+  wide = false,
 }: {
   Icon: typeof UserRound
   label: string
-  state: "unknown" | "ok" | "alert"
+  state: DetectorState
+  value: string
+  /** On the idle screen: a list row that also says the state in words. */
+  wide?: boolean
 }) {
-  // Colour alone says the state, as on the robot: green clear, red found.
+  // Colour says the state, as on the robot: green clear, red found.
+  const tone = cn(
+    state === "ok" && "text-success",
+    state === "alert" && "bg-error-subtle text-error",
+    state === "unknown" && "text-disabled"
+  )
+  if (wide)
+    return (
+      <li
+        className={cn(
+          "flex items-center gap-3 rounded-md p-3 text-xl font-bold",
+          tone
+        )}
+      >
+        <span className="size-3 shrink-0 rounded-full bg-current" />
+        <Icon className="size-7 shrink-0" />
+        <span className="min-w-0 flex-1">{label}</span>
+        <span
+          className={cn(
+            "shrink-0 text-lg",
+            state === "ok" && "font-medium text-secondary"
+          )}
+        >
+          {value}
+        </span>
+      </li>
+    )
   return (
     <div
       className={cn(
         "-mx-1.5 flex shrink-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm font-bold whitespace-nowrap",
-        state === "ok" && "text-success",
-        state === "alert" && "bg-error-subtle text-error",
-        state === "unknown" && "text-disabled"
+        tone
       )}
     >
       <span className="size-2.5 shrink-0 rounded-full bg-current" />
