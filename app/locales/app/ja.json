@@ -795,7 +795,7 @@
   "workflow.walkIn.stepSend": "ロボットに止まるよう伝えています",
   "workflow.walkIn.stepMove": "ロボットが待機位置へ移動しています",
   "workflow.walkIn.stepStopped": "止まったら中に入れます",
-  "workflow.walkIn.dontEnterYet": "ロボットが止まるまで、中に入らないでください",
+  "workflow.walkIn.dontEnterYet": "ロボットが止まるまで、\n中に入らないでください",
   "workflow.walkIn.watching": "ロボットの状態を確かめながら待っています",
   "workflow.walkIn.takingLonger": "いつもより時間がかかっています。中に入らずに、もう少しお待ちください。",
   "workflow.walkIn.heldBy": "{reason}。ロボットが止まったまま動けません。",
