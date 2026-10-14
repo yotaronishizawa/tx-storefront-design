@@ -149,8 +149,8 @@ export function WalkInView({
 function DontEnterCard() {
   const { t } = useTranslation("app")
   return (
-    <section className="flex min-h-0 flex-col items-center justify-center gap-6 rounded-xl bg-warning p-8 text-center text-inverse">
-      <TriangleAlert className="size-20 shrink-0" />
+    <section className="flex min-h-0 flex-col items-center justify-center gap-6 rounded-xl border-2 border-warning bg-[#fde4d2] p-8 text-center text-primary">
+      <TriangleAlert className="size-20 shrink-0 text-warning" />
       <p className="text-[2.5rem]/tight font-bold whitespace-pre-line">
         {t("workflow.walkIn.dontEnterYet")}
       </p>
