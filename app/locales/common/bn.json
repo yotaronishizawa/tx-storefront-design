@@ -1,0 +1,91 @@
+{
+  "actions": {
+    "back": "ফিরে যান",
+    "cancel": "বাতিল",
+    "clear": "পরিষ্কার",
+    "clearWithEntity": "{entity} পরিষ্কার করুন",
+    "clearing": "পরিষ্কার করা হচ্ছে...",
+    "close": "বন্ধ করুন",
+    "closing": "বন্ধ করা হচ্ছে...",
+    "confirm": "নিশ্চিত করুন",
+    "confirming": "নিশ্চিত করা হচ্ছে...",
+    "done": "শেষ",
+    "hide": "লুকান",
+    "hideWithEntity": "{entity} লুকান",
+    "install": "ইনস্টল",
+    "installing": "ইনস্টল করা হচ্ছে...",
+    "later": "পরে",
+    "login": "সাইন ইন",
+    "logout": "সাইন আউট",
+    "ok": "OK",
+    "refresh": "রিফ্রেশ",
+    "remove": "সরান",
+    "removeWithEntity": "{entity} সরান",
+    "removing": "সরানো হচ্ছে...",
+    "retry": "আবার চেষ্টা করুন",
+    "save": "সংরক্ষণ",
+    "saving": "সংরক্ষণ করা হচ্ছে...",
+    "select": "নির্বাচন করুন",
+    "selectWithEntity": "{entity} নির্বাচন করুন",
+    "send": "পাঠান",
+    "sending": "পাঠানো হচ্ছে...",
+    "show": "দেখান",
+    "showWithEntity": "{entity} দেখান",
+    "showing": "দেখানো হচ্ছে..."
+  },
+  "boolean": {
+    "no": "না",
+    "yes": "হ্যাঁ"
+  },
+  "count": {
+    "item": "{count, plural, other {# আইটেম}}"
+  },
+  "direction": {
+    "down": "নিচে",
+    "left": "বাম",
+    "right": "ডান",
+    "up": "উপরে"
+  },
+  "entity": {
+    "item": "{count, plural, other {আইটেম}}",
+    "language": "{count, plural, other {ভাষা}}",
+    "location": "{count, plural, other {লোকেশন}}",
+    "notice": "{count, plural, other {বিজ্ঞপ্তি}}",
+    "password": "{count, plural, other {পাসওয়ার্ড}}",
+    "product": "{count, plural, other {পণ্য}}",
+    "selection": "{count, plural, other {নির্বাচন}}",
+    "store": "{count, plural, other {স্টোর}}"
+  },
+  "error": {
+    "notFound": {
+      "details": "অনুরোধ করা পৃষ্ঠাটি খুঁজে পাওয়া যায়নি।",
+      "title": "পৃষ্ঠা পাওয়া যায়নি"
+    },
+    "title": "ত্রুটি",
+    "unexpected": {
+      "details": "এই পৃষ্ঠাটি লোড করার সময় একটি অপ্রত্যাশিত ত্রুটি ঘটেছে।",
+      "title": "কিছু ভুল হয়েছে"
+    }
+  },
+  "nav": {
+    "home": "হোম",
+    "settings": "সেটিংস"
+  },
+  "search": {
+    "label": "অনুসন্ধান",
+    "labelWithEntity": "{entity} অনুসন্ধান",
+    "placeholder": "অনুসন্ধান...",
+    "placeholderWithEntity": "{entity} অনুসন্ধান..."
+  },
+  "selection": {
+    "none": "কোনো {entity} নির্বাচিত নয়"
+  },
+  "shelf": {
+    "display": "ডিসপ্লে শেলফ",
+    "skuFallback": "পণ্য",
+    "stock": "স্টক শেলফ"
+  },
+  "table": {
+    "noResults": "কোনো ফলাফল নেই"
+  }
+}

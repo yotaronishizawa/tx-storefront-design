@@ -1,0 +1,28 @@
+import { useTranslation } from "react-i18next"
+
+import { Checkbox } from "~/core"
+
+/** "I have read the rules above"; unlocks the dialog's confirm button. */
+export function RulesConfirmCheckbox({
+  checked,
+  disabled,
+  onCheckedChange,
+}: {
+  checked: boolean
+  disabled: boolean
+  onCheckedChange: (checked: boolean) => void
+}) {
+  const { t } = useTranslation("app")
+
+  return (
+    <label className="mx-auto mt-4 inline-flex shrink-0 items-center gap-2 text-sm font-bold text-primary">
+      <Checkbox.Root
+        checked={checked}
+        className="size-6"
+        disabled={disabled}
+        onCheckedChange={onCheckedChange}
+      />
+      {t("restockingRuleConfirm")}
+    </label>
+  )
+}

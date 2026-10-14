@@ -1,0 +1,91 @@
+{
+  "actions": {
+    "back": "返回",
+    "cancel": "取消",
+    "clear": "清除",
+    "clearWithEntity": "清除{entity}",
+    "clearing": "正在清除...",
+    "close": "关闭",
+    "closing": "正在关闭...",
+    "confirm": "确认",
+    "confirming": "正在确认...",
+    "done": "完成",
+    "hide": "隐藏",
+    "hideWithEntity": "隐藏{entity}",
+    "install": "安装",
+    "installing": "正在安装...",
+    "later": "稍后",
+    "login": "登录",
+    "logout": "退出登录",
+    "ok": "OK",
+    "refresh": "刷新",
+    "remove": "删除",
+    "removeWithEntity": "删除{entity}",
+    "removing": "正在删除...",
+    "retry": "重试",
+    "save": "保存",
+    "saving": "正在保存...",
+    "select": "选择",
+    "selectWithEntity": "选择{entity}",
+    "send": "发送",
+    "sending": "正在发送...",
+    "show": "显示",
+    "showWithEntity": "显示{entity}",
+    "showing": "正在显示..."
+  },
+  "boolean": {
+    "no": "否",
+    "yes": "是"
+  },
+  "count": {
+    "item": "{count, plural, other {# 项}}"
+  },
+  "direction": {
+    "down": "下",
+    "left": "左",
+    "right": "右",
+    "up": "上"
+  },
+  "entity": {
+    "item": "{count, plural, other {项目}}",
+    "language": "{count, plural, other {语言}}",
+    "location": "{count, plural, other {位置}}",
+    "notice": "{count, plural, other {提示}}",
+    "password": "{count, plural, other {密码}}",
+    "product": "{count, plural, other {商品}}",
+    "selection": "{count, plural, other {选择}}",
+    "store": "{count, plural, other {门店}}"
+  },
+  "error": {
+    "notFound": {
+      "details": "找不到请求的页面。",
+      "title": "找不到页面"
+    },
+    "title": "错误",
+    "unexpected": {
+      "details": "加载此页面时发生意外错误。",
+      "title": "出现问题"
+    }
+  },
+  "nav": {
+    "home": "主页",
+    "settings": "设置"
+  },
+  "search": {
+    "label": "搜索",
+    "labelWithEntity": "{entity}搜索",
+    "placeholder": "搜索...",
+    "placeholderWithEntity": "{entity}搜索..."
+  },
+  "selection": {
+    "none": "未选择{entity}"
+  },
+  "shelf": {
+    "display": "陈列架",
+    "skuFallback": "商品",
+    "stock": "库存架"
+  },
+  "table": {
+    "noResults": "没有搜索结果"
+  }
+}

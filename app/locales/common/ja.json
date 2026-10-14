@@ -1,0 +1,91 @@
+{
+  "actions": {
+    "back": "戻る",
+    "cancel": "キャンセル",
+    "clear": "クリア",
+    "clearWithEntity": "{entity}をクリア",
+    "clearing": "クリア中...",
+    "close": "閉じる",
+    "closing": "閉じています...",
+    "confirm": "確認",
+    "confirming": "確認中...",
+    "done": "終了",
+    "hide": "非表示",
+    "hideWithEntity": "{entity}を非表示",
+    "install": "インストール",
+    "installing": "インストール中...",
+    "later": "あとで",
+    "login": "ログイン",
+    "logout": "サインアウト",
+    "ok": "OK",
+    "refresh": "更新",
+    "remove": "削除",
+    "removeWithEntity": "{entity}を削除",
+    "removing": "削除中...",
+    "retry": "もう一度試す",
+    "save": "保存",
+    "saving": "保存中...",
+    "select": "選択",
+    "selectWithEntity": "{entity}を選択",
+    "send": "送信",
+    "sending": "送信中...",
+    "show": "表示",
+    "showWithEntity": "{entity}を表示",
+    "showing": "表示しています..."
+  },
+  "boolean": {
+    "no": "いいえ",
+    "yes": "はい"
+  },
+  "count": {
+    "item": "{count, plural, other {#件}}"
+  },
+  "direction": {
+    "down": "下",
+    "left": "左",
+    "right": "右",
+    "up": "上"
+  },
+  "entity": {
+    "item": "{count, plural, other {アイテム}}",
+    "language": "{count, plural, other {言語}}",
+    "location": "{count, plural, other {ロケーション}}",
+    "notice": "{count, plural, other {お知らせ}}",
+    "password": "{count, plural, other {パスワード}}",
+    "product": "{count, plural, other {商品}}",
+    "selection": "{count, plural, other {選択}}",
+    "store": "{count, plural, other {ストア}}"
+  },
+  "error": {
+    "notFound": {
+      "details": "リクエストされたページが見つかりませんでした。",
+      "title": "ページが見つかりません"
+    },
+    "title": "エラー",
+    "unexpected": {
+      "details": "このページの読み込み中に予期しないエラーが発生しました。",
+      "title": "問題が発生しました"
+    }
+  },
+  "nav": {
+    "home": "ホーム",
+    "settings": "設定"
+  },
+  "search": {
+    "label": "検索",
+    "labelWithEntity": "{entity}検索",
+    "placeholder": "検索...",
+    "placeholderWithEntity": "{entity}検索..."
+  },
+  "selection": {
+    "none": "{entity}が選択されていません"
+  },
+  "shelf": {
+    "display": "売場棚",
+    "skuFallback": "商品",
+    "stock": "在庫棚"
+  },
+  "table": {
+    "noResults": "検索結果なし"
+  }
+}

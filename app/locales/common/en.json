@@ -1,0 +1,91 @@
+{
+  "actions": {
+    "back": "Back",
+    "cancel": "Cancel",
+    "clear": "Clear",
+    "clearWithEntity": "Clear {entity}",
+    "clearing": "Clearing...",
+    "close": "Close",
+    "closing": "Closing...",
+    "confirm": "Confirm",
+    "confirming": "Confirming...",
+    "done": "Done",
+    "hide": "Hide",
+    "hideWithEntity": "Hide {entity}",
+    "install": "Install",
+    "installing": "Installing...",
+    "later": "Later",
+    "login": "Sign in",
+    "logout": "Sign out",
+    "ok": "OK",
+    "refresh": "Refresh",
+    "remove": "Remove",
+    "removeWithEntity": "Remove {entity}",
+    "removing": "Removing...",
+    "retry": "Try again",
+    "save": "Save",
+    "saving": "Saving...",
+    "select": "Select",
+    "selectWithEntity": "Select {entity}",
+    "send": "Send",
+    "sending": "Sending...",
+    "show": "Show",
+    "showWithEntity": "Show {entity}",
+    "showing": "Showing..."
+  },
+  "boolean": {
+    "no": "No",
+    "yes": "Yes"
+  },
+  "count": {
+    "item": "{count, plural, one {# item} other {# items}}"
+  },
+  "direction": {
+    "down": "Down",
+    "left": "Left",
+    "right": "Right",
+    "up": "Up"
+  },
+  "entity": {
+    "item": "{count, plural, one {Item} other {Items}}",
+    "language": "{count, plural, one {Language} other {Languages}}",
+    "location": "{count, plural, one {Location} other {Locations}}",
+    "notice": "{count, plural, one {Notice} other {Notices}}",
+    "password": "{count, plural, one {Password} other {Passwords}}",
+    "product": "{count, plural, one {Product} other {Products}}",
+    "selection": "{count, plural, one {Selection} other {Selections}}",
+    "store": "{count, plural, one {Store} other {Stores}}"
+  },
+  "error": {
+    "notFound": {
+      "details": "The requested page could not be found.",
+      "title": "Page not found"
+    },
+    "title": "Error",
+    "unexpected": {
+      "details": "An unexpected error occurred while loading this page.",
+      "title": "Something went wrong"
+    }
+  },
+  "nav": {
+    "home": "Home",
+    "settings": "Settings"
+  },
+  "search": {
+    "label": "Search",
+    "labelWithEntity": "{entity} search",
+    "placeholder": "Search...",
+    "placeholderWithEntity": "{entity} search..."
+  },
+  "selection": {
+    "none": "No {entity} selected"
+  },
+  "shelf": {
+    "display": "Display shelf",
+    "skuFallback": "SKU",
+    "stock": "Stock shelf"
+  },
+  "table": {
+    "noResults": "No search results"
+  }
+}

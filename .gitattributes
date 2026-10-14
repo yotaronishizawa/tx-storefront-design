@@ -1,0 +1,5 @@
+.husky/* text eol=lf
+*.sh text eol=lf
+
+# Preserve the original whitespace in captured third-party source text.
+study/site/audit-*/evidence/*.txt -whitespace

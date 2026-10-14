@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>StoreApp｜デモ入力</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP",sans-serif;color:#182432;background:#f3f4f6;font-size:16px;line-height:1.6;font-synthesis:none}*{box-sizing:border-box}body{margin:0}button,input,select{font:inherit}a{color:inherit}button,.link-button{min-height:46px;border-radius:10px;border:1px solid #cbd2da;padding:10px 16px;background:white;color:inherit;font-weight:700;cursor:pointer;text-decoration:none;display:inline-flex;align-items:center;justify-content:center;gap:8px}button:hover:not(:disabled),.link-button:hover{border-color:#847027;background:#fff9df}button:focus-visible,a:focus-visible,select:focus-visible,input:focus-visible,summary:focus-visible{outline:3px solid #d49b00;outline-offset:3px}button:disabled{opacity:.45;cursor:not-allowed}.primary{background:#ffc400;border-color:#e7b200}.danger{color:#a22a27;border-color:#e7b0ac}.header{background:#162532;color:white;padding:28px max(20px,calc((100vw - 1180px)/2))}.eyebrow{margin:0 0 8px;font-size:12px;letter-spacing:.13em;color:#ffdb69;font-weight:800}h1{font-size:clamp(24px,4vw,34px);line-height:1.3;margin:0 0 12px}h2{font-size:21px;margin:0 0 8px;line-height:1.4}h3{font-size:17px;margin:0 0 10px}p{margin:0 0 12px}.header p:last-child{margin-bottom:0;color:#d0dae3;max-width:900px}.wrap{max-width:1220px;margin:auto;padding:24px 20px 48px}.topline{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-bottom:18px}.links{display:flex;gap:8px;flex-wrap:wrap}.local{font-size:13px;color:#546171}.layout{display:grid;grid-template-columns:minmax(0,1fr) 350px;align-items:start;gap:20px}.layout>*{min-width:0}.panel{padding:22px;background:white;border:1px solid #dce0e5;border-radius:16px;margin-bottom:18px;min-width:0}.tag{display:inline-block;font-size:12px;font-weight:800;background:#eff2f5;padding:4px 10px;border-radius:999px;margin-bottom:10px}.note{background:#fff8dc;border:1px solid #ecd998;border-radius:10px;padding:14px;margin-top:16px;font-size:14px}.muted{color:#5b6876;font-size:14px}.field{display:block;font-weight:700;margin:18px 0 7px}select,input[type=number]{width:100%;background:white;border:1px solid #aab5c0;border-radius:9px;padding:11px 12px;min-height:48px;color:#182432}code{font-family:ui-monospace,SFMono-Regular,monospace;font-size:.84em;overflow-wrap:anywhere}.scanline,.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.scanline>*{flex:1}.step{display:flex;align-items:center;gap:10px;margin-bottom:12px}.step b{display:grid;place-items:center;background:#172633;color:white;border-radius:50%;width:29px;height:29px;flex:none}.step h2{margin:0}.row-tabs{display:flex;gap:8px;flex-wrap:wrap;margin:16px 0 12px}.row-tabs button{font-size:14px;padding:9px 14px}.row-tabs button[aria-pressed=true]{background:#172633;color:white;border-color:#172633}.shelf-scroll{overflow-x:auto;border-radius:10px;background:#edf0f3;padding:12px}.lanes{display:flex;gap:7px;width:max-content}.lanes button{width:65px;min-height:76px;flex-direction:column;padding:8px;flex:none;border-width:2px}.lanes .number{font-size:24px;line-height:1;font-weight:900}.lanes .sub{font-size:11px;font-weight:600}.lanes button[aria-pressed=true]{border-color:#d3a000;background:#ffedac}.lanes .excluded{background:repeating-linear-gradient(135deg,#f3f3f3,#f3f3f3 5px,#e6e7e9 5px,#e6e7e9 10px)}.selected-location{display:flex;gap:8px;flex-direction:column;border-left:4px solid #ffc400;padding:12px 15px;margin:16px 0;background:#f8f9fa}.selected-location strong{font-size:22px}.inline-field{display:grid;grid-template-columns:minmax(0,1fr) 105px;align-items:center;gap:12px}.inline-field .field{margin:0}.status{padding:10px 13px;border-radius:10px;background:#edf1f5;font-weight:700;font-size:14px}.status.ok{color:#146238;background:#e6f4eb}.status.bad{color:#9c2823;background:#fbeceb}.facts{display:grid;grid-template-columns:100px minmax(0,1fr);gap:10px;margin:18px 0 0;font-size:14px}.facts dt{color:#657181}.facts dd{margin:0;overflow-wrap:anywhere;font-weight:650}.facts .full{grid-column:1/-1}details{margin-top:16px}summary{cursor:pointer;font-weight:700;padding:5px 0}pre{white-space:pre-wrap;overflow-wrap:anywhere;font-size:12px;line-height:1.5;margin:10px 0 0;max-height:260px;overflow:auto;background:#f0f3f6;padding:12px;border-radius:8px}.log{padding:0;list-style:none;display:grid;gap:10px;margin:14px 0 0}.log li{border-left:3px solid #9eabb9;padding:9px 12px;background:#f5f7f9;border-radius:0 8px 8px 0;font-size:13px}.log li.error{border-color:#cf5147;background:#fff3f0}.log time{display:block;color:#677687;font-size:12px}.log strong{display:block;margin:3px 0}.log details{margin-top:3px}.log summary{font-size:12px}.hint{min-height:24px;font-size:14px;margin:12px 0 0;color:#546171}.hidden{display:none!important}.source{border-top:1px solid #dce0e5;padding-top:20px;margin-top:16px;font-size:13px;color:#66717d}.wide{width:100%}.reset-note{margin-top:12px;color:#803b33;font-size:14px}@media(max-width:950px){.layout{grid-template-columns:minmax(0,1fr)}.aside{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}.aside .panel{margin-bottom:0}}@media(max-width:650px){.wrap{padding:18px 12px}.panel{padding:18px}.aside{display:block}.aside .panel{margin-bottom:18px}.scanline{flex-direction:column}.selected-location strong{font-size:19px}.links{width:100%}.links a{flex:1;font-size:14px;padding:9px}.facts{grid-template-columns:90px minmax(0,1fr)}}
+nav[aria-label="Language / 言語"] button[aria-pressed="true"]{background:#1e293b;color:white;border-color:#1e293b}
+</style>
+</head>
+<body>
+<header class="header">
+<p class="eyebrow">STOREAPP UX LAB / DEMO INPUT</p>
+<h1>実機の代わりに、イベントを送る</h1>
+<p>このページはデモ用シミュレーターの操作パネルです。同じブラウザの別タブで開いたReact画面へ、スキャン、棚への追加・取り出し、エラーの模擬イベントを送ります。</p>
+</header>
+<main class="wrap">
+<div class="topline"><div class="links"><a class="link-button" href="/" target="storeapp-demo">Reactホーム ↗</a><a class="link-button" href="/restocking" target="storeapp-demo">在庫棚にいれる ↗</a><a class="link-button" href="/manual" target="storeapp-demo">在庫棚からとりだす ↗</a></div></div>
+<div class="layout">
+<div>
+<section class="panel">
+<span class="tag">初期化は不要</span>
+<h2>作業の開始・終了は、React画面で</h2>
+<p class="muted">ログインは <code>demo</code> / <code>demo</code>、店舗は <code>SIM-BY1</code>。Reactで「在庫棚にいれる」または「在庫棚からとりだす」を開き、作業を開始してから、このページで模擬イベントを送ります。</p>
+<p class="muted">ここでは人の入退室・手元・売場への陳列完了を生成しません。HTTPの送信成功と、React側での受付・作業完了は別です。</p>
+</section>
+<section class="panel">
+<div class="step"><b>1</b><h2>スキャンする商品</h2></div>
+<p class="muted">スキャナーからJANが届いたことを再現します。選んだ商品は、下の「1本追加」にも使います。</p>
+<label class="field" for="sku">商品</label><select id="sku" aria-describedby="jan"></select>
+<p id="jan" class="hint"></p>
+<button id="scan" class="primary wide" data-mutation disabled>選んだ商品のスキャンを送る</button>
+<p id="scan-hint" class="hint" aria-live="polite">シミュレーターへ接続しています。</p>
+<p class="hint">棚割の商品検索にも使えます。Reactの棚割編集で対象フェイスを選んでから送ると、JANで候補を絞ります。RSの開始は不要です。商品を選んで確定するまでは棚割を変更しません。</p><div class="note"><strong>スキャンだけでは、在庫は増えません。</strong><p style="margin:7px 0 0">Reactでスキャン受付と商品を確認し、次に下でレーンを選んで「1本追加」を押してください。同じ商品を続けて入れるときは、追加だけを繰り返せます。</p><p style="margin:7px 0 0">スキャンはSKUの申告、追加は棚の変化の模擬イベントです。手元の実物や売場への陳列完了を検知するものではありません。</p></div>
+</section>
+<section class="panel">
+<div class="step"><b>2</b><h2>イベントを送るレーン</h2></div>
+<p class="muted">Reactと同じ位置・番号で選べます。上から5→1段、各段は左から番号の大きい順です。最下段は11レーン、ほかは15レーンです。左右へスクロールできます。</p>
+<div id="row-tabs" class="row-tabs" aria-label="棚の段"></div>
+<div class="shelf-scroll"><div id="lanes" class="lanes" aria-label="レーン"></div></div>
+<div class="selected-location"><strong id="location-label"></strong><code id="location-id"></code><span id="location-note" class="muted"></span></div>
+<div class="actions"><button id="add" class="primary" data-mutation disabled>選んだ商品を1本追加する</button></div>
+<p class="muted" style="margin-top:8px">棚でその商品の追加を検知したイベントを送ります。スキャンを受理したことにはなりません。受付SKUと違う商品を追加すると、現物と申告が食い違うケースになります。</p>
+<div class="inline-field"><label class="field" for="remove-count">ロボット側から取り出す本数</label><input id="remove-count" type="number" min="1" max="99" step="1" value="1"></div>
+<div class="actions"><button id="remove" data-mutation disabled>ロボット側からの取り出しを送る</button></div>
+<p class="muted" style="margin-top:8px">MRでの手取り出しを再現します。ロボットが取り出す側から指定本数を除きます。本数が足りない場合は残っている分まで。売場への陳列は完了扱いにしません。</p>
+</section>
+<section class="panel">
+<div class="step"><b>3</b><h2>エラー表示を試す</h2></div>
+<p class="muted">上で選んだレーンへ送ります。解決手順の完了や、使用停止の解除を代行する操作ではありません。</p>
+<label class="field" for="error-kind">エラーの種類</label>
+<select id="error-kind">
+<option value="stock:3">本数と重さが合わない：補充中の不整合（S000606）</option>
+<option value="stock:0">スキャンなしの投入（S000603）</option>
+<option value="stock:1">スキャンなしの取り出し（S000604）</option>
+<option value="stock:9">原因不明の不整合（S000699）</option>
+<option value="constraint:1">商品がレーン幅に合わない（S000602）</option>
+<option value="constraint:2">商品がレーン高さに合わない（S000601）</option>
+</select>
+<div class="actions"><button id="error" class="danger" data-mutation disabled>選んだエラーを発生させる</button><button id="clear-errors" data-mutation disabled>全レーンの模擬エラーを消す</button></div>
+<p id="constraint-note" class="hint hidden">寸法エラーfixtureはレモンソーダをレーン先頭へ追加します。既に先頭にあれば本数を変えず、理由だけを変更します。エラーを消しても追加した商品は残ります。</p>
+<p class="muted" style="margin-top:10px">エラーがある間、アプリが投入本数の数え上げを抑止する場合があります。エラー解除と本数・使用停止の状態は分けて確認してください。</p>
+</section>
+<section class="panel">
+<div class="step"><b>4</b><h2>ロボットの状態・検知・非常停止</h2></div>
+<p class="muted">ロボットが人・障害物・落下飲料を検知して止まった状態や、非常停止ボタンの状態を再現します。Reactのホームに約3秒で反映されます。</p>
+<label class="field" for="detection-kind">検知の種類</label>
+<select id="detection-kind">
+<option value="human">人（ウォークイン内に人がいる）</option>
+<option value="obstacle">障害物</option>
+<option value="fallenDrink">落下飲料</option>
+</select>
+<div class="actions"><button id="detect-stop" class="danger" data-mutation disabled>検知してロボットが止まる</button><button id="detect-only" data-mutation disabled>検知だけ（止まらない）</button><button id="detect-clear" data-mutation disabled>検知を解除する（直った）</button></div>
+<div class="actions"><button id="estop-press" class="danger" data-mutation disabled>非常停止ボタンを押す</button><button id="estop-reset" data-mutation disabled>解除したがリセットが必要</button><button id="estop-release" data-mutation disabled>非常停止を解除する</button></div>
+<label class="field" for="robot-work-state">ロボットの状態</label>
+<select id="robot-work-state">
+<option value="3">動作中（通常）</option>
+<option value="9:10">オペレーター待ち：在庫棚で掴み損ね</option>
+<option value="9:11">オペレーター待ち：運搬中に掴み損ね</option>
+<option value="9:30">オペレーター待ち：売場で異常を検知</option>
+<option value="9:32">オペレーター待ち：売場の認識失敗</option>
+<option value="9:31">オペレーター待ち：在庫棚の認識失敗</option>
+<option value="9:33">オペレーター待ち：在庫切れ</option>
+<option value="9:34">オペレーター待ち：在庫の詰まり（手前）</option>
+<option value="9:35">オペレーター待ち：在庫の詰まり（奥）</option>
+<option value="9:50">オペレーター待ち：過負荷（店舗で直せない）</option>
+<option value="1">起動待ち（要対応には出ない）</option>
+<option value="12">起動失敗（要対応には出ない）</option>
+<option value="500">内部の通信異常（要対応には出ない）</option>
+<option value="-1">ロボット異常（要対応には出ない）</option>
+<option value="5">停止中</option>
+</select>
+<div class="actions"><button id="robot-state-set" data-mutation disabled>この状態にする</button></div>
+<label class="field" for="resume-fault">再開（ロボット開始）を失敗させる理由</label>
+<select id="resume-fault">
+<option value="5">棚の角度を変更中</option>
+<option value="9">在庫補充中</option>
+<option value="12">品出し中</option>
+<option value="10">オペレーター対応中</option>
+<option value="1">サーバーエラー</option>
+</select>
+<div class="actions"><button id="resume-fault-set" class="danger" data-mutation disabled>以後の再開を失敗させる</button><button id="resume-fault-clear" data-mutation disabled>再開の失敗を解除する</button></div>
+<p class="muted" style="margin-top:10px">「検知だけ」は、補充中に店員が中にいるときのような、ロボットを止めない検知です。5分経過の表示は、ReactのURLに <code>?stuck=1</code> を付けると待たずに確認できます。</p>
+</section>
+</div>
+<aside class="aside">
+<section class="panel">
+<h2>シミュレーターの状態</h2>
+<p class="muted">表示中は5秒ごとに取得します。</p>
+<div id="connection" class="status" role="status" aria-live="polite">接続確認中</div>
+<dl class="facts"><dt>RS</dt><dd id="rs-state">—</dd><dt>MR</dt><dd id="mr-state">—</dd><dt>受付SKU</dt><dd id="accepted-sku">—</dd><dt>棚 / scanner</dt><dd id="shelf-state">—</dd><dt>ロボット</dt><dd id="robot-state">—</dd><dt>更新時刻</dt><dd id="updated">—</dd></dl>
+<button id="refresh" class="wide" style="margin-top:18px">状態を取り直す</button>
+<details><summary>API応答を表示</summary><pre id="state-json">未取得</pre></details>
+<details><summary>デモ全体を初期化する</summary><p class="reset-note">通常の試用には不要です。作業・在庫・エラーをfixture初期値へ戻します。接続中のReactへ初期化はpushされないので、実行後はReactを再読み込みしてください。</p><button id="reset" class="danger wide" data-mutation disabled>初期値に戻す…</button></details>
+</section>
+<section class="panel"><h2>送信結果</h2><p class="muted">直近12件。POST成功はイベント送信の応答です。最終的な画面・SKU受付・終了結果はReact側で確認してください。</p><ol id="log" class="log" aria-live="polite"><li id="empty-log">まだイベントを送っていません。</li></ol></section>
+</aside>
+</div>
+<footer class="source">SKUと位置対応は2026-10-06の <code>tx-storefront/simulator/src/seed/</code> と照合。接続時にcatalogのSKU・JAN・レーンIDも照合します。ID末尾の番号は画面のレーン番号と逆です（例：<code>S1-R1-L01 → 棚1・1段目・11レーン</code>）。状態APIは件数と作業状態を返すため、現在の各レーンの在庫一覧はReact画面で確認してください。</footer>
+</main>
+<script src="panel-language.js"></script>
+<script src="simulator-controls.js"></script>
+</body>
+</html>

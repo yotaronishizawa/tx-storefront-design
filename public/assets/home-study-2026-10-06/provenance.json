@@ -1,0 +1,91 @@
+{
+  "retrievedAt": "2026-10-06",
+  "figmaFileKey": "dSdo8ypplVQ4FgLknLrxKr",
+  "homeNode": "7863:163508",
+  "source": "https://www.figma.com/design/dSdo8ypplVQ4FgLknLrxKr/Store-App?node-id=7863-163508",
+  "usage": "Original individual illustrations and icons; all text, statuses and interactive controls are React elements. Detector states are not provided by the current frontend contract and remain explicitly unavailable.",
+  "assets": [
+    {
+      "file": "manual.png",
+      "figmaNode": "7864:46849",
+      "bytes": 19681
+    },
+    {
+      "file": "robot.svg",
+      "figmaNode": "7863:163621",
+      "bytes": 14567
+    },
+    {
+      "file": "enter.svg",
+      "figmaNode": "7863:163529"
+    },
+    {
+      "file": "layout.svg",
+      "figmaNode": "7863:163539"
+    },
+    {
+      "file": "reservation.svg",
+      "figmaNode": "7863:163549"
+    },
+    {
+      "file": "rs-arm.svg",
+      "figmaNode": "7864:46804",
+      "bytes": 306
+    },
+    {
+      "file": "rs-hand.svg",
+      "figmaNode": "7864:46805",
+      "bytes": 318
+    },
+    {
+      "file": "rs-bottle.svg",
+      "figmaNode": "7864:46808",
+      "bytes": 2110
+    },
+    {
+      "file": "rs-beam.svg",
+      "figmaNode": "7864:46825",
+      "bytes": 553
+    },
+    {
+      "file": "rs-scanner.svg",
+      "figmaNode": "7864:46827",
+      "bytes": 418
+    },
+    {
+      "file": "rs-scanner-mask.svg",
+      "figmaNode": "7864:46828",
+      "bytes": 503
+    },
+    {
+      "file": "rs-scanner-dark.svg",
+      "figmaNode": "7864:46831",
+      "bytes": 736
+    },
+    {
+      "file": "rs-trigger.svg",
+      "figmaNode": "7864:46836",
+      "bytes": 427
+    },
+    {
+      "file": "rs-trigger-inner.svg",
+      "figmaNode": "7864:46837",
+      "bytes": 428
+    },
+    {
+      "file": "rs-thumb.svg",
+      "figmaNode": "7864:46842",
+      "bytes": 474
+    },
+    {
+      "file": "rs-finger.svg",
+      "figmaNode": "7864:46843",
+      "bytes": 479
+    },
+    {
+      "file": "stock-count.png",
+      "figmaNode": "7863:163556",
+      "bytes": 1433
+    }
+  ]
+}

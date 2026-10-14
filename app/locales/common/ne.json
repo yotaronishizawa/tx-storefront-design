@@ -1,0 +1,91 @@
+{
+  "actions": {
+    "back": "पछाडि",
+    "cancel": "रद्द गर्नुहोस्",
+    "clear": "खाली गर्नुहोस्",
+    "clearWithEntity": "{entity} खाली गर्नुहोस्",
+    "clearing": "खाली गर्दै...",
+    "close": "बन्द गर्नुहोस्",
+    "closing": "बन्द गर्दै...",
+    "confirm": "पुष्टि गर्नुहोस्",
+    "confirming": "पुष्टि गर्दै...",
+    "done": "समाप्त",
+    "hide": "लुकाउनुहोस्",
+    "hideWithEntity": "{entity} लुकाउनुहोस्",
+    "install": "इन्स्टल गर्नुहोस्",
+    "installing": "इन्स्टल गर्दै...",
+    "later": "पछि",
+    "login": "साइन इन",
+    "logout": "साइन आउट",
+    "ok": "OK",
+    "refresh": "रिफ्रेस",
+    "remove": "हटाउनुहोस्",
+    "removeWithEntity": "{entity} हटाउनुहोस्",
+    "removing": "हटाउँदै...",
+    "retry": "फेरि प्रयास गर्नुहोस्",
+    "save": "सेभ गर्नुहोस्",
+    "saving": "सेभ गर्दै...",
+    "select": "छान्नुहोस्",
+    "selectWithEntity": "{entity} छान्नुहोस्",
+    "send": "पठाउनुहोस्",
+    "sending": "पठाउँदै...",
+    "show": "देखाउनुहोस्",
+    "showWithEntity": "{entity} देखाउनुहोस्",
+    "showing": "देखाउँदै..."
+  },
+  "boolean": {
+    "no": "होइन",
+    "yes": "हो"
+  },
+  "count": {
+    "item": "{count, plural, other {# वस्तुहरू}}"
+  },
+  "direction": {
+    "down": "तल",
+    "left": "बायाँ",
+    "right": "दायाँ",
+    "up": "माथि"
+  },
+  "entity": {
+    "item": "{count, plural, other {वस्तु}}",
+    "language": "{count, plural, other {भाषा}}",
+    "location": "{count, plural, other {स्थान}}",
+    "notice": "{count, plural, other {सूचना}}",
+    "password": "{count, plural, other {पासवर्ड}}",
+    "product": "{count, plural, other {उत्पादन}}",
+    "selection": "{count, plural, other {छनोट}}",
+    "store": "{count, plural, other {स्टोर}}"
+  },
+  "error": {
+    "notFound": {
+      "details": "अनुरोध गरिएको पृष्ठ फेला पार्न सकिएन।",
+      "title": "पृष्ठ फेला परेन"
+    },
+    "title": "त्रुटि",
+    "unexpected": {
+      "details": "यो पृष्ठ लोड गर्दा अप्रत्याशित त्रुटि भयो।",
+      "title": "केही गडबड भयो"
+    }
+  },
+  "nav": {
+    "home": "गृह",
+    "settings": "सेटिङ"
+  },
+  "search": {
+    "label": "खोजी",
+    "labelWithEntity": "{entity} खोजी",
+    "placeholder": "खोजी...",
+    "placeholderWithEntity": "{entity} खोजी..."
+  },
+  "selection": {
+    "none": "कुनै {entity} छानिएको छैन"
+  },
+  "shelf": {
+    "display": "डिस्प्ले शेल्फ",
+    "skuFallback": "उत्पादन",
+    "stock": "स्टक शेल्फ"
+  },
+  "table": {
+    "noResults": "खोज परिणाम छैन"
+  }
+}

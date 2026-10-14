@@ -1,0 +1,221 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "@fontsource-variable/inter";
+
+/*
+ * Design tokens from Figma "Store App (Web) Styles" (draft, 2026-10-04). Names
+ * follow Figma's usage names: `bg/subtle` → `bg-subtle`, `text/secondary` →
+ * `text-secondary`, `primary/pressed` → `bg-primary-pressed`. See
+ * docs/design-tokens.md before adding or changing one.
+ */
+@theme {
+  /* Only the tokens below exist; Tailwind's palette and shadows are cleared. */
+  --color-*: initial;
+  --color-white: #ffffff;
+  --color-black: #000000;
+  --shadow-*: initial;
+
+  /* Inter has no Japanese glyphs; Japanese falls back to the system font. */
+  --font-sans:
+    "Inter Variable", "Hiragino Sans", "Hiragino Kaku Gothic ProN",
+    "Noto Sans JP", "Yu Gothic UI", Meiryo, system-ui, sans-serif;
+
+  /* Colours named by what the element is, not how it looks. */
+  --background-color-app: #d9d9d9;
+  --background-color-default: #ffffff;
+  --background-color-subtle: #f5f5f5;
+  --background-color-muted: #e5e5e5;
+  --background-color-inverse: #262626;
+  --background-color-overlay: rgb(0 0 0 / 30%);
+
+  /* `text-primary` is near-black; yellow text is `text-primary-text`. */
+  --text-color-primary: #171717;
+  --text-color-secondary: #525252;
+  --text-color-disabled: #a3a3a3;
+  --text-color-inverse: #ffffff;
+  --text-color-on-primary: #3d2f00;
+
+  --border-color-default: #e5e5e5;
+  --border-color-strong: #737373;
+
+  --color-primary: #f5c000;
+  --color-primary-pressed: #d9aa00;
+  --color-primary-subtle: #fff9e0;
+  --color-primary-text: #8f7000;
+
+  --color-error: #da352f;
+  --color-error-pressed: #b92b26;
+  --color-error-subtle: #fdecea;
+
+  /* Small warning text is `text-primary` on `bg-warning-subtle`. */
+  --color-warning: #ea580c;
+  --color-warning-subtle: #fff7ed;
+
+  --color-success: #15803d;
+  --color-success-subtle: #dcfce7;
+
+  --color-info: #0a66c2;
+  --color-info-subtle: #eef4ff;
+
+  /* Line heights are Tailwind's defaults until design decides them. */
+  --text-*: initial;
+  --text-xs: 0.875rem;
+  --text-xs--line-height: 1.25rem;
+  --text-sm: 1rem;
+  --text-sm--line-height: 1.5rem;
+  --text-base: 1.125rem;
+  --text-base--line-height: 1.75rem;
+  --text-lg: 1.25rem;
+  --text-lg--line-height: 1.75rem;
+  --text-xl: 1.5rem;
+  --text-xl--line-height: 2rem;
+
+  --font-weight-*: initial;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  --radius-*: initial;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+
+  --shadow-dialog: 0 8px 32px rgb(0 0 0 / 16%);
+}
+
+/* App-local layout tokens, not in Figma. */
+@theme {
+  /* Large numbers and illustrations. Pending design. */
+  --text-display: 2.25rem;
+  --text-display--line-height: 2.5rem;
+  --text-display-lg: 3rem;
+  --text-display-lg--line-height: 1;
+  --text-display-xl: 4.5rem;
+  --text-display-xl--line-height: 1;
+
+  /* User-study home, Store App node 7863:163508 (2026-10-06). */
+  --background-color-home-restock: #f7eed9;
+  --background-color-home-manual: #e1f7d9;
+  /* In-progress card edge: a deeper shade of each card's own background. */
+  --ring-color-home-restock: #f5c000;
+  --ring-color-home-manual: #62ce3b;
+
+  --container-dialog-sm: 30rem;
+  --container-dialog: 39.375rem;
+  --container-dialog-lg: 47.5rem;
+  --container-dialog-xl: 58.75rem;
+}
+
+@layer base {
+  * {
+    @apply border-default outline-primary/50;
+    /* No rubber-band bounce or scroll chaining in any scroll area. */
+    overscroll-behavior: none;
+  }
+  body {
+    @apply bg-default text-base text-primary;
+    overscroll-behavior: none;
+  }
+  html {
+    @apply font-sans;
+    -webkit-text-size-adjust: 100%;
+    -webkit-touch-callout: none;
+    -webkit-user-select: none;
+    touch-action: pan-x pan-y;
+    user-select: none;
+  }
+  *,
+  *::before,
+  *::after {
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  button,
+  input,
+  select,
+  textarea,
+  [role="button"] {
+    touch-action: manipulation;
+  }
+}
+
+@layer components {
+  .view-transition {
+    width: 100%;
+    animation: tx-view-transition 260ms cubic-bezier(0.2, 0.8, 0.2, 1);
+  }
+
+  /* Green lane flash for a drink pulled in manual replenishment. */
+  .lane-flash {
+    animation: tx-lane-flash 1.2s ease-out 2;
+  }
+
+  /* "Needs attention" pill, in step with the in-trouble robot's red lamp (1.2 s). */
+  .attention-blink {
+    animation: tx-attention-blink 1.2s ease-in-out infinite;
+  }
+
+  /* Idle screen "touch to start": rings spread from a dot like a touch on
+     water. Paused while the robot needs attention. */
+  .idle-wake-ripple {
+    animation: tx-idle-wake-ripple 4s ease-out infinite;
+  }
+}
+
+@keyframes tx-idle-wake-ripple {
+  from {
+    opacity: 1;
+    transform: scale(0.55);
+  }
+
+  to {
+    opacity: 0;
+    transform: scale(1.6);
+  }
+}
+
+@keyframes tx-attention-blink {
+  0%,
+  100% {
+    background-color: var(--color-error);
+  }
+
+  50% {
+    background-color: #ec7f7b;
+  }
+}
+
+@keyframes tx-lane-flash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+
+  30% {
+    opacity: 1;
+  }
+}
+
+@keyframes tx-view-transition {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.992);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .view-transition,
+  .idle-wake-ripple {
+    animation: none;
+  }
+
+  .lane-flash {
+    animation-iteration-count: 1;
+  }
+}

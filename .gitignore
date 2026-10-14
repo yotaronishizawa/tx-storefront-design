@@ -1,0 +1,33 @@
+.DS_Store
+# Per-environment build config is committed (see .env.stg / .env.prod).
+# Personal overrides are not.
+.env
+.env.local
+.env.*.local
+node_modules
+screenshots
+test-results
+playwright-report
+
+# React Router
+.react-router
+build
+
+# typescript
+*.tsbuildinfo
+5.6.0_screenshots
+.claude/**
+.idea/**
+
+# Sentry Config File
+.env.sentry-build-plugin
+
+# Design study snapshots are intentionally versioned.
+!study/site/**/screenshots/
+!study/site/**/screenshots/**
+.study/
+
+# Firebase deploy key: given to you privately, never committed.
+firebase-key.json
+*-firebase-adminsdk-*.json
+.firebase/
