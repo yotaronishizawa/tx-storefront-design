@@ -78,10 +78,7 @@ export function WalkInView({
       muted
       playsInline
       disablePictureInPicture
-      className={cn(
-        "pointer-events-none h-full w-auto max-w-full object-contain",
-        stoppingNow ? "mx-auto object-bottom" : "object-bottom-left"
-      )}
+      className="pointer-events-none h-full w-auto max-w-full object-contain object-bottom-left"
     >
       <source
         src={`/assets/home-study-2026-10-06/robot-${clip}.mov`}
@@ -94,41 +91,44 @@ export function WalkInView({
     </video>
   )
 
-  if (stoppingNow)
-    return (
-      <section className="grid min-h-0 min-w-0 flex-1 grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)] gap-6 overflow-y-auto bg-subtle p-6">
-        <div className="flex min-h-0 flex-col">
-          {pill}
-          <StopProgress {...stopping} />
-        </div>
-        <div className="min-h-0 overflow-hidden">{robot}</div>
-      </section>
-    )
-
+  // One frame for both states, so stopping only swaps the right card and
+  // reveals the button: the robot and its status never jump.
   return (
     <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-y-auto bg-subtle p-6">
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6">
         <div className="flex min-h-0 flex-col">
           {pill}
-          <p className="mt-4 max-w-md text-lg/relaxed">
-            {blockingTask
-              ? t("workflow.walkIn.workOpenHint")
-              : ready
-                ? t("workflow.walkIn.stoppedHint")
-                : canPrepare
-                  ? t("workflow.walkIn.stopFirstHint")
-                  : notReadyReason}
-          </p>
+          {stoppingNow ? (
+            <StopStatus {...stopping} />
+          ) : (
+            <p className="mt-4 max-w-md text-lg/relaxed">
+              {blockingTask
+                ? t("workflow.walkIn.workOpenHint")
+                : ready
+                  ? t("workflow.walkIn.stoppedHint")
+                  : canPrepare
+                    ? t("workflow.walkIn.stopFirstHint")
+                    : notReadyReason}
+            </p>
+          )}
           <div className="mt-4 min-h-0 flex-1 overflow-hidden">{robot}</div>
         </div>
-        <RobotArmPanel {...arm} />
+        {stoppingNow ? <DontEnterCard /> : <RobotArmPanel {...arm} />}
       </div>
+      {/* Hidden, not removed, while the robot stops: the layout stays put. */}
       <Button
         size="lg"
         variant="unstyled"
-        className="min-h-20 w-full shrink-0 rounded-xl bg-primary text-xl font-bold text-on-primary active:bg-primary-pressed disabled:opacity-50"
+        aria-hidden={stoppingNow}
+        className={cn(
+          "min-h-20 w-full shrink-0 rounded-xl bg-primary text-xl font-bold text-on-primary active:bg-primary-pressed disabled:opacity-50",
+          stoppingNow && "invisible"
+        )}
         busy={busy}
-        disabled={blockingTask ? busy : ready ? busy : !canPrepare || busy}
+        disabled={
+          stoppingNow ||
+          (blockingTask ? busy : ready ? busy : !canPrepare || busy)
+        }
         onClick={blockingTask ? onReturnToTask : ready ? onHandBack : onPrepare}
       >
         {t(
@@ -145,6 +145,19 @@ export function WalkInView({
   )
 }
 
+/** Where the arm card will be: the one thing that matters while it stops. */
+function DontEnterCard() {
+  const { t } = useTranslation("app")
+  return (
+    <section className="flex min-h-0 flex-col items-center justify-center gap-6 rounded-xl bg-warning p-8 text-center text-inverse">
+      <TriangleAlert className="size-20 shrink-0" />
+      <p className="text-[2.5rem]/tight font-bold whitespace-pre-line">
+        {t("workflow.walkIn.dontEnterYet")}
+      </p>
+    </section>
+  )
+}
+
 type StopProgressProps = {
   /** The request going out, then the robot travelling to its rest position. */
   phase: "sending" | "moving"
@@ -157,31 +170,21 @@ type StopProgressProps = {
 }
 
 /**
- * While the robot stops: what it is doing, and above all not to go in. No
- * time or progress bar: how long the travel takes depends on where on the
- * rail the robot is, which the app cannot know.
+ * Under the pill while the robot stops: what it is doing, and anything
+ * holding it. No time or progress bar: how long the travel takes depends on
+ * where on the rail the robot is, which the app cannot know.
  */
-function StopProgress({ slow, statusLost, hold }: StopProgressProps) {
+function StopStatus({ slow, statusLost, hold }: StopProgressProps) {
   const { t } = useTranslation("app")
   const trouble = statusLost || hold
   return (
-    <div className="mt-6 flex min-h-0 flex-1 flex-col gap-6">
-      <p className="flex items-center gap-3 text-[1.75rem]/tight font-bold">
-        <span className="relative grid size-4 shrink-0 place-items-center">
-          <span className="absolute inset-0 animate-ping rounded-full bg-success opacity-60" />
-          <span className="size-3 rounded-full bg-success" />
-        </span>
-        {t("workflow.walkIn.stepMove")}
-      </p>
-      <p className="flex items-center gap-5 rounded-xl bg-warning px-7 py-8 text-[2.5rem]/tight font-bold whitespace-pre-line text-inverse">
-        <TriangleAlert className="size-14 shrink-0" />
-        {t("workflow.walkIn.dontEnterYet")}
-      </p>
+    <div className="mt-4 grid max-w-md gap-3">
+      <p className="text-lg/relaxed">{t("workflow.walkIn.stepMove")}</p>
       {(trouble || slow) && (
         <p
           role="status"
           className={cn(
-            "text-xl/relaxed font-bold",
+            "text-lg/relaxed font-bold",
             trouble ? "text-error" : "text-secondary"
           )}
         >
