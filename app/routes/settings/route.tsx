@@ -32,7 +32,8 @@ export default function SettingsPage() {
       idleTimeoutOptionsMs={IDLE_TIMEOUT_OPTIONS_MS}
       onIdleTimeoutChange={(ms) => {
         const option = IDLE_TIMEOUT_OPTIONS_MS.find((value) => value === ms)
-        if (option) setIdleTimeoutMs(option)
+        // 0 is "Off", so test for a match, not truthiness.
+        if (option !== undefined) setIdleTimeoutMs(option)
       }}
       isOnline={isOnline}
       selectedStoreId={selectedStoreId}
