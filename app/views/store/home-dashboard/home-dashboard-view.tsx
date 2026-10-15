@@ -25,7 +25,6 @@ import {
 import { HomeIdleScreen } from "./components/home-idle-screen"
 import { HomeObjectAction } from "./components/home-object-action"
 import { HomeRobotStatus } from "./components/home-robot-status"
-import { RobotStopsByItself } from "./components/robot-stops-by-itself"
 
 export function HomeDashboardView({
   busyAction,
@@ -203,11 +202,6 @@ export function HomeDashboardView({
         />
       ) : (
         <section className="flex min-h-0 min-w-0 flex-col gap-3 p-4 lg:gap-4">
-          {controls.canStop && !cause && (
-            // Staff look for a way to stop the robot before a task; say the
-            // tasks below do it, while there is a robot to stop.
-            <RobotStopsByItself className="shrink-0 rounded-lg border-2 border-primary bg-primary-subtle px-4 py-3 text-lg" />
-          )}
           {cause && (
             <div
               className={cn(
