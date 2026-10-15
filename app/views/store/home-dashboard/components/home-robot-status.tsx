@@ -106,41 +106,43 @@ export function HomeRobotStatus({
       />
     </video>
   )
+  const pill = (
+    <p
+      role="status"
+      className={cn(
+        "rounded-full font-bold",
+        // Read from across the walk-in on the idle screen: 48 px there.
+        wide ? "px-7 py-3 text-display-lg" : "px-4 py-2 text-xl/tight",
+        assist
+          ? "bg-primary text-on-primary"
+          : cause
+            ? "attention-blink bg-error text-inverse"
+            : moving
+              ? "bg-success text-inverse"
+              : "bg-muted text-primary"
+      )}
+    >
+      {assist
+        ? t("workflow.home.assist.badge")
+        : cause
+          ? t("workflow.home.attention.badge")
+          : t(
+              kind === "noRobot" || available
+                ? ROBOT_STATUS_LABELS[kind]
+                : ROBOT_STATUS_LABELS.unknown
+            )}
+    </p>
+  )
   return (
     <aside className="flex min-h-0 min-w-0 flex-col bg-subtle p-4 lg:p-5">
-      <div className="flex flex-wrap items-center justify-between gap-3">
-        {/* The idle screen is all robot status: no heading needed there. */}
-        {!wide && (
+      {!wide && (
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-sm font-bold text-secondary lg:text-base">
             {t("robotStatus")}
           </h2>
-        )}
-        <p
-          role="status"
-          className={cn(
-            "rounded-full font-bold",
-            // Read from across the walk-in on the idle screen: 48 px there.
-            wide ? "px-7 py-3 text-display-lg" : "px-4 py-2 text-xl/tight",
-            assist
-              ? "bg-primary text-on-primary"
-              : cause
-                ? "attention-blink bg-error text-inverse"
-                : moving
-                  ? "bg-success text-inverse"
-                  : "bg-muted text-primary"
-          )}
-        >
-          {assist
-            ? t("workflow.home.assist.badge")
-            : cause
-              ? t("workflow.home.attention.badge")
-              : t(
-                  kind === "noRobot" || available
-                    ? ROBOT_STATUS_LABELS[kind]
-                    : ROBOT_STATUS_LABELS.unknown
-                )}
-        </p>
-      </div>
+          {pill}
+        </div>
+      )}
       <p
         className={cn(
           "mt-3 text-xs text-secondary lg:hidden",
@@ -151,20 +153,25 @@ export function HomeRobotStatus({
       </p>
       {wide ? (
         // The idle screen only runs on the store iPad: no narrow fallback.
-        <div className="mt-4 flex min-h-0 flex-1 items-center justify-center gap-12">
-          <div className="h-full min-h-0 shrink-0 overflow-hidden">
-            {robotVideo}
+        <div className="mt-2 flex min-h-0 flex-1 justify-center">
+          {/* The pill sits over the robot's column, its left edge where the
+              working robot reaches furthest left in its clip (2.8% in from
+              the clip's edge), so the eye runs down one line. */}
+          <div className="grid h-full min-h-0 grid-cols-[auto_24rem] grid-rows-[auto_minmax(0,1fr)] gap-x-12 gap-y-4">
+            <div className="ml-[2.8%] place-self-start">{pill}</div>
+            <div aria-hidden="true" />
+            <div className="min-h-0 overflow-hidden">{robotVideo}</div>
+            <section className="grid gap-3 self-center">
+              <h2 className="text-lg font-bold text-secondary">
+                {t("workflow.idle.safetyCheck")}
+              </h2>
+              <ul className="grid gap-1 rounded-xl border-2 bg-default p-4">
+                {detectors.map(({ key, ...item }) => (
+                  <DetectorRow key={key} {...item} wide />
+                ))}
+              </ul>
+            </section>
           </div>
-          <section className="grid w-96 shrink-0 gap-3">
-            <h2 className="text-lg font-bold text-secondary">
-              {t("workflow.idle.safetyCheck")}
-            </h2>
-            <ul className="grid gap-1 rounded-xl border-2 bg-default p-4">
-              {detectors.map(({ key, ...item }) => (
-                <DetectorRow key={key} {...item} wide />
-              ))}
-            </ul>
-          </section>
         </div>
       ) : (
         <>
