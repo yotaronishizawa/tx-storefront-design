@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next"
 
 import type { RobotArmControlProps } from "~/components/robot/robot-arm-control"
 import { RobotArmPanel } from "~/components/robot/robot-arm-panel"
+import { RobotClip } from "~/components/robot/robot-clip"
 import { Button } from "~/core"
 import { cn } from "~/utils/cn"
-import { robotClipSrc } from "~/utils/robot-clip"
 
 /**
  * Inside the walk-in. Staff reach it after confirming on Home that the robot
@@ -71,16 +71,9 @@ export function WalkInView({
   )
   const robot = (
     // Same clips as the robot status on Home: resting once stopped.
-    <video
-      key={clip}
-      aria-hidden="true"
-      autoPlay
-      loop
-      muted
-      playsInline
-      disablePictureInPicture
+    <RobotClip
+      clip={clip}
       className="pointer-events-none h-full w-auto max-w-full object-contain object-bottom-left"
-      src={robotClipSrc(clip)}
     />
   )
 

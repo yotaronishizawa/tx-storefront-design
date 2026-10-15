@@ -1,4 +1,4 @@
-import { useEffect, useRef, type ComponentType } from "react"
+import type { ComponentType } from "react"
 
 import type { ParseKeys } from "i18next"
 import {
@@ -11,6 +11,7 @@ import {
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
+import { RobotClip } from "~/components/robot/robot-clip"
 import {
   ROBOT_MOVING_KINDS,
   ROBOT_STATUS_LABELS,
@@ -21,7 +22,6 @@ import {
 } from "~/model/robot-attention"
 import type { RobotStatusKind } from "~/model/robot-status"
 import { cn } from "~/utils/cn"
-import { robotClipSrc } from "~/utils/robot-clip"
 
 export function HomeRobotStatus({
   kind,
@@ -50,16 +50,6 @@ export function HomeRobotStatus({
     : moving || (available && kind === "standby")
       ? "normal"
       : "resting"
-  const robotVideoRef = useRef<HTMLVideoElement>(null)
-  // Browsers pause autoplay while the page is hidden; resume when the tablet comes back.
-  useEffect(() => {
-    const resume = () => {
-      if (document.visibilityState === "visible")
-        void robotVideoRef.current?.play().catch(() => {})
-    }
-    document.addEventListener("visibilitychange", resume)
-    return () => document.removeEventListener("visibilitychange", resume)
-  }, [])
   const detectors: DetectorItem[] = [
     ...DETECTOR_ROWS.map(({ detector, key, Icon }): DetectorItem => {
       const found = attention?.detected?.[detector]
@@ -92,17 +82,9 @@ export function HomeRobotStatus({
   const robotVideo = (
     // Same split as the status pill: working, in trouble, or resting.
     // Transparent clips: one file per browser engine (see robotClipSrc).
-    <video
-      key={robotClip}
-      ref={robotVideoRef}
-      aria-hidden="true"
-      autoPlay
-      loop
-      muted
-      playsInline
-      disablePictureInPicture
+    <RobotClip
+      clip={robotClip}
       className="pointer-events-none mx-auto h-full w-auto max-w-full object-contain object-bottom"
-      src={robotClipSrc(robotClip)}
     />
   )
   const pill = (
