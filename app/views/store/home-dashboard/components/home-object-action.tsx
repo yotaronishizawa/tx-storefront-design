@@ -98,7 +98,9 @@ export function HomeObjectAction({
         className={cn(
           "pointer-events-none relative min-h-0 w-full flex-1 overflow-hidden",
           // 24 px under the title, or 16 px under the in-progress tag.
-          inProgress ? "mt-4" : "mt-6"
+          inProgress ? "mt-4" : "mt-6",
+          // The restock drawing runs to its window's bottom: keep it off the card edge.
+          kind === "restock" && "mb-2"
         )}
       >
         {/* The part of the Figma canvas (553 x 600) both illustrations cover,
