@@ -802,5 +802,8 @@
   "workflow.walkIn.statusLost": "ロボットの状態を確認できません。通信を確認してください。中には入らないでください。",
   "workflow.walkIn.stopTimedOut": "ロボットが待機位置に着きませんでした。中に入らず、オペレーションセンターに連絡してください。",
   "workflow.walkIn.leaveConfirm": "ウォークインから出てください\nロボットを開始する場合、ウォークインの中に人やモノがないことを確認した後にボタンをタップしてください",
-  "workflow.walkIn.startAndHome": "ロボットを開始してホームに戻る"
+  "workflow.walkIn.startAndHome": "ロボットを開始してホームに戻る",
+  "workflow.start.stopAndRestock": "ロボットをとめて“在庫棚にいれる”を開始",
+  "workflow.start.stopAndManual": "ロボットをとめて“在庫棚からとりだす”を開始",
+  "workflow.home.robotStopsByItself": "作業を選ぶと、ロボットは自動で止まります"
 }

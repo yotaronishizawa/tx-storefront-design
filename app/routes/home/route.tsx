@@ -38,6 +38,7 @@ import { hasShelfClient } from "~/model/store-display"
 import { HomeDashboardView } from "~/views/store/home-dashboard"
 
 import { useOpenEditLayout } from "../_hooks/use-open-edit-layout"
+import { useRobotRunning } from "../_hooks/use-robot-running"
 
 export default function HomePage() {
   const selectedRobotId = useSelectedRobotId()
@@ -113,6 +114,7 @@ export default function HomePage() {
   const { t } = useTranslation("app")
   const openEditLayout = useOpenEditLayout()
   const requestManualStart = useRequestManualStart()
+  const robotRunning = useRobotRunning()
   const manualReplenishmentAvailable = hasShelfClient(useSelectedStore())
   function showManualReplenishment() {
     if (isActiveRequest(manualReplenishmentRequest)) {
@@ -124,6 +126,11 @@ export default function HomePage() {
   // Going in stops the robot, so ask on Home first; the walk-in screen then
   // opens already stopping it.
   async function enterWalkIn() {
+    // Asked only when there is a robot to stop; a parked one just goes in.
+    if (!robotRunning) {
+      void navigate(`${ROUTES.walkIn().pathname}?start=1`)
+      return
+    }
     const choice = await readAppShellState().askOperator({
       buttons: "stop-and-enter",
       home: false,

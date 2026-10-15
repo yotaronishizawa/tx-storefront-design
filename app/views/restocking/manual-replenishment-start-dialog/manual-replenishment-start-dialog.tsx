@@ -19,11 +19,14 @@ export function ManualReplenishmentStartDialog({
   busy,
   open,
   onCancel,
+  stopsRobot,
   onConfirm,
 }: {
   busy: boolean
   open: boolean
   onCancel: () => void
+  /** Starting stops the working robot: the button says so. */
+  stopsRobot: boolean
   onConfirm: () => void
 }) {
   const { t } = useTranslation(["app", "common"])
@@ -90,7 +93,11 @@ export function ManualReplenishmentStartDialog({
 
       <Dialog.Footer className="mt-4 grid-cols-1 gap-3 sm:grid-cols-2">
         <Button busy={busy} disabled={!confirmed} onClick={onConfirm}>
-          {t("startManualReplenishment")}
+          {t(
+            stopsRobot
+              ? "workflow.start.stopAndManual"
+              : "startManualReplenishment"
+          )}
         </Button>
         <Button
           ref={cancelRef}

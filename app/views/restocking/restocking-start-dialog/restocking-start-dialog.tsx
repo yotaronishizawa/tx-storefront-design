@@ -20,6 +20,7 @@ export function RestockingStartDialog({
   resuming,
   shelvesFlat,
   onCancel,
+  stopsRobot,
   onConfirm,
 }: {
   busy: boolean
@@ -28,6 +29,8 @@ export function RestockingStartDialog({
   resuming: boolean
   shelvesFlat: boolean
   onCancel: () => void
+  /** Starting stops the working robot: the button says so. */
+  stopsRobot: boolean
   onConfirm: () => void
 }) {
   const { t } = useTranslation(["app", "common"])
@@ -94,7 +97,13 @@ export function RestockingStartDialog({
 
       <Dialog.Footer className="mt-4 grid-cols-1 gap-3 sm:grid-cols-2">
         <Button busy={busy} disabled={!confirmed} onClick={onConfirm}>
-          {resuming ? t("restockingResume") : t("stockReplenishStart")}
+          {resuming
+            ? t("restockingResume")
+            : t(
+                stopsRobot
+                  ? "workflow.start.stopAndRestock"
+                  : "stockReplenishStart"
+              )}
         </Button>
         <Button
           ref={cancelRef}

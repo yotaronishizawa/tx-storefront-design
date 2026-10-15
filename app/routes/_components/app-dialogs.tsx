@@ -50,6 +50,7 @@ import { RobotLockView } from "~/views/store/robot-lock"
 import { ScannerRecoveryDialog } from "~/views/store/scanner-recovery-dialog"
 import { VideoTutorialDialog } from "~/views/store/video-tutorial-dialog"
 
+import { useRobotRunning } from "../_hooks/use-robot-running"
 import { useVideoTutorialCatalog } from "../_hooks/use-video-tutorial-catalog"
 import { RobotPowerHost } from "./robot-power-host"
 import { ScanAlertDialog } from "./scan-alert-dialog"
@@ -96,6 +97,7 @@ export function AppDialogs() {
     startRestocking,
   } = useRestockingActions()
   const requestManualStart = useRequestManualStart()
+  const robotRunning = useRobotRunning()
   const navigate = useNavigate()
   const videoTutorialOpen = activeDialog === "video-tutorial"
   const videoTutorialCatalog = useVideoTutorialCatalog(videoTutorialOpen)
@@ -130,6 +132,7 @@ export function AppDialogs() {
         <>
           <ManualReplenishmentStartDialog
             busy={Boolean(busyAction)}
+            stopsRobot={robotRunning}
             open={activeDialog === "manual-start" || continuation === "restock"}
             onCancel={() =>
               continuation ? setContinuation(null) : closeDialog("manual-start")
@@ -163,6 +166,7 @@ export function AppDialogs() {
           />
           <RestockingStartDialog
             busy={Boolean(busyAction)}
+            stopsRobot={robotRunning}
             open={
               activeDialog === "restocking-start" || continuation === "manual"
             }
