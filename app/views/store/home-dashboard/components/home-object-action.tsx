@@ -89,68 +89,80 @@ export function HomeObjectAction({
         aria-hidden="true"
         className="pointer-events-none relative min-h-0 w-full flex-1 overflow-hidden"
       >
-        {/* Scale the entire Figma canvas uniformly; clamping only its width
-            distorts percentage-positioned layers in tall cards. */}
-        <svg
-          className="absolute inset-0 size-full"
-          viewBox="0 160 553 440"
-          preserveAspectRatio="xMidYMin meet"
-          focusable="false"
-        >
-          <foreignObject width={553} height={600}>
-            <div className="relative size-full">
-              {kind === "restock" ? (
-                RESTOCK_LAYERS.map(({ file, style, masked }, index) =>
-                  masked ? (
-                    <span
-                      key={`${file}-${index}`}
-                      className="absolute"
-                      style={{
-                        ...style,
-                        maskImage: `url(${ASSETS}/rs-scanner-mask.svg)`,
-                        maskSize: "100% 100%",
-                        maskRepeat: "no-repeat",
-                      }}
-                    >
+        {/* The Figma canvas (553 x 600) scaled uniformly to fit the card,
+            showing its band from y 160 to 600, centred and top-aligned (as
+            an SVG viewBox "0 160 553 440" with xMidYMin meet). Plain CSS, not
+            an SVG foreignObject: iPad Safari does not draw positioned HTML
+            inside a foreignObject, which left the cards blank there. */}
+        <span className="@container-size absolute inset-0">
+          <span
+            className="absolute top-0 left-1/2 -translate-x-1/2 overflow-hidden"
+            style={{
+              width: "min(100cqw, 100cqh * 553 / 440)",
+              aspectRatio: "553 / 440",
+            }}
+          >
+            <span
+              className="absolute left-0 w-full"
+              style={{
+                top: `${(-160 / 440) * 100}%`,
+                height: `${(600 / 440) * 100}%`,
+              }}
+            >
+              <span className="relative block size-full">
+                {kind === "restock" ? (
+                  RESTOCK_LAYERS.map(({ file, style, masked }, index) =>
+                    masked ? (
+                      <span
+                        key={`${file}-${index}`}
+                        className="absolute"
+                        style={{
+                          ...style,
+                          maskImage: `url(${ASSETS}/rs-scanner-mask.svg)`,
+                          maskSize: "100% 100%",
+                          maskRepeat: "no-repeat",
+                        }}
+                      >
+                        <img
+                          src={`${ASSETS}/${file}`}
+                          alt=""
+                          draggable={false}
+                          className="absolute"
+                          style={{
+                            left: 0,
+                            top: 0,
+                            width: "102.4106%",
+                            height: "55.9622%",
+                            transformOrigin: "0 0",
+                            transform:
+                              "translate(-1.7494%, -0.0613%) matrix(0.999783, -0.004363, -0.00525, 1.00024, 0, 0)",
+                          }}
+                        />
+                      </span>
+                    ) : (
                       <img
+                        key={`${file}-${index}`}
                         src={`${ASSETS}/${file}`}
                         alt=""
                         draggable={false}
                         className="absolute"
-                        style={{
-                          left: 0,
-                          top: 0,
-                          width: "102.4106%",
-                          height: "55.9622%",
-                          transformOrigin: "0 0",
-                          transform:
-                            "translate(-1.7494%, -0.0613%) matrix(0.999783, -0.004363, -0.00525, 1.00024, 0, 0)",
-                        }}
+                        style={style}
                       />
-                    </span>
-                  ) : (
-                    <img
-                      key={`${file}-${index}`}
-                      src={`${ASSETS}/${file}`}
-                      alt=""
-                      draggable={false}
-                      className="absolute"
-                      style={style}
-                    />
+                    )
                   )
-                )
-              ) : (
-                <img
-                  src={`${ASSETS}/manual.png`}
-                  alt=""
-                  draggable={false}
-                  className="absolute h-auto"
-                  style={{ left: "8.68%", top: "34.2%", width: "84.81%" }}
-                />
-              )}
-            </div>
-          </foreignObject>
-        </svg>
+                ) : (
+                  <img
+                    src={`${ASSETS}/manual.png`}
+                    alt=""
+                    draggable={false}
+                    className="absolute h-auto"
+                    style={{ left: "8.68%", top: "34.2%", width: "84.81%" }}
+                  />
+                )}
+              </span>
+            </span>
+          </span>
+        </span>
       </span>
       <span className="relative order-first flex w-full min-w-0 shrink-0 flex-col items-start px-4 pt-4 lg:px-5 lg:pt-5">
         <span className="text-[2rem]/tight font-bold">{label}</span>
