@@ -21,6 +21,7 @@ import {
 } from "~/model/robot-attention"
 import type { RobotStatusKind } from "~/model/robot-status"
 import { cn } from "~/utils/cn"
+import { robotClipSrc } from "~/utils/robot-clip"
 
 export function HomeRobotStatus({
   kind,
@@ -90,8 +91,7 @@ export function HomeRobotStatus({
   ]
   const robotVideo = (
     // Same split as the status pill: working, in trouble, or resting.
-    // Transparent clips: HEVC with alpha for Safari/iPad (listed first,
-    // since Chrome skips QuickTime), VP9 with alpha for Chrome.
+    // Transparent clips: one file per browser engine (see robotClipSrc).
     <video
       key={robotClip}
       ref={robotVideoRef}
@@ -102,16 +102,8 @@ export function HomeRobotStatus({
       playsInline
       disablePictureInPicture
       className="pointer-events-none mx-auto h-full w-auto max-w-full object-contain object-bottom"
-    >
-      <source
-        src={`/assets/home-study-2026-10-06/robot-${robotClip}.mov`}
-        type='video/quicktime; codecs="hvc1"'
-      />
-      <source
-        src={`/assets/home-study-2026-10-06/robot-${robotClip}.webm`}
-        type="video/webm"
-      />
-    </video>
+      src={robotClipSrc(robotClip)}
+    />
   )
   const pill = (
     <p

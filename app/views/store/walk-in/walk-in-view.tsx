@@ -5,6 +5,7 @@ import type { RobotArmControlProps } from "~/components/robot/robot-arm-control"
 import { RobotArmPanel } from "~/components/robot/robot-arm-panel"
 import { Button } from "~/core"
 import { cn } from "~/utils/cn"
+import { robotClipSrc } from "~/utils/robot-clip"
 
 /**
  * Inside the walk-in. Staff reach it after confirming on Home that the robot
@@ -79,16 +80,8 @@ export function WalkInView({
       playsInline
       disablePictureInPicture
       className="pointer-events-none h-full w-auto max-w-full object-contain object-bottom-left"
-    >
-      <source
-        src={`/assets/home-study-2026-10-06/robot-${clip}.mov`}
-        type='video/quicktime; codecs="hvc1"'
-      />
-      <source
-        src={`/assets/home-study-2026-10-06/robot-${clip}.webm`}
-        type="video/webm"
-      />
-    </video>
+      src={robotClipSrc(clip)}
+    />
   )
 
   // One frame for both states, so stopping only swaps the right card and
