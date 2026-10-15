@@ -322,11 +322,11 @@ function HomePurposeAction({
           className={icon === "stock-count" ? "size-full" : "h-7 w-auto"}
         />
       </span>
-      {/* Title and its hint side by side, the same size, the hint quieter. */}
+      {/* Title and its hint side by side (24 / 20 px), the hint quieter. */}
       <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
         <span className="text-xl/tight font-bold text-primary">{title}</span>
         {subtitle && (
-          <span className="text-xl/tight text-secondary">{subtitle}</span>
+          <span className="text-lg/tight text-secondary">{subtitle}</span>
         )}
       </span>
     </Button>
