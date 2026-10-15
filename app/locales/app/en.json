@@ -795,7 +795,7 @@
   "workflow.walkIn.stepSend": "Telling the robot to stop",
   "workflow.walkIn.stepMove": "The robot is moving to its rest position",
   "workflow.walkIn.stepStopped": "Once it stops, you can go in",
-  "workflow.walkIn.dontEnterYet": "Do not go in until the robot has stopped",
+  "workflow.walkIn.dontEnterYet": "Do not go in\nuntil the robot has stopped",
   "workflow.walkIn.watching": "Waiting and checking the robot's status",
   "workflow.walkIn.takingLonger": "This is taking longer than usual. Stay outside and wait a little longer.",
   "workflow.walkIn.heldBy": "{reason}. The robot is held and cannot move.",

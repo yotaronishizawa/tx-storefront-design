@@ -137,8 +137,15 @@ function DontEnterCard() {
   return (
     <section className="flex min-h-0 flex-col items-start justify-center gap-6 rounded-xl border-2 border-warning bg-[#fde4d2] p-8 text-left text-primary">
       <TriangleAlert className="size-20 shrink-0 text-warning" />
-      <p className="text-[2.5rem]/tight font-bold whitespace-pre-line">
-        {t("workflow.walkIn.dontEnterYet")}
+      {/* One line per phrase, never broken mid-phrase. */}
+      <p className="text-display/tight font-bold">
+        {t("workflow.walkIn.dontEnterYet")
+          .split("\n")
+          .map((line) => (
+            <span key={line} className="block whitespace-nowrap">
+              {line}
+            </span>
+          ))}
       </p>
     </section>
   )
