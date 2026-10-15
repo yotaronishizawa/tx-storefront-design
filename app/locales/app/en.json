@@ -781,7 +781,7 @@
   "idleScreenOff": "Off",
   "idleScreenSeconds": "{count} s",
   "idleScreenMinutes": "{count} min",
-  "workflow.idle.wake": "Touch the screen to start",
+  "workflow.idle.wake": "Tap to start",
   "workflow.walkIn.stopConfirm": "The robot will stop. Is that all right?",
   "workflow.walkIn.stopAndEnter": "Stop the robot and go in",
   "workflow.walkIn.stoppedHint": "The robot is stopped. When you are done, press the button below.",
