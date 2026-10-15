@@ -1,7 +1,14 @@
-import { useEffect, useRef } from "react"
+import { useEffect, useRef, type ComponentType } from "react"
 
 import type { ParseKeys } from "i18next"
-import { Ban, Box, OctagonX, UserRound } from "lucide-react"
+import {
+  Box,
+  CircleCheck,
+  Minus,
+  OctagonX,
+  TriangleAlert,
+  UserRound,
+} from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import {
@@ -192,11 +199,15 @@ export function HomeRobotStatus({
 const DETECTOR_ROWS: {
   detector: RobotDetector
   key: ParseKeys<"app">
-  Icon: typeof UserRound
+  Icon: DetectorIcon
 }[] = [
   { detector: "human", key: "workflow.home.v5.person", Icon: UserRound },
-  { detector: "obstacle", key: "workflow.home.v5.obstacle", Icon: Ban },
-  { detector: "fallenDrink", key: "workflow.home.v5.droppedDrink", Icon: Box },
+  { detector: "obstacle", key: "workflow.home.v5.obstacle", Icon: Box },
+  {
+    detector: "fallenDrink",
+    key: "workflow.home.v5.droppedDrink",
+    Icon: BottleIcon,
+  },
 ]
 
 type DetectorState = "unknown" | "ok" | "alert"
@@ -208,7 +219,7 @@ function eStopState(eStop: RobotAttention["eStop"] | undefined): DetectorState {
 
 type DetectorItem = {
   key: string
-  Icon: typeof UserRound
+  Icon: DetectorIcon
   label: string
   state: DetectorState
   value: string
@@ -221,7 +232,7 @@ function DetectorRow({
   value,
   wide = false,
 }: {
-  Icon: typeof UserRound
+  Icon: DetectorIcon
   label: string
   state: DetectorState
   value: string
@@ -242,7 +253,7 @@ function DetectorRow({
           tone
         )}
       >
-        <span className="size-3 shrink-0 rounded-full bg-current" />
+        <StateMark state={state} className="size-7" />
         <Icon className="size-7 shrink-0" />
         <span className="min-w-0 flex-1">{label}</span>
         <span
@@ -262,9 +273,49 @@ function DetectorRow({
         tone
       )}
     >
-      <span className="size-2.5 shrink-0 rounded-full bg-current" />
+      <StateMark state={state} className="size-4" />
       <Icon className="size-5 shrink-0" />
       {label}
     </div>
+  )
+}
+
+type DetectorIcon = ComponentType<{ className?: string }>
+
+/**
+ * A check passed, something found, or nothing read yet: a shape as well as
+ * a colour, so the state reads without telling green from red.
+ */
+function StateMark({
+  state,
+  className,
+}: {
+  state: DetectorState
+  className?: string
+}) {
+  const Mark =
+    state === "ok" ? CircleCheck : state === "alert" ? TriangleAlert : Minus
+  return <Mark aria-hidden="true" className={cn("shrink-0", className)} />
+}
+
+/**
+ * A drink bottle (Figma "Group 247"), for the fallen-drink detector. Drawn
+ * centred in the same square as the other icons so the labels line up.
+ */
+function BottleIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      aria-hidden="true"
+      viewBox="0 0 72 133"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth={10}
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className={className}
+    >
+      <path d="M45.8 5H27.2C23.7758 5 21 7.83553 21 11.3333V17.6667C21 21.1645 23.7758 24 27.2 24H45.8C49.2242 24 52 21.1645 52 17.6667V11.3333C52 7.83553 49.2242 5 45.8 5Z" />
+      <path d="M23.6 24V33.1765C23.6 39.2941 5 48.4706 5 63.7647V115.765C5 119.01 6.30642 122.122 8.63188 124.416C10.9573 126.711 14.1113 128 17.4 128H54.6C57.8887 128 61.0427 126.711 63.3681 124.416C65.6936 122.122 67 119.01 67 115.765V63.7647C67 48.4706 48.4 39.2941 48.4 33.1765V24" />
+    </svg>
   )
 }
