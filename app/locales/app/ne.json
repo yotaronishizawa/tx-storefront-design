@@ -803,7 +803,6 @@
   "workflow.walkIn.stopTimedOut": "The robot did not reach its rest position. Do not go in; call the operation center.",
   "workflow.walkIn.leaveConfirm": "Leave the walk-in\nBefore starting the robot, check that no one and nothing is left inside the walk-in, then tap the button.",
   "workflow.walkIn.startAndHome": "Start the robot and go back to Home",
-  "workflow.start.stopAndRestock": "Stop the robot and start restocking",
-  "workflow.start.stopAndManual": "Stop the robot and start taking out",
+  "workflow.start.stopAndStart": "Stop the robot and start",
   "workflow.home.robotStopsByItself": "Pick a task and the robot stops by itself"
 }

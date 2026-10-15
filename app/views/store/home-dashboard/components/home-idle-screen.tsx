@@ -2,8 +2,6 @@ import type { ReactNode } from "react"
 
 import { useTranslation } from "react-i18next"
 
-import { RobotStopsByItself } from "./robot-stops-by-itself"
-
 /**
  * Shown over Home after it sits untouched: the robot status, and a
  * full-width "touch the screen to start" band. Any touch only wakes Home, so
@@ -13,15 +11,12 @@ import { RobotStopsByItself } from "./robot-stops-by-itself"
 export function HomeIdleScreen({
   robotStatus,
   attention,
-  robotRunning,
   onWake,
 }: {
   /** The robot status group (status, detectors, robot). */
   robotStatus: ReactNode
   /** The robot needs staff: the ripple stops so the red status leads. */
   attention: boolean
-  /** The robot is out working: say starting a task stops it by itself. */
-  robotRunning: boolean
   onWake: () => void
 }) {
   const { t } = useTranslation("app")
@@ -52,7 +47,6 @@ export function HomeIdleScreen({
           </span>
           {t("workflow.idle.wake")}
         </div>
-        {robotRunning && <RobotStopsByItself className="text-xl" />}
       </div>
     </div>
   )

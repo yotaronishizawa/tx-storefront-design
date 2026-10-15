@@ -175,7 +175,6 @@ export function HomeDashboardView({
             />
           }
           attention={cause !== null}
-          robotRunning={controls.canStop}
           onWake={() => {
             setWakeShield(true)
             onWake()

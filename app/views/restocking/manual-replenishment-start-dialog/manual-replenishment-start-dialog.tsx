@@ -95,7 +95,7 @@ export function ManualReplenishmentStartDialog({
         <Button busy={busy} disabled={!confirmed} onClick={onConfirm}>
           {t(
             stopsRobot
-              ? "workflow.start.stopAndManual"
+              ? "workflow.start.stopAndStart"
               : "startManualReplenishment"
           )}
         </Button>

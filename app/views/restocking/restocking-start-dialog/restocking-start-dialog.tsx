@@ -101,7 +101,7 @@ export function RestockingStartDialog({
             ? t("restockingResume")
             : t(
                 stopsRobot
-                  ? "workflow.start.stopAndRestock"
+                  ? "workflow.start.stopAndStart"
                   : "stockReplenishStart"
               )}
         </Button>
