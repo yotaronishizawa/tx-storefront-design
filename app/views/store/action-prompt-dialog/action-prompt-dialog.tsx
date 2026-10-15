@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next"
 
+import { ChoiceDialog } from "~/components/dialog/choice-dialog"
 import { ConfirmDialog } from "~/components/dialog/confirm-dialog"
 import { MessageDialog } from "~/components/dialog/message-dialog"
 import type {
@@ -11,6 +12,12 @@ import type {
 import { PromptPhotos } from "./components/prompt-photos"
 
 type Labels = { confirm: string; dismiss?: string }
+
+/** Laid out as their own design: a heading, a line under it, two answers. */
+const CHOICE_PROMPTS = new Set<PromptButtons>([
+  "stop-and-enter",
+  "start-and-home",
+])
 
 /** A lone button dismisses, except these. */
 const LONE_CONFIRMING = new Set<PromptButtons>([
@@ -91,6 +98,22 @@ export function ActionPromptDialog({
   }
   const buttons = prompt?.buttons ?? "ok"
   const { confirm, dismiss } = labels[buttons]
+
+  if (prompt && dismiss !== undefined && CHOICE_PROMPTS.has(buttons)) {
+    // The first line is the heading; the rest, if any, goes under it.
+    const [title = "", ...rest] = prompt.message.split("\n")
+    return (
+      <ChoiceDialog
+        cancelLabel={dismiss}
+        confirmLabel={confirm}
+        message={rest.join("\n")}
+        open
+        title={title}
+        onCancel={() => onAnswer("dismiss")}
+        onConfirm={() => onAnswer("confirm")}
+      />
+    )
+  }
 
   if (dismiss === undefined) {
     const choice = LONE_CONFIRMING.has(buttons) ? "confirm" : "dismiss"
