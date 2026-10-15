@@ -5,6 +5,14 @@ import { cn } from "~/utils/cn"
 
 const ASSETS = "/assets/home-study-2026-10-06"
 
+/**
+ * The window onto the Figma canvas (553 x 600) each card shows: the same
+ * size for both, so the drawings keep one scale, but starting where each
+ * drawing starts, so both sit the same gap under their title.
+ */
+const BAND = { x: 48, width: 479, height: 387 }
+const BAND_TOP = { restock: 177, manual: 205 }
+
 /** Figma 7864:46803: original individual illustration layers and positions. */
 const RESTOCK_LAYERS: {
   file: string
@@ -87,26 +95,32 @@ export function HomeObjectAction({
     >
       <span
         aria-hidden="true"
-        className="pointer-events-none relative min-h-0 w-full flex-1 overflow-hidden"
+        className={cn(
+          "pointer-events-none relative min-h-0 w-full flex-1 overflow-hidden",
+          // 24 px under the title, or 16 px under the in-progress tag.
+          inProgress ? "mt-4" : "mt-6"
+        )}
       >
-        {/* The Figma canvas (553 x 600) scaled uniformly to fit the card,
-            showing its band from y 160 to 600, centred and top-aligned (as
-            an SVG viewBox "0 160 553 440" with xMidYMin meet). Plain CSS, not
-            an SVG foreignObject: iPad Safari does not draw positioned HTML
-            inside a foreignObject, which left the cards blank there. */}
+        {/* The part of the Figma canvas (553 x 600) both illustrations cover,
+            x 48-527, from where each drawing starts, scaled uniformly to fit the card, centred
+            and top-aligned, so the drawing starts right at the gap above.
+            Plain CSS, not an SVG foreignObject: iPad Safari does not draw
+            positioned HTML inside a foreignObject. */}
         <span className="@container-size absolute inset-0">
           <span
             className="absolute top-0 left-1/2 -translate-x-1/2 overflow-hidden"
             style={{
-              width: "min(100cqw, 100cqh * 553 / 440)",
-              aspectRatio: "553 / 440",
+              width: `min(100cqw, 100cqh * ${BAND.width} / ${BAND.height})`,
+              aspectRatio: `${BAND.width} / ${BAND.height}`,
             }}
           >
             <span
-              className="absolute left-0 w-full"
+              className="absolute"
               style={{
-                top: `${(-160 / 440) * 100}%`,
-                height: `${(600 / 440) * 100}%`,
+                left: `${(-BAND.x / BAND.width) * 100}%`,
+                top: `${(-BAND_TOP[kind] / BAND.height) * 100}%`,
+                width: `${(553 / BAND.width) * 100}%`,
+                height: `${(600 / BAND.height) * 100}%`,
               }}
             >
               <span className="relative block size-full">
@@ -166,18 +180,12 @@ export function HomeObjectAction({
       </span>
       <span className="relative order-first flex w-full min-w-0 shrink-0 flex-col items-start px-4 pt-4 lg:px-5 lg:pt-5">
         <span className="text-[2rem]/tight font-bold">{label}</span>
-        {/* The tag's row is always kept, so the illustration below stays the
-            same size whether or not a task is open. */}
-        <span
-          aria-hidden={!inProgress}
-          className={cn(
-            "mt-2 inline-flex items-center gap-2.5 rounded-full bg-default px-5 py-2 text-xl font-bold text-primary",
-            !inProgress && "invisible"
-          )}
-        >
-          <span className="size-3.5 animate-pulse rounded-full bg-success" />
-          {inProgress ?? "\u00a0"}
-        </span>
+        {inProgress && (
+          <span className="mt-2 inline-flex items-center gap-2.5 rounded-full bg-default px-5 py-2 text-xl font-bold text-primary">
+            <span className="size-3.5 animate-pulse rounded-full bg-success" />
+            {inProgress}
+          </span>
+        )}
       </span>
       {/* An unfinished task: a deeper card edge that pulses with the tag's dot.
           A separate layer so only the edge fades, not the card content. */}
