@@ -138,11 +138,17 @@ export function HomeRobotStatus({
                 )}
         </p>
       </div>
-      <p className="mt-3 text-xs text-secondary lg:hidden">
+      <p
+        className={cn(
+          "mt-3 text-xs text-secondary lg:hidden",
+          wide && "hidden"
+        )}
+      >
         {t("workflow.home.v5.detectorsSummary")}
       </p>
       {wide ? (
-        <div className="mt-4 hidden min-h-0 flex-1 grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-center gap-8 lg:grid">
+        // The idle screen only runs on the store iPad: no narrow fallback.
+        <div className="mt-4 grid min-h-0 flex-1 grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-center gap-8">
           <div className="h-full min-h-0 overflow-hidden">{robotVideo}</div>
           <ul className="grid gap-1 rounded-xl border-2 bg-default p-4">
             {detectors.map(({ key, ...item }) => (
