@@ -306,10 +306,12 @@ function BottleIcon({ className }: { className?: string }) {
   return (
     <svg
       aria-hidden="true"
-      viewBox="0 0 72 133"
+      // Lucide draws 2 on a 24 grid; matched for a 133-high bottle, with a
+      // point of room so the thicker stroke is not clipped.
+      viewBox="-1 -1 74 135"
       fill="none"
       stroke="currentColor"
-      strokeWidth={10}
+      strokeWidth={11}
       strokeLinecap="round"
       strokeLinejoin="round"
       className={className}
