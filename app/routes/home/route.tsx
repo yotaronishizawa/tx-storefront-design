@@ -40,6 +40,9 @@ import { HomeDashboardView } from "~/views/store/home-dashboard"
 import { useOpenEditLayout } from "../_hooks/use-open-edit-layout"
 import { useRobotRunning } from "../_hooks/use-robot-running"
 
+/** Home has been shown since the page loaded. */
+let homeShownSinceLoad = false
+
 export default function HomePage() {
   const selectedRobotId = useSelectedRobotId()
   const manualReplenishmentRequest = useManualReplenishmentRequest()
@@ -90,7 +93,14 @@ export default function HomePage() {
     idleTimeoutMs,
     attentionPanelOpen || !idleScreenEnabled
   )
-  const [idle, setIdle] = useState(() => searchParams.get("idle") === "1")
+  // A fresh load (the tablet waking, a reload) opens on the idle screen;
+  // coming back to Home from a task does not.
+  const [idle, setIdle] = useState(
+    () => searchParams.get("idle") === "1" || !homeShownSinceLoad
+  )
+  useEffect(() => {
+    homeShownSinceLoad = true
+  }, [])
   // Turning the idle screen off (in Settings or by the study switch) closes it.
   const [idleScreenWasEnabled, setIdleScreenWasEnabled] =
     useState(idleScreenEnabled)
