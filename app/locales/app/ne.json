@@ -804,5 +804,6 @@
   "workflow.walkIn.leaveConfirm": "Leave the walk-in\nBefore starting the robot, check that no one and nothing is left inside the walk-in, then tap the button.",
   "workflow.walkIn.startAndHome": "Start the robot and go back to Home",
   "workflow.start.stopAndStart": "Stop the robot and start",
-  "workflow.home.robotStopsByItself": "Pick a task and the robot stops by itself"
+  "workflow.home.robotStopsByItself": "Pick a task and the robot stops by itself",
+  "workflow.idle.safetyCheck": "Robot safety check"
 }

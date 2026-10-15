@@ -109,9 +109,12 @@ export function HomeRobotStatus({
   return (
     <aside className="flex min-h-0 min-w-0 flex-col bg-subtle p-4 lg:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-bold text-secondary lg:text-base">
-          {t("robotStatus")}
-        </h2>
+        {/* The idle screen is all robot status: no heading needed there. */}
+        {!wide && (
+          <h2 className="text-sm font-bold text-secondary lg:text-base">
+            {t("robotStatus")}
+          </h2>
+        )}
         <p
           role="status"
           className={cn(
@@ -148,13 +151,20 @@ export function HomeRobotStatus({
       </p>
       {wide ? (
         // The idle screen only runs on the store iPad: no narrow fallback.
-        <div className="mt-4 grid min-h-0 flex-1 grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-center gap-8">
-          <div className="h-full min-h-0 overflow-hidden">{robotVideo}</div>
-          <ul className="grid gap-1 rounded-xl border-2 bg-default p-4">
-            {detectors.map(({ key, ...item }) => (
-              <DetectorRow key={key} {...item} wide />
-            ))}
-          </ul>
+        <div className="mt-4 flex min-h-0 flex-1 items-center justify-center gap-12">
+          <div className="h-full min-h-0 shrink-0 overflow-hidden">
+            {robotVideo}
+          </div>
+          <section className="grid w-96 shrink-0 gap-3">
+            <h2 className="text-lg font-bold text-secondary">
+              {t("workflow.idle.safetyCheck")}
+            </h2>
+            <ul className="grid gap-1 rounded-xl border-2 bg-default p-4">
+              {detectors.map(({ key, ...item }) => (
+                <DetectorRow key={key} {...item} wide />
+              ))}
+            </ul>
+          </section>
         </div>
       ) : (
         <>

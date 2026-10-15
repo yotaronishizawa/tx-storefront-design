@@ -804,5 +804,6 @@
   "workflow.walkIn.leaveConfirm": "ウォークインから出てください\nロボットを開始する場合、ウォークインの中に人やモノがないことを確認した後にボタンをタップしてください",
   "workflow.walkIn.startAndHome": "ロボットを開始してホームに戻る",
   "workflow.start.stopAndStart": "ロボットを止めて開始",
-  "workflow.home.robotStopsByItself": "作業を選ぶと、ロボットは自動で止まります"
+  "workflow.home.robotStopsByItself": "作業を選ぶと、ロボットは自動で止まります",
+  "workflow.idle.safetyCheck": "ロボットの安全チェック"
 }
