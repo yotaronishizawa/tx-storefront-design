@@ -317,7 +317,7 @@ function HomePurposeAction({
       onClick={onClick}
       className={cn(
         "w-full min-w-0 shrink-0 justify-start gap-3 rounded-lg border-2 border-default bg-default px-4 py-3 text-left whitespace-normal active:bg-subtle",
-        subtitle ? "min-h-24" : "min-h-20"
+        "min-h-20"
       )}
     >
       <span className="flex size-10 shrink-0 items-center justify-center gap-0.5 rounded-md bg-subtle text-secondary">
@@ -328,14 +328,11 @@ function HomePurposeAction({
           className={icon === "stock-count" ? "size-full" : "h-7 w-auto"}
         />
       </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-xl/tight font-bold text-primary">
-          {title}
-        </span>
+      {/* Title and its hint side by side, the same size, the hint quieter. */}
+      <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
+        <span className="text-xl/tight font-bold text-primary">{title}</span>
         {subtitle && (
-          <span className="mt-1 block text-xs/relaxed text-secondary">
-            {subtitle}
-          </span>
+          <span className="text-xl/tight text-secondary">{subtitle}</span>
         )}
       </span>
     </Button>
