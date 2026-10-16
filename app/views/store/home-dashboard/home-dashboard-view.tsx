@@ -25,7 +25,7 @@ import {
 } from "./components/home-attention-panel"
 import { HomeIdleScreen } from "./components/home-idle-screen"
 import { HomeObjectAction } from "./components/home-object-action"
-import { HomeRobotStatus } from "./components/home-robot-status"
+import { HomeRobotStatus, type IdleLook } from "./components/home-robot-status"
 import { HomeWalkInGate } from "./components/home-walk-in-gate"
 
 export function HomeDashboardView({
@@ -134,6 +134,15 @@ export function HomeDashboardView({
   // Study: `?runningPreview=1` shows both cards in progress without starting a task.
   const [searchParams] = useSearchParams()
   const runningPreview = searchParams.get("runningPreview") === "1"
+  // The idle screen is the signage look (2026-10-16). Study: `?idleLook=split`
+  // / `ambient` / `headline` brings back the looks it was chosen from.
+  const idleLookParam = searchParams.get("idleLook")
+  const idleLook: IdleLook =
+    idleLookParam === "split" ||
+    idleLookParam === "ambient" ||
+    idleLookParam === "headline"
+      ? idleLookParam
+      : "sign"
   // Study: `?homeLayout=gate` / `split` switches Home's layout and remembers
   // it on this tablet, so coming back from a task keeps the one on trial.
   const layoutParam = searchParams.get("homeLayout")
@@ -190,9 +199,11 @@ export function HomeDashboardView({
               available={available}
               attention={attention}
               wide
+              look={idleLook}
             />
           }
           attention={cause !== null}
+          look={idleLook}
           onWake={() => {
             setWakeShield(true)
             onWake()
@@ -221,14 +232,14 @@ export function HomeDashboardView({
         />
       ) : (
         <section className="flex min-h-0 min-w-0 flex-col gap-3 p-4 lg:gap-4">
-          <header className="flex shrink-0 flex-col gap-2 px-2 pt-6 pb-4">
-            <h1 className="text-display-lg/tight font-bold tracking-tight text-primary">
-              {t("workflow.home.pageHeading")}
-            </h1>
-            <p className="text-xl/snug text-secondary">
-              {t("workflow.home.pageHint")}
-            </p>
-          </header>
+          <h1
+            className={cn(
+              "shrink-0 px-2 pt-6 pb-4 font-bold tracking-tight text-primary",
+              idleScreenEnabled ? "text-display-lg/tight" : "text-display/tight"
+            )}
+          >
+            {t("workflow.home.pageHeading")}
+          </h1>
           {cause && (
             <div
               className={cn(
