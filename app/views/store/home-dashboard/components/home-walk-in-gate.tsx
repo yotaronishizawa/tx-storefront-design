@@ -57,33 +57,33 @@ export function HomeWalkInGate({
               ? onManual()
               : setChoosing(true)
         }
-        className="h-[50svh] w-full min-w-0 shrink-0 items-center justify-start gap-8 rounded-lg border-2 border-default bg-default px-10 py-8 text-left whitespace-normal active:bg-subtle"
+        className="h-[50svh] w-full min-w-0 shrink-0 flex-col items-stretch justify-start gap-4 overflow-hidden rounded-lg border-2 border-default bg-default p-6 text-left whitespace-normal active:bg-subtle"
       >
-        <span className="grid size-28 shrink-0 place-items-center rounded-xl bg-subtle">
-          <img
-            src="/assets/home-study-2026-10-06/enter.svg"
-            alt=""
-            draggable={false}
-            className="h-16 w-auto"
-          />
-        </span>
-        <span className="flex min-w-0 flex-1 flex-col gap-3">
-          <span className="text-[2.5rem]/tight font-bold text-primary">
-            {t("workflow.gate.title")}
+        <span className="flex min-w-0 items-start gap-4">
+          <span className="flex min-w-0 flex-1 flex-col gap-1">
+            <span className="text-[2rem]/tight font-bold text-primary">
+              {t("workflow.gate.title")}
+            </span>
+            <span className="text-lg/snug text-secondary">
+              {openTask
+                ? t("workflow.gate.backToTask", {
+                    task: t(
+                      openTask === "restock"
+                        ? "workflow.home.restock"
+                        : "workflow.home.manual"
+                    ),
+                  })
+                : t("workflow.gate.hint")}
+            </span>
           </span>
-          <span className="text-xl/snug text-secondary">
-            {openTask
-              ? t("workflow.gate.backToTask", {
-                  task: t(
-                    openTask === "restock"
-                      ? "workflow.home.restock"
-                      : "workflow.home.manual"
-                  ),
-                })
-              : t("workflow.gate.hint")}
-          </span>
+          <ChevronRight className="size-10 shrink-0 text-secondary" />
         </span>
-        <ChevronRight className="size-10 shrink-0 text-secondary" />
+        <img
+          src="/assets/home-study-2026-10-06/walk-in-enter.svg"
+          alt=""
+          draggable={false}
+          className="min-h-0 w-full flex-1 rounded-md object-cover"
+        />
       </Button>
 
       <Dialog.Root
