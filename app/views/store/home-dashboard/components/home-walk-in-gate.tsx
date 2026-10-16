@@ -57,7 +57,7 @@ export function HomeWalkInGate({
               ? onManual()
               : setChoosing(true)
         }
-        className="h-[50svh] w-full min-w-0 shrink-0 flex-col items-stretch justify-start gap-4 overflow-hidden rounded-lg border-2 border-default bg-default p-6 text-left whitespace-normal active:bg-subtle"
+        className="min-h-0 w-full min-w-0 flex-1 flex-col items-stretch justify-start gap-4 overflow-hidden rounded-lg border-2 border-default bg-default p-6 text-left whitespace-normal active:bg-subtle"
       >
         <span className="flex min-w-0 items-start gap-4">
           <span className="flex min-w-0 flex-1 flex-col gap-1">

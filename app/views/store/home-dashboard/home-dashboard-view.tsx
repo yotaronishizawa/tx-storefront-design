@@ -221,9 +221,14 @@ export function HomeDashboardView({
         />
       ) : (
         <section className="flex min-h-0 min-w-0 flex-col gap-3 p-4 lg:gap-4">
-          <h1 className="shrink-0 text-[1.75rem]/tight font-bold text-primary">
-            {t("workflow.home.pageHeading")}
-          </h1>
+          <header className="flex shrink-0 flex-col gap-2 px-2 pt-6 pb-4">
+            <h1 className="text-display-lg/tight font-bold tracking-tight text-primary">
+              {t("workflow.home.pageHeading")}
+            </h1>
+            <p className="text-xl/snug text-secondary">
+              {t("workflow.home.pageHint")}
+            </p>
+          </header>
           {cause && (
             <div
               className={cn(
