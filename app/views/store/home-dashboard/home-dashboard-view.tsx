@@ -278,7 +278,6 @@ export function HomeDashboardView({
           {gateLayout ? (
             <HomeWalkInGate
               disabled={busy || robotHeld}
-              robotRunning={controls.canStop}
               restockOpen={restockOpen}
               manualOpen={manualOpen}
               manualAvailable={manualReplenishmentAvailable}

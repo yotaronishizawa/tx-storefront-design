@@ -10,12 +10,12 @@ import { HomeObjectAction } from "./home-object-action"
 /**
  * One way in to the walk-in (study, `?homeLayout=gate`): staff think "I am
  * going in", so that is the button, whatever the reason and whatever the
- * robot is doing. What they go in for comes next, and choosing it stops the
- * robot. An open restock or take-out goes straight back to its task.
+ * robot is doing. What they will do inside comes next; the task they pick
+ * stops the robot on its own. An open restock or take-out goes straight back
+ * to its task.
  */
 export function HomeWalkInGate({
   disabled,
-  robotRunning,
   restockOpen,
   manualOpen,
   manualAvailable,
@@ -24,8 +24,6 @@ export function HomeWalkInGate({
   onOther,
 }: {
   disabled: boolean
-  /** The robot is out working, so choosing stops it; else it stays stopped. */
-  robotRunning: boolean
   restockOpen: boolean
   manualOpen: boolean
   manualAvailable: boolean
@@ -91,18 +89,9 @@ export function HomeWalkInGate({
         open={choosing}
         onDismiss={() => setChoosing(false)}
       >
-        <div className="grid gap-2">
-          <Dialog.Title className="text-display/tight">
-            {t("workflow.gate.question")}
-          </Dialog.Title>
-          <Dialog.Message className="text-left text-xl/snug font-normal">
-            {t(
-              robotRunning
-                ? "workflow.gate.robotStops"
-                : "workflow.gate.robotStaysStopped"
-            )}
-          </Dialog.Message>
-        </div>
+        <Dialog.Title className="text-display/tight">
+          {t("workflow.gate.question")}
+        </Dialog.Title>
         <div className="grid h-80 grid-cols-3 gap-4">
           <HomeObjectAction
             kind="restock"
