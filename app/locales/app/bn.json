@@ -812,5 +812,6 @@
   "workflow.gate.robotStops": "Choosing one stops the robot",
   "workflow.gate.robotStaysStopped": "Choosing one keeps the robot stopped while you work",
   "workflow.gate.other": "Anything else",
-  "workflow.gate.otherHint": "Cleaning, checks, tidying up"
+  "workflow.gate.otherHint": "Cleaning, checks, tidying up",
+  "workflow.home.framedHeading": "Going into the walk-in? Pick here first"
 }

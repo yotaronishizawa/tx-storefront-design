@@ -137,9 +137,17 @@ export function HomeDashboardView({
   // Study: `?homeLayout=gate` / `split` switches Home's layout and remembers
   // it on this tablet, so coming back from a task keeps the one on trial.
   const layoutParam = searchParams.get("homeLayout")
-  if (layoutParam === "gate" || layoutParam === "split")
+  if (
+    layoutParam === "gate" ||
+    layoutParam === "framed" ||
+    layoutParam === "split"
+  )
     writeStorage(HOME_LAYOUT_KEY, layoutParam)
-  const gateLayout = readStorage(HOME_LAYOUT_KEY) === "gate"
+  const storedLayout = readStorage(HOME_LAYOUT_KEY)
+  const gateLayout = storedLayout === "gate"
+  // `framed`: the walk-in actions boxed under "going in? pick here", with
+  // no extra tap.
+  const framedLayout = storedLayout === "framed"
   // With the idle screen on, the robot status lives only there: staff look at
   // it for reassurance, not to decide anything, so Home gives the width to
   // actions. With it off, Home shows the status beside them (the version to
@@ -260,7 +268,24 @@ export function HomeDashboardView({
               onOther={onEnterWalkInDirect}
             />
           ) : (
-            <>
+            <div
+              className={cn(
+                "contents",
+                framedLayout &&
+                  "flex min-h-0 flex-col gap-3 rounded-xl border-2 border-strong bg-subtle p-4 lg:flex-1 lg:gap-4"
+              )}
+            >
+              {framedLayout && (
+                <p className="flex items-center gap-3 text-xl font-bold text-primary">
+                  <img
+                    src="/assets/home-study-2026-10-06/enter.svg"
+                    alt=""
+                    draggable={false}
+                    className="h-7 w-auto"
+                  />
+                  {t("workflow.home.framedHeading")}
+                </p>
+              )}
               <HomePurposeAction
                 icon="enter"
                 title={t("workflow.home.v5.enter")}
@@ -288,7 +313,7 @@ export function HomeDashboardView({
                   onClick={onShowManualReplenishment}
                 />
               </div>
-            </>
+            </div>
           )}
           <HomePurposeAction
             icon="layout"

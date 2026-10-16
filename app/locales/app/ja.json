@@ -812,5 +812,6 @@
   "workflow.gate.robotStops": "選ぶと、ロボットが止まります",
   "workflow.gate.robotStaysStopped": "選ぶと、ロボットは止まったまま作業できます",
   "workflow.gate.other": "それ以外の用事",
-  "workflow.gate.otherHint": "掃除・点検・片付けなど"
+  "workflow.gate.otherHint": "掃除・点検・片付けなど",
+  "workflow.home.framedHeading": "ウォークインに入るときは、ここから選ぶ"
 }
