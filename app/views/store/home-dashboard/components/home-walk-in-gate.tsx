@@ -57,7 +57,7 @@ export function HomeWalkInGate({
               ? onManual()
               : setChoosing(true)
         }
-        className="min-h-64 w-full min-w-0 flex-1 shrink-0 items-center justify-start gap-8 rounded-lg border-2 border-default bg-default px-10 py-8 text-left whitespace-normal active:bg-subtle"
+        className="h-[50svh] w-full min-w-0 shrink-0 items-center justify-start gap-8 rounded-lg border-2 border-default bg-default px-10 py-8 text-left whitespace-normal active:bg-subtle"
       >
         <span className="grid size-28 shrink-0 place-items-center rounded-xl bg-subtle">
           <img

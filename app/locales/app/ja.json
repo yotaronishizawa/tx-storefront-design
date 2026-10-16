@@ -684,7 +684,7 @@
   "workflow.home.attention.badge": "要対応",
   "workflow.home.detect.clear": "検知なし",
   "workflow.home.detect.found": "検知あり",
-  "workflow.home.eStop": "非常停止",
+  "workflow.home.eStop": "非常停止ボタン",
   "workflow.home.eStop.released": "解除",
   "workflow.home.eStop.pressed": "押されています",
   "workflow.home.eStop.needsReset": "リセットが必要",
