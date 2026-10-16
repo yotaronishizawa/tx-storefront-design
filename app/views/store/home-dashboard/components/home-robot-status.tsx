@@ -1,4 +1,4 @@
-import type { ComponentType } from "react"
+import type { ComponentType, ReactNode } from "react"
 
 import type { ParseKeys } from "i18next"
 import {
@@ -28,6 +28,7 @@ export function HomeRobotStatus({
   available,
   attention,
   wide = false,
+  look = "split",
 }: {
   kind: RobotStatusKind
   available: boolean
@@ -39,6 +40,8 @@ export function HomeRobotStatus({
    * row of detectors in colour only, the robot below.
    */
   wide?: boolean
+  /** Study: which idle screen look to lay the parts out in. */
+  look?: IdleLook
 }) {
   const { t } = useTranslation("app")
   const moving = available && ROBOT_MOVING_KINDS.has(kind)
@@ -87,33 +90,63 @@ export function HomeRobotStatus({
       className="pointer-events-none mx-auto h-full w-auto max-w-full object-contain object-bottom"
     />
   )
+  // Calm states take a pale tint on the idle screen, with a dot for the colour;
+  // a cause or a call for staff stays solid so it still leads.
+  const calm = !assist && !cause
+  const statusLabel = assist
+    ? t("workflow.home.assist.badge")
+    : cause
+      ? t("workflow.home.attention.badge")
+      : t(
+          kind === "noRobot" || available
+            ? ROBOT_STATUS_LABELS[kind]
+            : ROBOT_STATUS_LABELS.unknown
+        )
   const pill = (
     <p
       role="status"
       className={cn(
         "rounded-full font-bold",
-        // Read from across the walk-in on the idle screen: 48 px there.
-        wide ? "px-7 py-3 text-display-lg" : "px-4 py-2 text-xl/tight",
+        // Read from across the walk-in on the idle screen: 40 px there.
+        wide
+          ? "inline-flex items-center gap-3.5 py-2.5 ps-5 pe-7 text-[2.5rem]/tight tracking-wide"
+          : "px-4 py-2 text-xl/tight",
         assist
           ? "bg-primary text-on-primary"
           : cause
             ? "attention-blink bg-error text-inverse"
             : moving
-              ? "bg-success text-inverse"
-              : "bg-muted text-primary"
+              ? wide
+                ? "bg-success-subtle text-success"
+                : "bg-success text-inverse"
+              : wide
+                ? "bg-default text-secondary ring-1 ring-black/10"
+                : "bg-muted text-primary"
       )}
     >
-      {assist
-        ? t("workflow.home.assist.badge")
-        : cause
-          ? t("workflow.home.attention.badge")
-          : t(
-              kind === "noRobot" || available
-                ? ROBOT_STATUS_LABELS[kind]
-                : ROBOT_STATUS_LABELS.unknown
-            )}
+      {wide && calm && (
+        <span
+          aria-hidden="true"
+          className={cn(
+            "size-4 shrink-0 rounded-full",
+            moving ? "bg-success" : "bg-disabled"
+          )}
+        />
+      )}
+      {statusLabel}
     </p>
   )
+  if (wide && look !== "split" && look !== "headline")
+    return (
+      <IdleAltLayout
+        look={look}
+        tone={assist ? "assist" : cause ? "cause" : moving ? "moving" : "rest"}
+        statusLabel={statusLabel}
+        robotVideo={robotVideo}
+        detectors={detectors}
+        heading={t("workflow.idle.safetyCheck")}
+      />
+    )
   return (
     <aside className="flex min-h-0 min-w-0 flex-col bg-subtle p-4 lg:p-5">
       {!wide && (
@@ -134,25 +167,23 @@ export function HomeRobotStatus({
       </p>
       {wide ? (
         // The idle screen only runs on the store iPad: no narrow fallback.
-        <div className="mt-2 flex min-h-0 flex-1 justify-center">
-          {/* The pill sits over the robot's column, its left edge where the
-              working robot reaches furthest left in its clip (2.8% in from
-              the clip's edge), so the eye runs down one line. */}
-          <div className="grid h-full min-h-0 grid-cols-[auto_24rem] grid-rows-[auto_minmax(0,1fr)] gap-x-12 gap-y-4">
-            <div className="ml-[2.8%] place-self-start">{pill}</div>
-            <div aria-hidden="true" />
-            <div className="min-h-0 overflow-hidden">{robotVideo}</div>
-            <section className="grid gap-3 self-center">
-              <h2 className="text-lg font-bold text-secondary">
-                {t("workflow.idle.safetyCheck")}
-              </h2>
-              <ul className="grid gap-1 rounded-xl border-2 bg-default p-4">
-                {detectors.map(({ key, ...item }) => (
-                  <DetectorRow key={key} {...item} wide />
-                ))}
-              </ul>
-            </section>
+        // Two columns on one centre line: the status over the robot, and the
+        // safety check as a single card beside it.
+        <div className="flex min-h-0 flex-1 items-center justify-center gap-24 px-10">
+          <div className="flex h-full min-h-0 flex-col items-start gap-5 pt-2">
+            {pill}
+            <div className="min-h-0 flex-1 overflow-hidden">{robotVideo}</div>
           </div>
+          <section className="w-[26rem] shrink-0 overflow-hidden rounded-xl bg-default shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_rgb(0_0_0/0.06)] ring-1 ring-black/5">
+            <h2 className="px-6 pt-5 pb-2 text-sm font-bold tracking-wider text-secondary">
+              {t("workflow.idle.safetyCheck")}
+            </h2>
+            <ul className="divide-y divide-black/5 px-3 pb-3">
+              {detectors.map(({ key, ...item }) => (
+                <DetectorRow key={key} {...item} wide />
+              ))}
+            </ul>
+          </section>
         </div>
       ) : (
         <>
@@ -221,19 +252,27 @@ function DetectorRow({
   )
   if (wide)
     return (
+      // Only the mark carries the colour; the names stay calm until
+      // something is found, then the whole row turns red.
       <li
         className={cn(
-          "flex items-center gap-3 rounded-md p-3 text-xl font-bold",
-          tone
+          "flex items-center gap-4 rounded-md px-3 py-4 text-xl font-bold",
+          state === "alert" ? "bg-error-subtle text-error" : "text-primary",
+          state === "unknown" && "text-disabled"
         )}
       >
-        <StateMark state={state} className="size-7" />
-        <Icon className="size-7 shrink-0" />
+        <StateMark state={state} className={cn("size-7", tone)} />
+        <Icon
+          className={cn(
+            "size-6 shrink-0",
+            state === "ok" ? "text-secondary" : undefined
+          )}
+        />
         <span className="min-w-0 flex-1">{label}</span>
         <span
           className={cn(
-            "shrink-0 text-lg",
-            state === "ok" && "font-medium text-secondary"
+            "shrink-0 text-base",
+            state === "alert" ? "font-bold" : "font-medium text-secondary"
           )}
         >
           {value}
@@ -299,5 +338,187 @@ function BottleIcon({ className }: { className?: string }) {
       {/* ...on the lane it fell over in. */}
       <path d="M6 120H144" />
     </svg>
+  )
+}
+
+export type IdleLook = "split" | "sign" | "ambient" | "headline"
+
+type StatusTone = "assist" | "cause" | "moving" | "rest"
+
+/**
+ * Study looks for the idle screen, same parts as the split one:
+ * - sign: station signage. The state as a big headline top left, the checks
+ *   as a row of tiles under it, the robot standing full height on the right.
+ * - ambient: a smart display. The whole screen takes the state's tint, the
+ *   robot in the middle, the checks as a row of chips under it.
+ */
+function IdleAltLayout({
+  look,
+  tone,
+  statusLabel,
+  robotVideo,
+  detectors,
+  heading,
+}: {
+  look: Exclude<IdleLook, "split" | "headline">
+  tone: StatusTone
+  statusLabel: string
+  robotVideo: ReactNode
+  detectors: DetectorItem[]
+  heading: string
+}) {
+  const loud = tone === "assist" || tone === "cause"
+  const dot = (
+    <span
+      aria-hidden="true"
+      className={cn(
+        "shrink-0 rounded-full",
+        tone === "moving" ? "bg-success" : "bg-disabled"
+      )}
+    />
+  )
+  if (look === "sign")
+    return (
+      // The whole screen takes the state's tint, so the state reads from
+      // across the walk-in before the words do. Red only for a cause.
+      <aside
+        className={cn(
+          "grid min-h-0 flex-1 grid-cols-[auto_minmax(0,1fr)] gap-10 px-14 pt-8 pb-6 transition-colors duration-700",
+          // Half the green: the tint is felt, not read. Red stays full.
+          tone === "moving" && "bg-success-subtle/50",
+          tone === "rest" && "bg-subtle",
+          tone === "cause" && "bg-error-subtle",
+          tone === "assist" && "bg-primary-subtle"
+        )}
+      >
+        <div className="flex min-h-0 flex-col">
+          <p
+            role="status"
+            className={cn(
+              "flex items-center gap-6 self-start text-[4.875rem]/none font-bold tracking-tight",
+              loud
+                ? cn(
+                    "rounded-2xl px-8 py-5 text-inverse",
+                    tone === "cause"
+                      ? "attention-blink bg-error"
+                      : "bg-primary text-on-primary"
+                  )
+                : tone === "moving"
+                  ? "text-success"
+                  : "text-primary"
+            )}
+          >
+            {!loud && <span className="contents [&>span]:size-9">{dot}</span>}
+            {statusLabel}
+          </p>
+          <section className="mt-8">
+            <h2 className="mb-3 text-lg font-bold tracking-wider text-secondary">
+              {heading}
+            </h2>
+            <ul className="grid grid-cols-[repeat(2,16.5rem)] gap-3">
+              {detectors.map(({ key, Icon, label, state, value }) => (
+                <li
+                  key={key}
+                  className={cn(
+                    "flex items-center gap-3.5 rounded-xl px-4 py-4",
+                    state === "alert"
+                      ? "bg-error text-inverse"
+                      : "bg-default/85 text-primary",
+                    state === "unknown" && "text-disabled"
+                  )}
+                >
+                  <Icon className="size-9 shrink-0" />
+                  <span className="grid min-w-0 flex-1 gap-1">
+                    <span className="text-[1.625rem]/tight font-bold whitespace-nowrap">
+                      {label}
+                    </span>
+                    {/* The mark sits with the state's words, not on its own
+                        at the edge, so the tile stays narrow. */}
+                    <span
+                      className={cn(
+                        "flex items-center gap-1.5 text-lg/tight",
+                        state === "alert"
+                          ? "font-bold"
+                          : "font-medium text-secondary"
+                      )}
+                    >
+                      <StateMark
+                        state={state}
+                        className={cn(
+                          "size-5",
+                          state === "ok" && "text-success"
+                        )}
+                      />
+                      {value}
+                    </span>
+                  </span>
+                </li>
+              ))}
+            </ul>
+          </section>
+        </div>
+        {/* The robot's top lines up with the status headline's. */}
+        <div className="-mb-6 min-h-0 overflow-hidden [&>*]:object-top">
+          {robotVideo}
+        </div>
+      </aside>
+    )
+  // ambient
+  return (
+    <aside
+      className={cn(
+        "flex min-h-0 flex-1 flex-col items-center px-10 pt-10 pb-36 transition-colors duration-700",
+        tone === "moving" && "bg-success-subtle",
+        tone === "rest" && "bg-subtle",
+        tone === "cause" && "bg-error-subtle",
+        tone === "assist" && "bg-primary-subtle"
+      )}
+    >
+      <p
+        role="status"
+        className={cn(
+          "flex items-center gap-4 rounded-full px-8 py-3 text-[2.75rem]/tight font-bold",
+          tone === "cause" && "attention-blink bg-error text-inverse",
+          tone === "assist" && "bg-primary text-on-primary",
+          tone === "moving" && "text-success",
+          tone === "rest" && "text-secondary"
+        )}
+      >
+        {!loud && <span className="contents [&>span]:size-5">{dot}</span>}
+        {statusLabel}
+      </p>
+      <div className="min-h-0 w-full flex-1 overflow-hidden py-4">
+        {robotVideo}
+      </div>
+      <ul aria-label={heading} className="flex flex-wrap justify-center gap-2.5">
+        {detectors.map(({ key, Icon, label, state, value }) => (
+          <li
+            key={key}
+            className={cn(
+              "flex items-center gap-2.5 rounded-full py-2.5 ps-3.5 pe-5 text-lg font-bold shadow-[0_1px_2px_rgb(0_0_0/0.06)]",
+              state === "alert"
+                ? "bg-error text-inverse"
+                : "bg-default/85 text-primary",
+              state === "unknown" && "text-disabled"
+            )}
+          >
+            <StateMark
+              state={state}
+              className={cn("size-6", state === "ok" && "text-success")}
+            />
+            <Icon className="size-6 shrink-0" />
+            {label}
+            <span
+              className={cn(
+                "text-base",
+                state === "alert" ? "font-bold" : "font-medium text-secondary"
+              )}
+            >
+              {value}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </aside>
   )
 }
