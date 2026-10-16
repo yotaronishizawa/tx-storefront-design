@@ -174,6 +174,9 @@ export default function HomePage() {
           : robotActions.startRobot())
       }
       onEnterWalkIn={() => void enterWalkIn()}
+      onEnterWalkInDirect={() =>
+        void navigate(`${ROUTES.walkIn().pathname}?start=1`)
+      }
       onShowDisplay={() => navigate(ROUTES.display().pathname)}
       onShowEdit={openEditLayout}
       onShowManualReplenishment={showManualReplenishment}

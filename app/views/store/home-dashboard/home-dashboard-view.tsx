@@ -17,6 +17,7 @@ import {
 } from "~/model/robot-status"
 import type { BusyAction } from "~/types/busy-action"
 import { cn } from "~/utils/cn"
+import { readStorage, writeStorage } from "~/utils/local-storage"
 
 import {
   HomeAttentionPanel,
@@ -25,6 +26,7 @@ import {
 import { HomeIdleScreen } from "./components/home-idle-screen"
 import { HomeObjectAction } from "./components/home-object-action"
 import { HomeRobotStatus } from "./components/home-robot-status"
+import { HomeWalkInGate } from "./components/home-walk-in-gate"
 
 export function HomeDashboardView({
   busyAction,
@@ -43,6 +45,7 @@ export function HomeDashboardView({
   onRobotAction,
   onRetryRestart,
   onEnterWalkIn,
+  onEnterWalkInDirect,
   onShowDisplay,
   onShowEdit,
   onShowRecommendations,
@@ -73,6 +76,8 @@ export function HomeDashboardView({
   /** The cause has not cleared for a while. */
   attentionStuck: boolean
   onEnterWalkIn: () => void
+  /** Into the walk-in screen without asking again (the gate already said it stops the robot). */
+  onEnterWalkInDirect: () => void
   onShowDisplay: () => void
   onShowEdit: () => void
   onShowRecommendations: () => void
@@ -129,6 +134,12 @@ export function HomeDashboardView({
   // Study: `?runningPreview=1` shows both cards in progress without starting a task.
   const [searchParams] = useSearchParams()
   const runningPreview = searchParams.get("runningPreview") === "1"
+  // Study: `?homeLayout=gate` / `split` switches Home's layout and remembers
+  // it on this tablet, so coming back from a task keeps the one on trial.
+  const layoutParam = searchParams.get("homeLayout")
+  if (layoutParam === "gate" || layoutParam === "split")
+    writeStorage(HOME_LAYOUT_KEY, layoutParam)
+  const gateLayout = readStorage(HOME_LAYOUT_KEY) === "gate"
   // With the idle screen on, the robot status lives only there: staff look at
   // it for reassurance, not to decide anything, so Home gives the width to
   // actions. With it off, Home shows the status beside them (the version to
@@ -236,33 +247,49 @@ export function HomeDashboardView({
               </Button>
             </div>
           )}
-          <HomePurposeAction
-            icon="enter"
-            title={t("workflow.home.v5.enter")}
-            subtitle={t("workflow.home.v5.enterHint")}
-            disabled={busy || robotHeld}
-            onClick={onEnterWalkIn}
-          />
-          <div className="grid min-h-64 shrink-0 grid-cols-2 gap-3 lg:min-h-56 lg:flex-1 lg:gap-4">
-            <HomeObjectAction
-              kind="restock"
-              label={t("workflow.home.restock")}
-              inProgress={
-                restockOpen ? t("workflow.home.running.badge") : undefined
-              }
+          {/* Study: `?homeLayout=gate` tries one way in to the walk-in. */}
+          {gateLayout ? (
+            <HomeWalkInGate
               disabled={busy || robotHeld}
-              onClick={onShowRestocking}
+              robotRunning={controls.canStop}
+              restockOpen={restockOpen}
+              manualOpen={manualOpen}
+              manualAvailable={manualReplenishmentAvailable}
+              onRestock={onShowRestocking}
+              onManual={onShowManualReplenishment}
+              onOther={onEnterWalkInDirect}
             />
-            <HomeObjectAction
-              kind="manual"
-              label={t("workflow.home.manual")}
-              inProgress={
-                manualOpen ? t("workflow.home.running.badge") : undefined
-              }
-              disabled={busy || robotHeld || !manualReplenishmentAvailable}
-              onClick={onShowManualReplenishment}
-            />
-          </div>
+          ) : (
+            <>
+              <HomePurposeAction
+                icon="enter"
+                title={t("workflow.home.v5.enter")}
+                subtitle={t("workflow.home.v5.enterHint")}
+                disabled={busy || robotHeld}
+                onClick={onEnterWalkIn}
+              />
+              <div className="grid min-h-64 shrink-0 grid-cols-2 gap-3 lg:min-h-56 lg:flex-1 lg:gap-4">
+                <HomeObjectAction
+                  kind="restock"
+                  label={t("workflow.home.restock")}
+                  inProgress={
+                    restockOpen ? t("workflow.home.running.badge") : undefined
+                  }
+                  disabled={busy || robotHeld}
+                  onClick={onShowRestocking}
+                />
+                <HomeObjectAction
+                  kind="manual"
+                  label={t("workflow.home.manual")}
+                  inProgress={
+                    manualOpen ? t("workflow.home.running.badge") : undefined
+                  }
+                  disabled={busy || robotHeld || !manualReplenishmentAvailable}
+                  onClick={onShowManualReplenishment}
+                />
+              </div>
+            </>
+          )}
           <HomePurposeAction
             icon="layout"
             title={t("workflow.home.layout")}
@@ -337,6 +364,7 @@ function HomePurposeAction({
 // operator, so it has not necessarily resumed.
 /** How long a restart gets to move the robot before "Try again" reports it still held. */
 const RETRY_SETTLE_MS = 6000
+const HOME_LAYOUT_KEY = "storeApp.study.homeLayout"
 /** How long taps are held after the idle screen wakes Home. */
 const WAKE_SHIELD_MS = 400
 
