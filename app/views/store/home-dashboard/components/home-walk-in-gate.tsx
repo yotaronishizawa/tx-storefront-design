@@ -82,7 +82,7 @@ export function HomeWalkInGate({
           src="/assets/home-study-2026-10-06/walk-in-enter.svg"
           alt=""
           draggable={false}
-          className="min-h-0 w-full flex-1 rounded-md bg-subtle object-contain p-4"
+          className="min-h-0 w-full flex-1 rounded-md bg-[#DCEBF8] object-contain p-6"
         />
       </Button>
 
