@@ -187,7 +187,7 @@ export function HomeRobotStatus({
         </div>
       ) : (
         <>
-          <div className="mt-4 hidden shrink-0 items-center justify-between gap-4 rounded-xl border-2 bg-default p-4 lg:flex">
+          <div className="mt-4 hidden shrink-0 grid-cols-2 gap-x-4 gap-y-2 rounded-xl border-2 bg-default p-4 lg:grid">
             {detectors.map(({ key, ...item }) => (
               <DetectorRow key={key} {...item} />
             ))}
