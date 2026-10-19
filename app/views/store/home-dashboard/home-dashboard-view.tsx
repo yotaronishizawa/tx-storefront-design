@@ -158,6 +158,8 @@ export function HomeDashboardView({
   // `framed`: the walk-in actions boxed under "going in? pick here", with
   // no extra tap.
   const framedLayout = storedLayout === "framed"
+  // The current Home: the panel above, the rest a step back.
+  const splitLayout = !gateLayout && !framedLayout
   // With the idle screen on, the robot status lives only there: staff look at
   // it for reassurance, not to decide anything, so Home gives the width to
   // actions. With it off, Home shows the status beside them (the version to
@@ -294,7 +296,8 @@ export function HomeDashboardView({
                   : // The three whose steps stop the robot, said once at the
                     // top of a quiet panel. Layout change stops it later, at
                     // send, so it stays outside.
-                    "flex min-h-0 flex-col gap-3 rounded-xl bg-subtle p-3 lg:flex-1"
+                    // Set apart by space as well as by the panel.
+                    "mb-3 flex min-h-0 flex-col gap-3 rounded-xl bg-subtle p-3 lg:mb-5 lg:flex-1"
               )}
             >
               {!framedLayout && (
@@ -348,6 +351,7 @@ export function HomeDashboardView({
             title={t("workflow.home.layout")}
             disabled={busy || robotHeld}
             onClick={onShowEdit}
+            quiet={splitLayout}
           />
           <div className="grid shrink-0 grid-cols-1 gap-3 min-[440px]:grid-cols-2 lg:gap-4">
             <HomePurposeAction
@@ -355,12 +359,14 @@ export function HomeDashboardView({
               title={t("workflow.home.v5.reservations")}
               disabled={busy}
               onClick={onShowDisplay}
+              quiet={splitLayout}
             />
             <HomePurposeAction
               icon="stock-count"
               title={t("workflow.home.count")}
               disabled={busy}
               onClick={onShowRecommendations}
+              quiet={splitLayout}
             />
           </div>
         </section>
@@ -375,12 +381,15 @@ function HomePurposeAction({
   subtitle,
   disabled,
   onClick,
+  quiet = false,
 }: {
   icon: "enter" | "layout" | "reservation" | "stock-count"
   title: string
   subtitle?: string
   disabled: boolean
   onClick: () => void
+  /** A step back from the panel above: thin line, lighter title. */
+  quiet?: boolean
 }) {
   return (
     <Button
@@ -390,11 +399,18 @@ function HomePurposeAction({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "w-full min-w-0 shrink-0 justify-start gap-3 rounded-lg border-2 border-default bg-default px-4 py-3 text-left whitespace-normal active:bg-subtle",
-        "min-h-20"
+        "w-full min-w-0 shrink-0 justify-start gap-3 rounded-lg px-4 py-3 text-left whitespace-normal active:bg-subtle",
+        quiet
+          ? "min-h-16 border border-default"
+          : "min-h-20 border-2 border-default bg-default"
       )}
     >
-      <span className="flex size-10 shrink-0 items-center justify-center gap-0.5 rounded-md bg-subtle text-secondary">
+      <span
+        className={cn(
+          "flex size-10 shrink-0 items-center justify-center gap-0.5 rounded-md text-secondary",
+          !quiet && "bg-subtle"
+        )}
+      >
         <img
           src={`/assets/home-study-2026-10-06/${icon}.${icon === "stock-count" ? "png" : "svg"}`}
           alt=""
@@ -404,7 +420,14 @@ function HomePurposeAction({
       </span>
       {/* Title and its hint side by side (24 / 20 px), the hint quieter. */}
       <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span className="text-xl/tight font-bold text-primary">{title}</span>
+        <span
+          className={cn(
+            "text-xl/tight",
+            quiet ? "font-medium text-secondary" : "font-bold text-primary"
+          )}
+        >
+          {title}
+        </span>
         {subtitle && (
           <span className="text-lg/tight text-secondary">{subtitle}</span>
         )}
