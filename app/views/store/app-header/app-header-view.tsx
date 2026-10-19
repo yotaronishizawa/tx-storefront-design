@@ -12,6 +12,7 @@ import {
 import { useTranslation } from "react-i18next"
 
 import { LanguageMenu } from "~/components/language/language-menu"
+import { ManualSearch } from "~/components/manual-search/manual-search"
 import { APP_ENVIRONMENT_LABEL } from "~/config/app"
 import { ROUTES } from "~/config/routes"
 import { Button, Dialog } from "~/core"
@@ -49,6 +50,7 @@ export function AppHeaderView({
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
 
   const [helpOpen, setHelpOpen] = useState(false)
+  const [helpSearching, setHelpSearching] = useState(false)
   const closeHelpRef = useRef<HTMLButtonElement>(null)
   const isHome = isSamePathname(pathname, ROUTES.home().pathname)
 
@@ -145,7 +147,7 @@ export function AppHeaderView({
         open={helpOpen}
         onDismiss={() => setHelpOpen(false)}
         initialFocus={closeHelpRef}
-        className="max-w-dialog p-6 sm:p-8"
+        className="w-240 max-w-[calc(100vw-2rem)] p-6 sm:p-8"
       >
         <div className="mb-6 flex items-center justify-between gap-3">
           <Dialog.Title>{t("howToUse")}</Dialog.Title>
@@ -154,7 +156,8 @@ export function AppHeaderView({
             aria-label={t("common:actions.close")}
           />
         </div>
-        <div className="grid gap-3">
+        <ManualSearch onSearchingChange={setHelpSearching} />
+        <div className={cn("mt-6 grid gap-3", helpSearching && "hidden")}>
           <Button
             variant="secondary"
             className="min-h-18 justify-start gap-4 text-lg"

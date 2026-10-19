@@ -31,3 +31,6 @@ build
 firebase-key.json
 *-firebase-adminsdk-*.json
 .firebase/
+
+# Manual search data built from CX decks marked Confidential: local only.
+public/manual-search/
