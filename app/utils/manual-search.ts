@@ -102,44 +102,6 @@ export function manualPicksFor(
   })
 }
 
-/**
- * A way straight to the control a search is about, above the manual pages.
- * One for now, to try the idea: the robot's up/down card on the restock
- * screen. It only takes staff there; the card's own confirm still runs.
- */
-export type ManualShortcut = {
-  /** Names its title and hint in the locale files. */
-  key: "robotArm"
-  to: string
-  /** Typed words (folded) that bring it up. */
-  words: string[]
-}
-
-export const MANUAL_SHORTCUTS: ManualShortcut[] = [
-  {
-    key: "robotArm",
-    to: "/restocking?arm=open",
-    words: [
-      "上下",
-      "うえした",
-      "上に",
-      "下に",
-      "あーむ",
-      "うごか",
-      "とどかない",
-      "届かない",
-    ],
-  },
-]
-
-export function shortcutsFor(query: string): ManualShortcut[] {
-  const typed = fold(query.normalize("NFKC")).folded
-  if (!typed) return []
-  return MANUAL_SHORTCUTS.filter((shortcut) =>
-    shortcut.words.some((word) => typed.includes(fold(word).folded))
-  )
-}
-
 export function loadManualIndex(): Promise<ManualDoc[]> {
   indexPromise ??= fetch(INDEX_URL)
     .then((response) => (response.ok ? response.json() : { docs: [] }))

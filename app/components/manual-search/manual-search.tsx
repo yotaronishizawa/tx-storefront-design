@@ -1,7 +1,6 @@
 import { useEffect, useMemo, useState } from "react"
 
 import {
-  ArrowUpDown,
   ChevronLeft,
   ChevronRight,
   ExternalLink,
@@ -10,7 +9,6 @@ import {
   X,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
 
 import { OPERATIONS_CENTER_PHONE } from "~/config/app"
 import { Button, Input } from "~/core"
@@ -19,7 +17,6 @@ import {
   MANUAL_PAGE_IMAGE_BASE,
   manualPicksFor,
   searchManual,
-  shortcutsFor,
   type ManualDoc,
   type ManualPage,
 } from "~/utils/manual-search"
@@ -35,17 +32,13 @@ const MAX_HITS = 30
 export function ManualSearch({
   pathname,
   onSearchingChange,
-  onLeave,
 }: {
-  /** The help closes before a shortcut takes staff to another screen. */
-  onLeave: () => void
   /** The screen behind the help: its likely questions come first. */
   pathname: string
   /** True while a search or a page is on screen (the help hides its buttons). */
   onSearchingChange: (searching: boolean) => void
 }) {
   const { t } = useTranslation("app")
-  const navigate = useNavigate()
   const [docs, setDocs] = useState<ManualDoc[] | null>(null)
   const [query, setQuery] = useState("")
   const [open, setOpen] = useState<ManualPage | null>(null)
@@ -64,7 +57,6 @@ export function ManualSearch({
     () => (docs ? searchManual(docs, query).slice(0, MAX_HITS) : []),
     [docs, query]
   )
-  const shortcuts = useMemo(() => shortcutsFor(query), [query])
   const picks = useMemo(
     () => (docs ? manualPicksFor(docs, pathname) : []),
     [docs, pathname]
@@ -184,45 +176,6 @@ export function ManualSearch({
               </Button>
             ))}
           </div>
-        </section>
-      )}
-      {shortcuts.length > 0 && (
-        <section className="grid gap-2">
-          <h3 className="text-base font-bold text-secondary">
-            {t("manualSearch.shortcutsHeading")}
-          </h3>
-          {shortcuts.map((shortcut) => (
-            <Button
-              key={shortcut.key}
-              variant="unstyled"
-              size="unstyled"
-              type="button"
-              onClick={() => {
-                onLeave()
-                void navigate(shortcut.to)
-              }}
-              className="flex w-full items-center gap-4 rounded-lg border-2 border-black/20 bg-default px-4 py-3 text-left whitespace-normal active:bg-subtle"
-            >
-              <span className="grid size-12 shrink-0 place-items-center rounded-md bg-subtle">
-                <ArrowUpDown aria-hidden="true" className="size-6" />
-              </span>
-              <span className="flex min-w-0 flex-1 flex-col items-start gap-0.5">
-                <span className="text-xl/tight font-bold">
-                  {t(`manualSearch.shortcut.${shortcut.key}.title`)}
-                </span>
-                <span className="text-base text-secondary">
-                  {t(`manualSearch.shortcut.${shortcut.key}.hint`)}
-                </span>
-              </span>
-              <ChevronRight
-                aria-hidden="true"
-                className="size-6 shrink-0 text-secondary"
-              />
-            </Button>
-          ))}
-          <h3 className="mt-2 text-base font-bold text-secondary">
-            {t("manualSearch.pagesHeading")}
-          </h3>
         </section>
       )}
       {query.trim() && docs && (

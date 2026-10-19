@@ -1,18 +1,13 @@
 import { useEffect, useState } from "react"
 
 import { useTranslation } from "react-i18next"
-import { useSearchParams } from "react-router"
 
 import { getRobotDetection } from "~/api/opm"
 import type {
   RobotArmControlProps,
   RobotArmTarget,
 } from "~/components/robot/robot-arm-control"
-import {
-  readAppShellState,
-  useActionPrompt,
-  useActiveDialog,
-} from "~/domains/app-shell"
+import { readAppShellState } from "~/domains/app-shell"
 import {
   useRobotActions,
   useRobotStatusStale,
@@ -45,25 +40,6 @@ export function useRobotArm(): RobotArmControlProps {
   const online = useOnlineStatus()
   const actions = useRobotActions()
   const [open, setOpen] = useState(false)
-  // `?arm=open` arrives from the help's shortcut: open the card once, then
-  // drop the flag so a reload does not open it again.
-  const [searchParams, setSearchParams] = useSearchParams()
-  const armParam = searchParams.get("arm")
-  // Wait out any notice the screen opens on arrival: tapping it away would
-  // also close the card.
-  const activeDialog = useActiveDialog()
-  const prompt = useActionPrompt()
-  useEffect(() => {
-    if (armParam !== "open" || activeDialog !== null || prompt !== null) return
-    setOpen(true)
-    setSearchParams(
-      (current) => {
-        current.delete("arm")
-        return current
-      },
-      { replace: true }
-    )
-  }, [activeDialog, armParam, prompt, setSearchParams])
   const [moving, setMoving] = useState<RobotArmTarget | null>(null)
   const [confirming, setConfirming] = useState(false)
   const [height, setHeight] = useState<{
@@ -127,10 +103,7 @@ export function useRobotArm(): RobotArmControlProps {
     open,
     // A confirm or a running move keeps the card open behind it.
     onOpenChange: (next) => {
-      // A notice that pops up over the open card is tapped away; that tap
-      // should not close the card too.
-      if (next || (!confirming && moving === null && prompt === null))
-        setOpen(next)
+      if (next || (!confirming && moving === null)) setOpen(next)
     },
     position,
     moving,

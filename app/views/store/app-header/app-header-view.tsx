@@ -159,7 +159,6 @@ export function AppHeaderView({
         <ManualSearch
           pathname={pathname}
           onSearchingChange={setHelpSearching}
-          onLeave={() => setHelpOpen(false)}
         />
         <div className={cn("mt-6 grid gap-3", helpSearching && "hidden")}>
           <Button
