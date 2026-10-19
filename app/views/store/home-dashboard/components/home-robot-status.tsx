@@ -395,14 +395,17 @@ function IdleAltLayout({
           <p
             role="status"
             className={cn(
-              // A tag, like the pill on Home, so it reads as the robot's state
-              // and not as a title.
-              "flex items-center gap-6 self-start rounded-full py-5 ps-9 pe-12 text-[4.875rem]/none font-bold tracking-tight",
-              tone === "cause" && "attention-blink bg-error text-inverse",
-              tone === "assist" && "bg-primary text-on-primary",
-              tone === "moving" && "bg-success-subtle text-success",
-              tone === "rest" &&
-                "bg-default text-secondary ring-1 ring-black/10"
+              "flex items-center gap-6 self-start text-[4.875rem]/none font-bold tracking-tight",
+              loud
+                ? cn(
+                    "rounded-xl px-8 py-5 text-inverse",
+                    tone === "cause"
+                      ? "attention-blink bg-error"
+                      : "bg-primary text-on-primary"
+                  )
+                : tone === "moving"
+                  ? "text-success"
+                  : "text-primary"
             )}
           >
             {!loud && <span className="contents [&>span]:size-9">{dot}</span>}
