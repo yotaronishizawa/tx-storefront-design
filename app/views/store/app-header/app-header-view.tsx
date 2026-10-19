@@ -156,7 +156,10 @@ export function AppHeaderView({
             aria-label={t("common:actions.close")}
           />
         </div>
-        <ManualSearch onSearchingChange={setHelpSearching} />
+        <ManualSearch
+          pathname={pathname}
+          onSearchingChange={setHelpSearching}
+        />
         <div className={cn("mt-6 grid gap-3", helpSearching && "hidden")}>
           <Button
             variant="secondary"

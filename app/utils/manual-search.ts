@@ -13,6 +13,8 @@ export type ManualDoc = {
   pages: string[]
   /** Each page's image file under `/manual-search/pages/`. */
   images: string[]
+  /** Each page's title line, as the slide shows it. */
+  headings: string[]
 }
 
 export type ManualHit = {
@@ -28,6 +30,77 @@ const INDEX_URL = "/manual-search/index.json"
 export const MANUAL_PAGE_IMAGE_BASE = "/manual-search/pages/"
 
 let indexPromise: Promise<ManualDoc[]> | null = null
+
+/** A section of a deck, by its slide title, so CX can re-order pages. */
+type ManualPick = { deck: string; heading: string }
+
+const HOME_PICKS: ManualPick[] = [
+  { deck: "trouble-flow", heading: "ロボットが動かない" },
+  { deck: "robot-status", heading: "状況別:対応方法早見表" },
+  { deck: "robot-status", heading: "よくある質問" },
+  { deck: "trouble-flow", heading: "アプリが開かない" },
+  { deck: "tablet", heading: "状況別対応一覧" },
+]
+
+/**
+ * What staff on each screen most likely came to ask, picked from the
+ * manual's own troubleshooting and FAQ pages. A first guess: search logs
+ * should decide these later.
+ */
+const PICKS_BY_PATHNAME: Record<string, ManualPick[]> = {
+  "/": HOME_PICKS,
+  "/restocking": [
+    { deck: "trouble-flow", heading: "補充が開始できない" },
+    { deck: "trouble-flow", heading: "補充が終了できない" },
+    { deck: "trouble-flow", heading: "スキャンができない" },
+    { deck: "shelf-guide", heading: "補充時の注意事項" },
+    { deck: "scanner", heading: "よくある質問" },
+  ],
+  "/manual": [
+    {
+      deck: "shelf-guide",
+      heading: "スマートシェルフから売場棚に手で品出しする",
+    },
+    { deck: "shelf-guide", heading: "スマートシェルフから削除する" },
+    { deck: "robot-operation", heading: "手補充モード" },
+    { deck: "restock", heading: "よくある質問" },
+  ],
+  "/edit": [
+    { deck: "planogram-change", heading: "状況別対応方法" },
+    { deck: "planogram-change", heading: "よくある質問" },
+    { deck: "planogram-change", heading: "棚割変更の基本ルール" },
+    { deck: "robot-guide", heading: "陳列対象外に設定する" },
+  ],
+  "/walk-in": [
+    { deck: "robot-guide", heading: "ウォークインに入る(ロボットを止める)" },
+    { deck: "robot-guide", heading: "ウォークインから出る(ロボットを動かす)" },
+    { deck: "walk-in-work", heading: "作業前の確認事項" },
+    { deck: "robot-operation", heading: "ロボットを上・下に移動する" },
+  ],
+  "/display": [
+    { deck: "robot-operation", heading: "陳列予約機能" },
+    { deck: "robot-operation", heading: "よくある質問" },
+  ],
+  "/recommendations": [
+    { deck: "shelf-manual", heading: "必要在庫本数を設定・変更する" },
+    { deck: "shelf-manual", heading: "推奨補充本数を設定・変更する" },
+  ],
+}
+
+export type ManualPage = { doc: ManualDoc; page: number }
+
+/** The pages to offer before anything is typed, for the screen behind the help. */
+export function manualPicksFor(
+  docs: ManualDoc[],
+  pathname: string
+): ManualPage[] {
+  const picks = PICKS_BY_PATHNAME[pathname] ?? HOME_PICKS
+  return picks.flatMap(({ deck, heading }) => {
+    const doc = docs.find((candidate) => candidate.key === deck)
+    const page = doc?.headings.indexOf(heading) ?? -1
+    return doc && page >= 0 ? [{ doc, page }] : []
+  })
+}
 
 export function loadManualIndex(): Promise<ManualDoc[]> {
   indexPromise ??= fetch(INDEX_URL)

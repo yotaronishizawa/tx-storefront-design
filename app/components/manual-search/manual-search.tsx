@@ -15,8 +15,10 @@ import { Button, Input } from "~/core"
 import {
   loadManualIndex,
   MANUAL_PAGE_IMAGE_BASE,
+  manualPicksFor,
   searchManual,
   type ManualDoc,
+  type ManualPage,
 } from "~/utils/manual-search"
 
 const MAX_HITS = 30
@@ -28,17 +30,18 @@ const MAX_HITS = 30
  * give the operations centre's number.
  */
 export function ManualSearch({
+  pathname,
   onSearchingChange,
 }: {
+  /** The screen behind the help: its likely questions come first. */
+  pathname: string
   /** True while a search or a page is on screen (the help hides its buttons). */
   onSearchingChange: (searching: boolean) => void
 }) {
   const { t } = useTranslation("app")
   const [docs, setDocs] = useState<ManualDoc[] | null>(null)
   const [query, setQuery] = useState("")
-  const [open, setOpen] = useState<{ doc: ManualDoc; page: number } | null>(
-    null
-  )
+  const [open, setOpen] = useState<ManualPage | null>(null)
 
   useEffect(() => {
     let alive = true
@@ -53,6 +56,10 @@ export function ManualSearch({
   const hits = useMemo(
     () => (docs ? searchManual(docs, query).slice(0, MAX_HITS) : []),
     [docs, query]
+  )
+  const picks = useMemo(
+    () => (docs ? manualPicksFor(docs, pathname) : []),
+    [docs, pathname]
   )
   const searching = query.trim().length > 0 || open !== null
   useEffect(() => onSearchingChange(searching), [onSearchingChange, searching])
@@ -83,7 +90,10 @@ export function ManualSearch({
           </a>
         </div>
         <p className="text-xl font-bold">
-          {doc.title}
+          {doc.headings[page] || doc.title}
+          <span className="ms-3 text-lg font-medium text-secondary">
+            {doc.title}
+          </span>
           <span className="ms-3 text-lg font-medium text-secondary">
             {t("manualSearch.pageOf", {
               page: page + 1,
@@ -144,6 +154,30 @@ export function ManualSearch({
           </Button>
         )}
       </label>
+      {!query.trim() && picks.length > 0 && (
+        <section className="grid gap-2">
+          <h3 className="text-base font-bold text-secondary">
+            {t("manualSearch.picksHeading")}
+          </h3>
+          <div className="grid grid-cols-2 gap-2">
+            {picks.map(({ doc, page }) => (
+              <Button
+                key={`${doc.key}-${page}`}
+                variant="unstyled"
+                size="unstyled"
+                type="button"
+                onClick={() => setOpen({ doc, page })}
+                className="flex w-full flex-col items-start justify-center gap-0.5 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
+              >
+                <span className="text-lg/tight font-bold">
+                  {doc.headings[page]}
+                </span>
+                <span className="text-sm text-secondary">{doc.title}</span>
+              </Button>
+            ))}
+          </div>
+        </section>
+      )}
       {query.trim() && docs && (
         <div className="grid max-h-[55svh] gap-2 overflow-y-auto">
           {hits.length === 0 ? (
@@ -169,14 +203,17 @@ export function ManualSearch({
                 size="unstyled"
                 type="button"
                 onClick={() => setOpen({ doc: hit.doc, page: hit.page })}
-                className="grid w-full justify-items-start gap-1 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
+                className="flex w-full flex-col items-start gap-1 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
               >
-                <span className="text-sm font-bold text-secondary">
+                <span className="text-xl/tight font-bold">
+                  {hit.doc.headings[hit.page] || hit.doc.title}
+                </span>
+                <span className="line-clamp-2 text-base/snug text-secondary">
+                  <Highlighted {...hit.snippet} />
+                </span>
+                <span className="text-sm font-medium text-secondary">
                   {hit.doc.title}・
                   {t("manualSearch.page", { page: hit.page + 1 })}
-                </span>
-                <span className="text-lg/snug">
-                  <Highlighted {...hit.snippet} />
                 </span>
               </Button>
             ))
