@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from "react"
 
 import {
+  BookOpen,
   ChevronLeft,
   ChevronRight,
-  ExternalLink,
   Phone,
   Search,
   X,
@@ -23,6 +23,24 @@ import {
 
 const MAX_HITS = 30
 
+/** Where the help is, so "back" returns to where staff came from. */
+type View =
+  | { kind: "start" }
+  | { kind: "library" }
+  | { kind: "deck"; doc: ManualDoc }
+  | { kind: "page"; at: ManualPage; from: "start" | "deck" }
+
+/** A deck's sections: each slide title once, at its first page (cover and contents left out). */
+function sectionsOf(doc: ManualDoc): ManualPage[] {
+  const sections: ManualPage[] = []
+  doc.headings.forEach((heading, page) => {
+    if (page === 0 || !heading || heading === "目次") return
+    if (doc.headings[page - 1] === heading) return
+    sections.push({ doc, page })
+  })
+  return sections
+}
+
 /**
  * Staff mostly know the app; they open the manual to look one thing up. So
  * the help starts with a search box: type a word, get the manual pages that
@@ -41,7 +59,9 @@ export function ManualSearch({
   const { t } = useTranslation("app")
   const [docs, setDocs] = useState<ManualDoc[] | null>(null)
   const [query, setQuery] = useState("")
-  const [open, setOpen] = useState<ManualPage | null>(null)
+  const [view, setView] = useState<View>({ kind: "start" })
+  const open = (at: ManualPage, from: "start" | "deck" = "start") =>
+    setView({ kind: "page", at, from })
 
   useEffect(() => {
     let alive = true
@@ -61,34 +81,36 @@ export function ManualSearch({
     () => (docs ? manualPicksFor(docs, pathname) : []),
     [docs, pathname]
   )
-  const searching = query.trim().length > 0 || open !== null
+  const searching = query.trim().length > 0 || view.kind !== "start"
   useEffect(() => onSearchingChange(searching), [onSearchingChange, searching])
 
-  if (open) {
-    const { doc, page } = open
+  const backButton = (onClick: () => void, label: string) => (
+    <Button
+      variant="unstyled"
+      size="unstyled"
+      type="button"
+      onClick={onClick}
+      className="flex min-h-11 items-center gap-1 justify-self-start rounded-full ps-2 pe-4 text-lg font-bold active:bg-subtle"
+    >
+      <ChevronLeft aria-hidden="true" className="size-6" />
+      {label}
+    </Button>
+  )
+
+  if (view.kind === "page") {
+    const { doc, page } = view.at
+    const goTo = (next: number) => setView({ ...view, at: { doc, page: next } })
     return (
       <div className="grid gap-4">
-        <div className="flex items-center justify-between gap-3">
-          <Button
-            variant="unstyled"
-            size="unstyled"
-            type="button"
-            onClick={() => setOpen(null)}
-            className="flex min-h-11 items-center gap-1 rounded-full ps-2 pe-4 text-lg font-bold active:bg-subtle"
-          >
-            <ChevronLeft aria-hidden="true" className="size-6" />
-            {t("manualSearch.back")}
-          </Button>
-          <a
-            href={doc.url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex min-h-11 items-center gap-2 rounded-full border border-black/20 px-4 text-base font-bold"
-          >
-            {t("manualSearch.openDeck")}
-            <ExternalLink aria-hidden="true" className="size-5" />
-          </a>
-        </div>
+        {view.from === "deck"
+          ? backButton(
+              () => setView({ kind: "deck", doc }),
+              t("manualSearch.backToDeck", { title: doc.title })
+            )
+          : backButton(
+              () => setView({ kind: "start" }),
+              t("manualSearch.back")
+            )}
         <p className="text-xl font-bold">
           {doc.headings[page] || doc.title}
           <span className="ms-3 text-lg font-medium text-secondary">
@@ -111,7 +133,7 @@ export function ManualSearch({
             variant="secondary"
             className="h-14 gap-2 px-6 text-lg"
             disabled={page === 0}
-            onClick={() => setOpen({ doc, page: page - 1 })}
+            onClick={() => goTo(page - 1)}
           >
             <ChevronLeft aria-hidden="true" className="size-6" />
             {t("manualSearch.previous")}
@@ -120,11 +142,84 @@ export function ManualSearch({
             variant="secondary"
             className="h-14 gap-2 px-6 text-lg"
             disabled={page === doc.pages.length - 1}
-            onClick={() => setOpen({ doc, page: page + 1 })}
+            onClick={() => goTo(page + 1)}
           >
             {t("manualSearch.next")}
             <ChevronRight aria-hidden="true" className="size-6" />
           </Button>
+        </div>
+      </div>
+    )
+  }
+
+  if (view.kind === "deck") {
+    const { doc } = view
+    return (
+      <div className="grid gap-4">
+        {backButton(
+          () => setView({ kind: "library" }),
+          t("manualSearch.backToLibrary")
+        )}
+        <p className="text-display/tight font-bold">{doc.title}</p>
+        <div className="grid max-h-[60svh] gap-2 overflow-y-auto">
+          {sectionsOf(doc).map(({ page }) => (
+            <Button
+              key={page}
+              variant="unstyled"
+              size="unstyled"
+              type="button"
+              onClick={() => open({ doc, page }, "deck")}
+              className="flex w-full items-center gap-3 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
+            >
+              <span className="flex-1 text-lg/tight font-bold">
+                {doc.headings[page]}
+              </span>
+              <span className="text-sm text-secondary">
+                {t("manualSearch.page", { page: page + 1 })}
+              </span>
+              <ChevronRight
+                aria-hidden="true"
+                className="size-5 shrink-0 text-secondary"
+              />
+            </Button>
+          ))}
+        </div>
+      </div>
+    )
+  }
+
+  if (view.kind === "library") {
+    return (
+      <div className="grid gap-4">
+        {backButton(
+          () => setView({ kind: "start" }),
+          t("manualSearch.backToStart")
+        )}
+        <p className="text-display/tight font-bold">
+          {t("manualSearch.library")}
+        </p>
+        <div className="grid max-h-[60svh] grid-cols-2 gap-2 overflow-y-auto">
+          {(docs ?? []).map((doc) => (
+            <Button
+              key={doc.key}
+              variant="unstyled"
+              size="unstyled"
+              type="button"
+              onClick={() => setView({ kind: "deck", doc })}
+              className="flex w-full items-center gap-3 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
+            >
+              <BookOpen
+                aria-hidden="true"
+                className="size-5 shrink-0 text-secondary"
+              />
+              <span className="flex-1 text-lg/tight font-bold">
+                {doc.title}
+              </span>
+              <span className="text-sm text-secondary">
+                {t("manualSearch.pageCount", { count: doc.pages.length })}
+              </span>
+            </Button>
+          ))}
         </div>
       </div>
     )
@@ -166,7 +261,7 @@ export function ManualSearch({
                 variant="unstyled"
                 size="unstyled"
                 type="button"
-                onClick={() => setOpen({ doc, page })}
+                onClick={() => open({ doc, page })}
                 className="flex w-full flex-col items-start justify-center gap-0.5 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
               >
                 <span className="text-lg/tight font-bold">
@@ -177,6 +272,16 @@ export function ManualSearch({
             ))}
           </div>
         </section>
+      )}
+      {!query.trim() && docs && docs.length > 0 && (
+        <Button
+          variant="secondary"
+          className="min-h-16 justify-start gap-4 text-lg"
+          onClick={() => setView({ kind: "library" })}
+        >
+          <BookOpen aria-hidden="true" className="size-6" />
+          {t("manualSearch.openLibrary")}
+        </Button>
       )}
       {query.trim() && docs && (
         <div className="grid max-h-[55svh] gap-2 overflow-y-auto">
@@ -202,7 +307,7 @@ export function ManualSearch({
                 variant="unstyled"
                 size="unstyled"
                 type="button"
-                onClick={() => setOpen({ doc: hit.doc, page: hit.page })}
+                onClick={() => open({ doc: hit.doc, page: hit.page })}
                 className="flex w-full flex-col items-start gap-1 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
               >
                 <span className="text-xl/tight font-bold">

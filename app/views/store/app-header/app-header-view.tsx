@@ -1,7 +1,6 @@
 import { useRef, useState, type ReactNode } from "react"
 
 import {
-  BookOpen,
   CircleHelp,
   CupSoda,
   House,
@@ -28,7 +27,6 @@ export function AppHeaderView({
   onDrinkRefundOpen,
   onHowToUse,
   onLanguageChange,
-  onManualDocumentOpen,
   onSettings,
   onHome,
   leading,
@@ -40,7 +38,8 @@ export function AppHeaderView({
   onDrinkRefundOpen?: () => void
   onHowToUse: () => void
   onLanguageChange: (language: Language) => void
-  onManualDocumentOpen: () => void
+  /** Kept for the shell; the help now reads the manual in the app. */
+  onManualDocumentOpen?: () => void
   onSettings: () => void
   onHome: () => void
   /** Status shown after the logo (scanner state). */
@@ -171,17 +170,6 @@ export function AppHeaderView({
           >
             <Video className="size-6" />
             {t("howToUse")}
-          </Button>
-          <Button
-            variant="secondary"
-            className="min-h-18 justify-start gap-4 text-lg"
-            onClick={() => {
-              setHelpOpen(false)
-              onManualDocumentOpen()
-            }}
-          >
-            <BookOpen className="size-6" />
-            {t("manualDocument")}
           </Button>
         </div>
       </Dialog.Root>
