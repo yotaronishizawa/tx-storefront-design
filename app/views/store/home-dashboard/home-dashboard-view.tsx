@@ -401,7 +401,7 @@ function HomePurposeAction({
       className={cn(
         "w-full min-w-0 shrink-0 justify-start gap-3 rounded-lg px-4 py-3 text-left whitespace-normal active:bg-subtle",
         quiet
-          ? "min-h-16 border border-black/20"
+          ? "min-h-16 border border-black/30"
           : "min-h-20 border-2 border-black/20 bg-default"
       )}
     >
