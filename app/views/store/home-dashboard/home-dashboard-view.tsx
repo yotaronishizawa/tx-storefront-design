@@ -235,12 +235,7 @@ export function HomeDashboardView({
         />
       ) : (
         <section className="flex min-h-0 min-w-0 flex-col gap-3 p-4 lg:gap-4">
-          <h1
-            className={cn(
-              "shrink-0 p-2 font-bold tracking-tight text-primary",
-              idleScreenEnabled ? "text-display-lg/tight" : "text-display/tight"
-            )}
-          >
+          <h1 className="shrink-0 p-2 text-[2.5rem]/tight font-bold tracking-tight text-primary">
             {t("workflow.home.pageHeading")}
           </h1>
           {cause && (
