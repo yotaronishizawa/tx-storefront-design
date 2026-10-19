@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
+import { Power } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
@@ -288,11 +289,20 @@ export function HomeDashboardView({
           ) : (
             <div
               className={cn(
-                "contents",
-                framedLayout &&
-                  "flex min-h-0 flex-col gap-3 rounded-xl border-2 border-strong bg-subtle p-4 lg:flex-1 lg:gap-4"
+                framedLayout
+                  ? "flex min-h-0 flex-col gap-3 rounded-xl border-2 border-strong bg-subtle p-4 lg:flex-1 lg:gap-4"
+                  : // The three that stop the robot the moment they're pressed,
+                    // said once on the frame. Layout change stops it later, at
+                    // send, so it stays outside.
+                    "relative mt-4 flex min-h-0 flex-col gap-3 rounded-xl border-2 border-warning p-3 pt-7 lg:flex-1 lg:gap-4"
               )}
             >
+              {!framedLayout && (
+                <p className="absolute -top-4 left-4 flex items-center gap-2 bg-default px-2 text-lg/8 font-bold text-warning">
+                  <Power aria-hidden="true" className="size-5" />
+                  {t("workflow.home.stopsRobot")}
+                </p>
+              )}
               {framedLayout && (
                 <p className="flex items-center gap-3 text-xl font-bold text-primary">
                   <img
