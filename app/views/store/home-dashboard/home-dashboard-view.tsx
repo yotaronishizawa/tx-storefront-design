@@ -237,7 +237,7 @@ export function HomeDashboardView({
         <section className="flex min-h-0 min-w-0 flex-col gap-3 p-4 lg:gap-4">
           <h1
             className={cn(
-              "shrink-0 px-2 pt-6 pb-4 font-bold tracking-tight text-primary",
+              "shrink-0 p-2 font-bold tracking-tight text-primary",
               idleScreenEnabled ? "text-display-lg/tight" : "text-display/tight"
             )}
           >
