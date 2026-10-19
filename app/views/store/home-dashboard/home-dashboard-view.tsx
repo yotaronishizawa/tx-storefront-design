@@ -297,7 +297,7 @@ export function HomeDashboardView({
                     // top of a quiet panel. Layout change stops it later, at
                     // send, so it stays outside.
                     // Set apart by space as well as by the panel.
-                    "mb-3 flex min-h-0 flex-col gap-3 rounded-xl bg-subtle p-3 lg:mb-5 lg:flex-1"
+                    "mb-2 flex min-h-0 flex-col gap-3 rounded-xl bg-subtle p-3 lg:flex-1"
               )}
             >
               {!framedLayout && (
@@ -401,8 +401,8 @@ function HomePurposeAction({
       className={cn(
         "w-full min-w-0 shrink-0 justify-start gap-3 rounded-lg px-4 py-3 text-left whitespace-normal active:bg-subtle",
         quiet
-          ? "min-h-16 border border-default"
-          : "min-h-20 border-2 border-default bg-default"
+          ? "min-h-16 border border-black/20"
+          : "min-h-20 border-2 border-black/20 bg-default"
       )}
     >
       <span
