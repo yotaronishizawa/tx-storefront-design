@@ -185,6 +185,7 @@ export default function HomePage() {
       idle={idle && idleScreenEnabled}
       idleScreenEnabled={idleScreenEnabled}
       onWake={() => setIdle(false)}
+      onShowIdle={() => setIdle(true)}
       onAttentionPanelChange={setAttentionPanelOpen}
     />
   )

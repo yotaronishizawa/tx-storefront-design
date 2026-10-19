@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-import { Power } from "lucide-react"
+import { Bot, Power } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
@@ -55,6 +55,7 @@ export function HomeDashboardView({
   idle,
   idleScreenEnabled,
   onWake,
+  onShowIdle,
   onAttentionPanelChange,
 }: {
   busyAction: BusyAction
@@ -89,6 +90,8 @@ export function HomeDashboardView({
   /** Off: no idle screen, and Home shows the robot status beside the actions. */
   idleScreenEnabled: boolean
   onWake: () => void
+  /** Back to the idle screen, to look at the robot on purpose. */
+  onShowIdle: () => void
   /** The attention panel (or its "recovered" note) opened or closed. */
   onAttentionPanelChange: (open: boolean) => void
 }) {
@@ -235,9 +238,25 @@ export function HomeDashboardView({
         />
       ) : (
         <section className="flex min-h-0 min-w-0 flex-col gap-3 p-4 lg:gap-4">
-          <h1 className="shrink-0 p-2 text-[2.5rem]/tight font-bold tracking-tight text-primary">
-            {t("workflow.home.pageHeading")}
-          </h1>
+          <div className="flex shrink-0 items-center justify-between gap-4">
+            <h1 className="p-2 text-[2.5rem]/tight font-bold tracking-tight text-primary">
+              {t("workflow.home.pageHeading")}
+            </h1>
+            {/* With the idle screen on, Home shows no robot status: a way
+                back to it for staff who want to look. */}
+            {idleScreenEnabled && (
+              <Button
+                variant="unstyled"
+                size="unstyled"
+                type="button"
+                onClick={onShowIdle}
+                className="h-12 shrink-0 gap-2 rounded-full border border-black/20 px-5 text-lg font-bold text-primary active:bg-subtle"
+              >
+                <Bot aria-hidden="true" className="size-6" />
+                {t("workflow.home.showIdle")}
+              </Button>
+            )}
+          </div>
           {cause && (
             <div
               className={cn(
