@@ -291,15 +291,15 @@ export function HomeDashboardView({
               className={cn(
                 framedLayout
                   ? "flex min-h-0 flex-col gap-3 rounded-xl border-2 border-strong bg-subtle p-4 lg:flex-1 lg:gap-4"
-                  : // The three that stop the robot the moment they're pressed,
-                    // said once on the frame. Layout change stops it later, at
+                  : // The three whose steps stop the robot, said once at the
+                    // top of a quiet panel. Layout change stops it later, at
                     // send, so it stays outside.
-                    "relative mt-4 flex min-h-0 flex-col gap-3 rounded-xl border-2 border-warning p-3 pt-7 lg:flex-1 lg:gap-4"
+                    "flex min-h-0 flex-col gap-3 rounded-xl bg-subtle p-3 lg:flex-1"
               )}
             >
               {!framedLayout && (
-                <p className="absolute -top-4 left-4 flex items-center gap-2 bg-default px-2 text-lg/8 font-bold text-warning">
-                  <Power aria-hidden="true" className="size-5" />
+                <p className="flex items-center gap-2 px-1 text-lg/tight text-secondary">
+                  <Power aria-hidden="true" className="size-5 shrink-0" />
                   {t("workflow.home.stopsRobot")}
                 </p>
               )}
