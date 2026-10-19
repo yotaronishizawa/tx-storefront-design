@@ -388,7 +388,7 @@ function HomePurposeAction({
   subtitle?: string
   disabled: boolean
   onClick: () => void
-  /** A step back from the panel above: thin line, lighter title. */
+  /** A step back from the panel above: a thin line, no fill. */
   quiet?: boolean
 }) {
   return (
@@ -420,14 +420,7 @@ function HomePurposeAction({
       </span>
       {/* Title and its hint side by side (24 / 20 px), the hint quieter. */}
       <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span
-          className={cn(
-            "text-xl/tight",
-            quiet ? "font-medium text-secondary" : "font-bold text-primary"
-          )}
-        >
-          {title}
-        </span>
+        <span className="text-xl/tight font-bold text-primary">{title}</span>
         {subtitle && (
           <span className="text-lg/tight text-secondary">{subtitle}</span>
         )}
