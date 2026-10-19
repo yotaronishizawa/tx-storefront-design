@@ -89,6 +89,90 @@ const PICKS_BY_PATHNAME: Record<string, ManualPick[]> = {
 
 export type ManualPage = { doc: ManualDoc; page: number }
 
+/**
+ * The tutorial videos to put first on each screen, by video id. Staff watch
+ * the videos more than they read the manual, so these lead.
+ */
+const VIDEO_PICKS_BY_PATHNAME: Record<string, string[]> = {
+  "/": [
+    "vid_system_overview",
+    "vid_robot_operation_stop_and_resume",
+    "vid_scanner_troubleshooting_guide",
+  ],
+  "/restocking": [
+    "vid_replenishment_procedure_and_data_correction",
+    "vid_replenishment_ui_screen_guide",
+    "vid_replenishment_safety_precautions",
+  ],
+  "/manual": [
+    "vid_manual_replenishment_mode_usage",
+    "vid_replenishment_safety_precautions",
+  ],
+  "/edit": ["vid_shelf_layout_change_procedure"],
+  "/walk-in": [
+    "vid_robot_operation_stop_and_resume",
+    "vid_robot_stop_position_customization",
+  ],
+  "/display": ["vid_display_reservation_function_usage"],
+  "/recommendations": ["vid_inventory_required_stock_quantity_edit"],
+}
+
+export function videoPicksFor<V extends { id: string }>(
+  videos: V[],
+  pathname: string
+): V[] {
+  const ids =
+    VIDEO_PICKS_BY_PATHNAME[pathname] ?? VIDEO_PICKS_BY_PATHNAME["/"] ?? []
+  return ids.flatMap((id) => videos.filter((video) => video.id === id))
+}
+
+/** Videos have only their titles to go on: the same folding and word pairs, on the title. */
+export function searchVideos<V extends { title: string }>(
+  videos: V[],
+  query: string
+): V[] {
+  const words = terms(query)
+  if (words.length === 0) return []
+  return videos.filter((video) => {
+    const title = fold(video.title).folded
+    return words.every((variants) =>
+      variants.some((word) => {
+        if (title.includes(word)) return true
+        const pieces = piecesOf(word)
+        const held = pieces.filter((piece) => title.includes(piece)).length
+        return held / pieces.length >= MIN_COVERAGE
+      })
+    )
+  })
+}
+
+/** The manual's own troubleshooting and FAQ pages, for "when stuck". */
+export function troublePagesOf(docs: ManualDoc[]): ManualPage[] {
+  const pages: ManualPage[] = []
+  for (const doc of docs) {
+    doc.headings.forEach((heading, page) => {
+      if (page === 0 || doc.headings[page - 1] === heading) return
+      const trouble =
+        doc.key === "trouble-flow"
+          ? heading !== "目次" && heading !== "お問い合わせ先"
+          : /よくある質問|状況別|うまく.*使えない/.test(heading)
+      if (trouble) pages.push({ doc, page })
+    })
+  }
+  return pages
+}
+
+/** A deck's sections: each slide title once, at its first page (cover and contents left out). */
+export function sectionsOf(doc: ManualDoc): ManualPage[] {
+  const sections: ManualPage[] = []
+  doc.headings.forEach((heading, page) => {
+    if (page === 0 || !heading || heading === "目次") return
+    if (doc.headings[page - 1] === heading) return
+    sections.push({ doc, page })
+  })
+  return sections
+}
+
 /** The pages to offer before anything is typed, for the screen behind the help. */
 export function manualPicksFor(
   docs: ManualDoc[],

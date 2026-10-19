@@ -1,20 +1,18 @@
-import { useRef, useState, type ReactNode } from "react"
+import { useState, type ReactNode } from "react"
 
 import {
   CircleHelp,
   CupSoda,
   House,
   Settings2,
-  Video,
   WifiOff,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { LanguageMenu } from "~/components/language/language-menu"
-import { ManualSearch } from "~/components/manual-search/manual-search"
 import { APP_ENVIRONMENT_LABEL } from "~/config/app"
 import { ROUTES } from "~/config/routes"
-import { Button, Dialog } from "~/core"
+import { Button } from "~/core"
 import { cn } from "~/utils/cn"
 import type { Language } from "~/utils/i18n"
 import { isSamePathname } from "~/utils/pathname"
@@ -48,9 +46,6 @@ export function AppHeaderView({
   const { t } = useTranslation(["app", "common"])
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
 
-  const [helpOpen, setHelpOpen] = useState(false)
-  const [helpSearching, setHelpSearching] = useState(false)
-  const closeHelpRef = useRef<HTMLButtonElement>(null)
   const isHome = isSamePathname(pathname, ROUTES.home().pathname)
 
   return (
@@ -95,7 +90,7 @@ export function AppHeaderView({
           variant="unstyled"
           size="unstyled"
           type="button"
-          onClick={() => setHelpOpen(true)}
+          onClick={onHowToUse}
           className={cn(
             "flex min-h-11 items-center gap-2 rounded-full bg-subtle px-3 text-sm font-bold sm:px-4",
             isVideoTutorialOpen && "ring-2 ring-primary"
@@ -142,37 +137,6 @@ export function AppHeaderView({
           <Settings2 className="size-5" />
         </Button>
       </div>
-      <Dialog.Root
-        open={helpOpen}
-        onDismiss={() => setHelpOpen(false)}
-        initialFocus={closeHelpRef}
-        className="w-240 max-w-[calc(100vw-2rem)] p-6 sm:p-8"
-      >
-        <div className="mb-6 flex items-center justify-between gap-3">
-          <Dialog.Title>{t("howToUse")}</Dialog.Title>
-          <Dialog.Close
-            ref={closeHelpRef}
-            aria-label={t("common:actions.close")}
-          />
-        </div>
-        <ManualSearch
-          pathname={pathname}
-          onSearchingChange={setHelpSearching}
-        />
-        <div className={cn("mt-6 grid gap-3", helpSearching && "hidden")}>
-          <Button
-            variant="secondary"
-            className="min-h-18 justify-start gap-4 text-lg"
-            onClick={() => {
-              setHelpOpen(false)
-              onHowToUse()
-            }}
-          >
-            <Video className="size-6" />
-            {t("howToUse")}
-          </Button>
-        </div>
-      </Dialog.Root>
     </header>
   )
 }
