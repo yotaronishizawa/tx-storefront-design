@@ -292,7 +292,7 @@ export function HomeDashboardView({
                     // top of a quiet panel. Layout change stops it later, at
                     // send, so it stays outside.
                     // Set apart by space as well as by the panel.
-                    "mb-2 flex min-h-0 flex-col gap-3 rounded-xl bg-subtle p-3 lg:flex-1"
+                    "mb-2 flex min-h-0 flex-col gap-3 rounded-xl bg-black/3 p-3 lg:flex-1"
               )}
             >
               {!framedLayout && (
