@@ -129,7 +129,7 @@ export function HomeRobotStatus({
           aria-hidden="true"
           className={cn(
             "size-4 shrink-0 rounded-full",
-            moving ? "bg-success" : "bg-disabled"
+            moving ? "bg-success" : "bg-(--text-color-disabled)"
           )}
         />
       )}
@@ -174,7 +174,7 @@ export function HomeRobotStatus({
             {pill}
             <div className="min-h-0 flex-1 overflow-hidden">{robotVideo}</div>
           </div>
-          <section className="w-[26rem] shrink-0 overflow-hidden rounded-xl bg-default shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_rgb(0_0_0/0.06)] ring-1 ring-black/5">
+          <section className="w-104 shrink-0 overflow-hidden rounded-xl bg-default shadow-[0_1px_2px_rgb(0_0_0/0.04),0_8px_24px_rgb(0_0_0/0.06)] ring-1 ring-black/5">
             <h2 className="px-6 pt-5 pb-2 text-sm font-bold tracking-wider text-secondary">
               {t("workflow.idle.safetyCheck")}
             </h2>
@@ -373,7 +373,7 @@ function IdleAltLayout({
       aria-hidden="true"
       className={cn(
         "shrink-0 rounded-full",
-        tone === "moving" ? "bg-success" : "bg-disabled"
+        tone === "moving" ? "bg-success" : "bg-(--text-color-disabled)"
       )}
     />
   )
@@ -395,17 +395,14 @@ function IdleAltLayout({
           <p
             role="status"
             className={cn(
-              "flex items-center gap-6 self-start text-[4.875rem]/none font-bold tracking-tight",
-              loud
-                ? cn(
-                    "rounded-2xl px-8 py-5 text-inverse",
-                    tone === "cause"
-                      ? "attention-blink bg-error"
-                      : "bg-primary text-on-primary"
-                  )
-                : tone === "moving"
-                  ? "text-success"
-                  : "text-primary"
+              // A tag, like the pill on Home, so it reads as the robot's state
+              // and not as a title.
+              "flex items-center gap-6 self-start rounded-full py-5 ps-9 pe-12 text-[4.875rem]/none font-bold tracking-tight",
+              tone === "cause" && "attention-blink bg-error text-inverse",
+              tone === "assist" && "bg-primary text-on-primary",
+              tone === "moving" && "bg-success-subtle text-success",
+              tone === "rest" &&
+                "bg-default text-secondary ring-1 ring-black/10"
             )}
           >
             {!loud && <span className="contents [&>span]:size-9">{dot}</span>}
@@ -420,7 +417,7 @@ function IdleAltLayout({
                 <li
                   key={key}
                   className={cn(
-                    "flex items-center gap-3.5 rounded-xl px-4 py-4",
+                    "flex items-center gap-3.5 rounded-xl p-4",
                     state === "alert"
                       ? "bg-error text-inverse"
                       : "bg-default/85 text-primary",
@@ -458,7 +455,7 @@ function IdleAltLayout({
           </section>
         </div>
         {/* The robot's top lines up with the status headline's. */}
-        <div className="-mb-6 min-h-0 overflow-hidden [&>*]:object-top">
+        <div className="-mb-6 min-h-0 overflow-hidden *:object-top">
           {robotVideo}
         </div>
       </aside>
@@ -490,7 +487,10 @@ function IdleAltLayout({
       <div className="min-h-0 w-full flex-1 overflow-hidden py-4">
         {robotVideo}
       </div>
-      <ul aria-label={heading} className="flex flex-wrap justify-center gap-2.5">
+      <ul
+        aria-label={heading}
+        className="flex flex-wrap justify-center gap-2.5"
+      >
         {detectors.map(({ key, Icon, label, state, value }) => (
           <li
             key={key}
