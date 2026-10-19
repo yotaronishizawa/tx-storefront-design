@@ -312,13 +312,15 @@ export function HomeDashboardView({
                   {t("workflow.home.framedHeading")}
                 </p>
               )}
-              <HomePurposeAction
-                icon="enter"
-                title={t("workflow.home.v5.enter")}
-                subtitle={t("workflow.home.v5.enterHint")}
-                disabled={busy || robotHeld}
-                onClick={onEnterWalkIn}
-              />
+              {framedLayout && (
+                <HomePurposeAction
+                  icon="enter"
+                  title={t("workflow.home.v5.enter")}
+                  subtitle={t("workflow.home.v5.enterHint")}
+                  disabled={busy || robotHeld}
+                  onClick={onEnterWalkIn}
+                />
+              )}
               <div className="grid min-h-64 shrink-0 grid-cols-2 gap-3 lg:min-h-56 lg:flex-1 lg:gap-4">
                 <HomeObjectAction
                   kind="restock"
@@ -339,6 +341,16 @@ export function HomeDashboardView({
                   onClick={onShowManualReplenishment}
                 />
               </div>
+              {/* Under the two cards so "above" points at them; the title
+                  says it all, so no hint. */}
+              {!framedLayout && (
+                <HomePurposeAction
+                  icon="enter"
+                  title={t("workflow.home.enterOther")}
+                  disabled={busy || robotHeld}
+                  onClick={onEnterWalkIn}
+                />
+              )}
             </div>
           )}
           <HomePurposeAction
