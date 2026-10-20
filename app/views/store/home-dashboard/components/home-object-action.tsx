@@ -107,13 +107,15 @@ export function HomeObjectAction({
       disabled={disabled}
       onClick={onClick}
       className={cn(
-        "relative size-full min-h-64 min-w-0 flex-col items-start justify-start overflow-hidden rounded-lg border-0 text-left whitespace-normal text-primary lg:min-h-56",
+        // The same outline as every other button on Home, so the cards read as
+        // buttons too (staff said they did not).
+        "relative size-full min-h-64 min-w-0 flex-col items-start justify-start overflow-hidden rounded-lg border-2 border-black/20 text-left whitespace-normal text-primary lg:min-h-56",
         kind === "restock" ? "bg-home-restock" : "bg-home-manual",
         (cardStyle === 1 || cardStyle === 10) &&
           "border-b-6 border-black/25 active:translate-y-0.5 active:border-b-2",
         (cardStyle === 2 || cardStyle === 10) &&
           "shadow-[0_2px_4px_rgb(0_0_0/0.08),0_8px_20px_rgb(0_0_0/0.10)] active:shadow-none",
-        cardStyle === 7 && "border-2 border-black/30",
+        cardStyle === 7 && "border-black/30",
         cardStyle === 9 && "ring-3 ring-primary ring-inset"
       )}
     >
