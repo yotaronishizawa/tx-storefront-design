@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-import { Bot, Power } from "lucide-react"
+import { Bot, ChevronRight, Power } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
@@ -163,6 +163,13 @@ export function HomeDashboardView({
   const framedLayout = storedLayout === "framed"
   // The current Home: the panel above, the rest a step back.
   const splitLayout = !gateLayout && !framedLayout
+  // Study: `?walkInEntry=parent` makes the panel's top edge the way in
+  // ("go into the walk-in"), the two cards what to do there; `row` (default)
+  // keeps it a light row under the cards. Remembered like the layout.
+  const walkInEntryParam = searchParams.get("walkInEntry")
+  if (walkInEntryParam === "parent" || walkInEntryParam === "row")
+    writeStorage(WALK_IN_ENTRY_KEY, walkInEntryParam)
+  const walkInEntryAsParent = readStorage(WALK_IN_ENTRY_KEY) === "parent"
   // With the idle screen on, the robot status lives only there: staff look at
   // it for reassurance, not to decide anything, so Home gives the width to
   // actions. With it off, Home shows the status beside them (the version to
@@ -314,12 +321,44 @@ export function HomeDashboardView({
                     "mb-2 flex min-h-0 flex-col gap-3 rounded-xl bg-black/3 p-3 lg:flex-1"
               )}
             >
-              {!framedLayout && (
-                <p className="flex items-center gap-2 px-1 text-lg/tight text-secondary">
-                  <Power aria-hidden="true" className="size-5 shrink-0" />
-                  {t("workflow.home.stopsRobot")}
-                </p>
-              )}
+              {!framedLayout &&
+                (walkInEntryAsParent ? (
+                  // All three go into the walk-in; going in is the parent,
+                  // the cards are what to do there.
+                  <Button
+                    variant="unstyled"
+                    size="unstyled"
+                    type="button"
+                    disabled={busy || robotHeld}
+                    onClick={onEnterWalkIn}
+                    className="flex min-h-18 w-full items-center gap-4 rounded-lg border-2 border-black/20 bg-default px-4 py-2 text-left whitespace-normal active:bg-subtle"
+                  >
+                    <img
+                      src="/assets/home-study-2026-10-06/walk-in-enter.svg"
+                      alt=""
+                      draggable={false}
+                      className="h-12 w-auto shrink-0"
+                    />
+                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
+                      <span className="text-xl/tight font-bold">
+                        {t("workflow.home.enterWalkIn")}
+                      </span>
+                      <span className="flex items-center gap-1.5 text-base text-secondary">
+                        <Power aria-hidden="true" className="size-4 shrink-0" />
+                        {t("workflow.home.stopsRobot")}
+                      </span>
+                    </span>
+                    <ChevronRight
+                      aria-hidden="true"
+                      className="size-7 shrink-0 text-secondary"
+                    />
+                  </Button>
+                ) : (
+                  <p className="flex items-center gap-2 px-1 text-lg/tight text-secondary">
+                    <Power aria-hidden="true" className="size-5 shrink-0" />
+                    {t("workflow.home.stopsRobot")}
+                  </p>
+                ))}
               {framedLayout && (
                 <p className="flex items-center gap-3 text-xl font-bold text-primary">
                   <img
@@ -362,10 +401,10 @@ export function HomeDashboardView({
               </div>
               {/* Under the two cards so "above" points at them; the title
                   says it all, so no hint. */}
-              {!framedLayout && (
+              {!framedLayout && !walkInEntryAsParent && (
                 <HomePurposeAction
                   icon="enter"
-                  title={t("workflow.home.enterOther")}
+                  title={t("workflow.home.enterWalkIn")}
                   disabled={busy || robotHeld}
                   onClick={onEnterWalkIn}
                 />
@@ -460,6 +499,7 @@ function HomePurposeAction({
 /** How long a restart gets to move the robot before "Try again" reports it still held. */
 const RETRY_SETTLE_MS = 6000
 const HOME_LAYOUT_KEY = "storeApp.study.homeLayout"
+const WALK_IN_ENTRY_KEY = "storeApp.study.walkInEntry"
 /** How long taps are held after the idle screen wakes Home. */
 const WAKE_SHIELD_MS = 400
 
