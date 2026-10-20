@@ -37,7 +37,7 @@ export function HomeMoreActions({
         type="button"
         disabled={disabled}
         onClick={() => setOpen(true)}
-        className="flex min-h-24 w-full shrink-0 items-center justify-start gap-3 rounded-lg border border-black/30 px-4 py-3 text-left whitespace-normal active:bg-subtle"
+        className="mx-3 flex min-h-24 shrink-0 items-center justify-start gap-3 rounded-lg border border-black/30 px-4 py-3 text-left whitespace-normal active:bg-subtle"
       >
         <span className="flex size-10 shrink-0 items-center justify-center text-secondary">
           <Ellipsis aria-hidden="true" className="size-7" />
