@@ -96,26 +96,3 @@ export function ContactStrip() {
     </a>
   )
 }
-
-export function Highlighted({
-  text,
-  marks,
-}: {
-  text: string
-  marks: [number, number][]
-}) {
-  const parts: ReactNode[] = []
-  let at = 0
-  marks.forEach(([from, to], index) => {
-    if (from < at) return
-    parts.push(text.slice(at, from))
-    parts.push(
-      <b key={index} className="font-bold text-primary">
-        {text.slice(from, to)}
-      </b>
-    )
-    at = to
-  })
-  parts.push(text.slice(at))
-  return <>{parts}</>
-}

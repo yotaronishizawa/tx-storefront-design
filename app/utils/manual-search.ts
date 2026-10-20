@@ -126,8 +126,12 @@ export function videoPicksFor<V extends { id: string }>(
   return ids.flatMap((id) => videos.filter((video) => video.id === id))
 }
 
-/** Videos have only their titles to go on: the same folding and word pairs, on the title. */
-export function searchVideos<V extends { title: string }>(
+/**
+ * Search by name only, for videos and manual documents alike (2026-10-20:
+ * keeping the CX manual's contents in sync is out of reach for now; names
+ * are). The same folding and word pairs, on the title.
+ */
+export function searchByName<V extends { title: string }>(
   videos: V[],
   query: string
 ): V[] {

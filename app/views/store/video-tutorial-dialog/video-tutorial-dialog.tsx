@@ -20,8 +20,7 @@ import { cn } from "~/utils/cn"
 import {
   loadManualIndex,
   manualPicksFor,
-  searchManual,
-  searchVideos,
+  searchByName,
   troublePagesOf,
   videoPicksFor,
   type ManualDoc,
@@ -38,7 +37,6 @@ import type {
 import { DeckReader } from "./components/deck-reader"
 import {
   ContactStrip,
-  Highlighted,
   PageCard,
   SectionTitle,
   VideoCard,
@@ -53,8 +51,6 @@ type Open =
   | { kind: "video"; video: VideoTutorial }
   | { kind: "page"; at: ManualPage }
   | null
-
-const MAX_PAGE_HITS = 20
 
 /**
  * The help: one place for the tutorial videos and the CX manual, read in the
@@ -112,11 +108,8 @@ export function VideoTutorialDialog({
   )
 
   const typed = query.trim()
-  const videoHits = useMemo(() => searchVideos(videos, typed), [videos, typed])
-  const pageHits = useMemo(
-    () => searchManual(docs, typed).slice(0, MAX_PAGE_HITS),
-    [docs, typed]
-  )
+  const videoHits = useMemo(() => searchByName(videos, typed), [videos, typed])
+  const docHits = useMemo(() => searchByName(docs, typed), [docs, typed])
 
   const openVideo = (video: VideoTutorial) => {
     setOpened({ kind: "video", video })
@@ -242,7 +235,7 @@ export function VideoTutorialDialog({
                 <Results
                   query={typed}
                   videos={videoHits}
-                  pages={pageHits}
+                  docs={docHits}
                   onVideo={openVideo}
                   onPage={openPage}
                 />
@@ -269,31 +262,7 @@ export function VideoTutorialDialog({
               ) : section === "manual" ? (
                 <section className="grid gap-3">
                   <SectionTitle>{t("manualSearch.library")}</SectionTitle>
-                  <div className="grid grid-cols-2 gap-2">
-                    {docs.map((doc) => (
-                      <Button
-                        key={doc.key}
-                        variant="unstyled"
-                        size="unstyled"
-                        type="button"
-                        onClick={() => openPage({ doc, page: 0 })}
-                        className="flex w-full items-center gap-3 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
-                      >
-                        <BookOpen
-                          aria-hidden="true"
-                          className="size-5 shrink-0 text-secondary"
-                        />
-                        <span className="flex-1 text-lg/tight font-bold">
-                          {doc.title}
-                        </span>
-                        <span className="text-sm text-secondary">
-                          {t("manualSearch.pageCount", {
-                            count: doc.pages.length,
-                          })}
-                        </span>
-                      </Button>
-                    ))}
-                  </div>
+                  <DocList docs={docs} onPage={openPage} />
                 </section>
               ) : section === "trouble" ? (
                 <PageGrid
@@ -426,18 +395,18 @@ function PageGrid({
 function Results({
   query,
   videos,
-  pages,
+  docs,
   onVideo,
   onPage,
 }: {
   query: string
   videos: VideoTutorial[]
-  pages: ReturnType<typeof searchManual>
+  docs: ManualDoc[]
   onVideo: (video: VideoTutorial) => void
   onPage: (at: ManualPage) => void
 }) {
   const { t } = useTranslation("app")
-  if (videos.length === 0 && pages.length === 0) {
+  if (videos.length === 0 && docs.length === 0) {
     return (
       <p className="text-xl font-bold">{t("manualSearch.noHits", { query })}</p>
     )
@@ -449,27 +418,47 @@ function Results({
         videos={videos}
         onVideo={onVideo}
       />
-      {pages.length > 0 && (
+      {docs.length > 0 && (
         <section className="grid gap-3">
           <SectionTitle>
-            {t("help.pageResults", { count: pages.length })}
+            {t("help.pageResults", { count: docs.length })}
           </SectionTitle>
-          <div className="grid gap-2">
-            {pages.map((hit) => (
-              <PageCard
-                key={`${hit.doc.key}-${hit.page}`}
-                at={hit}
-                onOpen={() => onPage(hit)}
-                detail={
-                  <span className="line-clamp-2 text-base/snug text-secondary">
-                    <Highlighted {...hit.snippet} />
-                  </span>
-                }
-              />
-            ))}
-          </div>
+          <DocList docs={docs} onPage={onPage} />
         </section>
       )}
     </>
+  )
+}
+
+function DocList({
+  docs,
+  onPage,
+}: {
+  docs: ManualDoc[]
+  onPage: (at: ManualPage) => void
+}) {
+  const { t } = useTranslation("app")
+  return (
+    <div className="grid grid-cols-2 gap-2">
+      {docs.map((doc) => (
+        <Button
+          key={doc.key}
+          variant="unstyled"
+          size="unstyled"
+          type="button"
+          onClick={() => onPage({ doc, page: 0 })}
+          className="flex w-full items-center gap-3 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
+        >
+          <BookOpen
+            aria-hidden="true"
+            className="size-5 shrink-0 text-secondary"
+          />
+          <span className="flex-1 text-lg/tight font-bold">{doc.title}</span>
+          <span className="text-sm text-secondary">
+            {t("manualSearch.pageCount", { count: doc.pages.length })}
+          </span>
+        </Button>
+      ))}
+    </div>
   )
 }
