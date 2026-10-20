@@ -193,16 +193,19 @@ function WalkInSession() {
       const robot = await runBusy("refresh", readFreshRobot)
       if (!robot || !current()) return
       const freshStatus = robot.status ?? ""
-      if (freshStatus !== "RestPosition") {
-        const freshControls = getRobotControls({
-          hasRobot: true,
-          workStatus: freshStatus,
-          operationMode: robot.opMode ?? "",
-          isOnline: true,
-          statusStale: false,
-          robotOperating: false,
-          sessionInProgress: false,
-        })
+      const freshControls = getRobotControls({
+        hasRobot: true,
+        workStatus: freshStatus,
+        operationMode: robot.opMode ?? "",
+        isOnline: true,
+        statusStale: false,
+        robotOperating: false,
+        sessionInProgress: false,
+      })
+      // Parked is not enough: until the store has stopped it, the robot can
+      // move again on its own (a detection that clears, the next job), so a
+      // parked robot not yet stopped by the store is stopped too.
+      if (freshStatus !== "RestPosition" || freshControls.canStop) {
         if (!freshControls.canStop) {
           readAppShellState().setError(
             t(WALK_IN_BLOCK_KEYS[getWalkInBlock(freshControls.kind, true)])

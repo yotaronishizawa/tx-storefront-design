@@ -245,6 +245,7 @@ export function HomeDashboardView({
           resumeMessage={resumeMessage}
           busy={busy}
           onRobotAction={onRobotAction}
+          onEnterWalkIn={onEnterWalkIn}
           cameras={attention?.cameras ?? []}
           stuck={attentionStuck}
           onOtherWork={() => (assist ? setOpened(null) : setSetAside(cause))}

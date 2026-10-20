@@ -92,6 +92,7 @@ export function HomeAttentionPanel({
   stuck,
   busy,
   onRobotAction,
+  onEnterWalkIn,
   onOtherWork,
 }: {
   cause: RobotAttentionCause
@@ -110,6 +111,8 @@ export function HomeAttentionPanel({
   busy: boolean
   /** Resume, or check and stop, as the cause asks. */
   onRobotAction: () => void
+  /** Go in through the walk-in screen, which keeps the robot stopped meanwhile. */
+  onEnterWalkIn: () => void
   onOtherWork: () => void
 }) {
   const { i18n, t } = useTranslation("app")
@@ -193,6 +196,19 @@ export function HomeAttentionPanel({
               // The existing stop flow: confirm, three-point check, then stop.
               <Button size="lg" disabled={busy} onClick={onRobotAction}>
                 {t("workflow.home.attention.actionCheckAndStop")}
+              </Button>
+            )}
+            {/* Removing it means going in: through the walk-in screen, so
+                the robot stays stopped until staff come out, not only until
+                the detection clears. */}
+            {(cause === "obstacle" || cause === "fallenDrink") && (
+              <Button
+                size="lg"
+                variant={retryable ? "secondary" : undefined}
+                disabled={busy}
+                onClick={onEnterWalkIn}
+              >
+                {t("workflow.home.enterWalkIn")}
               </Button>
             )}
             {retryable && (
