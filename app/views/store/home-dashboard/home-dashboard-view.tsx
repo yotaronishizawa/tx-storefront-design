@@ -26,7 +26,10 @@ import {
 } from "./components/home-attention-panel"
 import { HomeIdleScreen } from "./components/home-idle-screen"
 import { HomeMoreActions } from "./components/home-more-actions"
-import { HomeObjectAction } from "./components/home-object-action"
+import {
+  HomeObjectAction,
+  type CardStyle,
+} from "./components/home-object-action"
 import { HomeRobotStatus, type IdleLook } from "./components/home-robot-status"
 import { HomeWalkInGate } from "./components/home-walk-in-gate"
 
@@ -168,6 +171,11 @@ export function HomeDashboardView({
   if (walkInEntryParam === "parent" || walkInEntryParam === "row")
     writeStorage(WALK_IN_ENTRY_KEY, walkInEntryParam)
   const walkInEntryAsParent = readStorage(WALK_IN_ENTRY_KEY) === "parent"
+  // Study: `?card=1`..`10` tries ways to make the two cards read as buttons.
+  const cardParam = searchParams.get("card")
+  if (cardParam !== null && /^(?:[0-9]|10)$/.test(cardParam))
+    writeStorage(CARD_STYLE_KEY, cardParam)
+  const cardStyle = Number(readStorage(CARD_STYLE_KEY) ?? "0") as CardStyle
   // With the idle screen on, the robot status lives only there: staff look at
   // it for reassurance, not to decide anything, so Home gives the width to
   // actions. With it off, Home shows the status beside them (the version to
@@ -360,6 +368,8 @@ export function HomeDashboardView({
               )}
               <div className="grid min-h-64 shrink-0 grid-cols-2 gap-3 lg:min-h-56 lg:flex-1 lg:gap-4">
                 <HomeObjectAction
+                  cardStyle={cardStyle}
+                  startLabel={t("workflow.home.cardStart")}
                   kind="restock"
                   label={t("workflow.home.restock")}
                   inProgress={
@@ -369,6 +379,8 @@ export function HomeDashboardView({
                   onClick={onShowRestocking}
                 />
                 <HomeObjectAction
+                  cardStyle={cardStyle}
+                  startLabel={t("workflow.home.cardStart")}
                   kind="manual"
                   label={t("workflow.home.manual")}
                   inProgress={
@@ -515,6 +527,7 @@ function HomePurposeAction({
 const RETRY_SETTLE_MS = 6000
 const HOME_LAYOUT_KEY = "storeApp.study.homeLayout"
 const WALK_IN_ENTRY_KEY = "storeApp.study.walkInEntry"
+const CARD_STYLE_KEY = "storeApp.study.cardStyle"
 /** How long taps are held after the idle screen wakes Home. */
 const WAKE_SHIELD_MS = 400
 
