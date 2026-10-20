@@ -30,6 +30,7 @@ export function AppHeaderView({
   onSettings,
   onHome,
   leading,
+  idleScreenShown = false,
 }: {
   isOnline: boolean
   isVideoTutorialOpen: boolean
@@ -42,6 +43,8 @@ export function AppHeaderView({
   onManualDocumentOpen?: () => void
   onSettings: () => void
   onHome: () => void
+  /** Home is showing the idle screen: no "see the robot" over it. */
+  idleScreenShown?: boolean
   /** Status shown after the logo (scanner state). */
   leading?: ReactNode
 }) {
@@ -91,7 +94,7 @@ export function AppHeaderView({
         )}
         {/* Home shows no robot status with the idle screen on: the way to
             look on purpose. */}
-        {isHome && (
+        {isHome && !idleScreenShown && (
           <Button
             variant="unstyled"
             size="unstyled"

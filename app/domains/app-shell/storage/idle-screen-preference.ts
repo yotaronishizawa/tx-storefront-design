@@ -50,3 +50,16 @@ export function setIdleScreenEnabled(enabled: boolean): void {
   if (enabled === (timeoutMs !== 0)) return
   setIdleTimeoutMs(enabled ? DEFAULT_IDLE_TIMEOUT_MS : 0)
 }
+
+/** Whether Home is showing the idle screen right now (the header hides what it would cover). */
+const useIdleScreenShownStore = create<{ shown: boolean }>(() => ({
+  shown: false,
+}))
+
+export function useIdleScreenShown(): boolean {
+  return useIdleScreenShownStore((state) => state.shown)
+}
+
+export function setIdleScreenShown(shown: boolean): void {
+  useIdleScreenShownStore.setState({ shown })
+}

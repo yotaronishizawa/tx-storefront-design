@@ -24,8 +24,10 @@ export {
 export {
   IDLE_TIMEOUT_OPTIONS_MS,
   setIdleScreenEnabled,
+  setIdleScreenShown,
   setIdleTimeoutMs,
   useIdleScreenEnabled,
+  useIdleScreenShown,
   useIdleTimeoutMs,
   type IdleTimeoutMs,
 } from "./storage/idle-screen-preference"

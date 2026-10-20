@@ -7,6 +7,7 @@ import { ROUTES } from "~/config/routes"
 import {
   readAppShellState,
   setIdleScreenEnabled,
+  setIdleScreenShown,
   useBusyAction,
   useIdleScreenEnabled,
   useIdleTimeoutMs,
@@ -111,6 +112,11 @@ export default function HomePage() {
   useEffect(() => {
     if (inactive && shellIdle) setIdle(true)
   }, [inactive, shellIdle])
+  const idleShown = idle && idleScreenEnabled
+  useEffect(() => {
+    setIdleScreenShown(idleShown)
+    return () => setIdleScreenShown(false)
+  }, [idleShown])
   // The header's "see the robot" asks with `?idle=1` while Home is open.
   const idleAsked = searchParams.get("idle") === "1"
   useEffect(() => {
