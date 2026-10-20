@@ -72,7 +72,7 @@ export default function HomePage() {
       ).message
     : ""
   // Study: `?stuck=1` skips the five-minute wait for the call-centre hint.
-  const [searchParams] = useSearchParams()
+  const [searchParams, setSearchParams] = useSearchParams()
   // The idle screen: after Home sits untouched with nothing open, for the
   // time chosen in Settings. Only a touch on it (or a key, e.g. the scanner)
   // wakes Home. Study: `?idle=1` shows it at once.
@@ -111,6 +111,19 @@ export default function HomePage() {
   useEffect(() => {
     if (inactive && shellIdle) setIdle(true)
   }, [inactive, shellIdle])
+  // The header's "see the robot" asks with `?idle=1` while Home is open.
+  const idleAsked = searchParams.get("idle") === "1"
+  useEffect(() => {
+    if (!idleAsked) return
+    if (idleScreenEnabled) setIdle(true)
+    setSearchParams(
+      (current) => {
+        current.delete("idle")
+        return current
+      },
+      { replace: true }
+    )
+  }, [idleAsked, idleScreenEnabled, setSearchParams])
   useEffect(() => {
     if (!idle) return
     const wake = () => setIdle(false)
@@ -185,7 +198,6 @@ export default function HomePage() {
       idle={idle && idleScreenEnabled}
       idleScreenEnabled={idleScreenEnabled}
       onWake={() => setIdle(false)}
-      onShowIdle={() => setIdle(true)}
       onAttentionPanelChange={setAttentionPanelOpen}
     />
   )

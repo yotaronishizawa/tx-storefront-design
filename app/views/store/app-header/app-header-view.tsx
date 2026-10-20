@@ -1,6 +1,7 @@
 import { useState, type ReactNode } from "react"
 
 import {
+  Bot,
   CircleHelp,
   CupSoda,
   House,
@@ -8,6 +9,7 @@ import {
   WifiOff,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
+import { useNavigate } from "react-router"
 
 import { LanguageMenu } from "~/components/language/language-menu"
 import { APP_ENVIRONMENT_LABEL } from "~/config/app"
@@ -46,6 +48,7 @@ export function AppHeaderView({
   const { t } = useTranslation(["app", "common"])
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
 
+  const navigate = useNavigate()
   const isHome = isSamePathname(pathname, ROUTES.home().pathname)
 
   return (
@@ -85,6 +88,23 @@ export function AppHeaderView({
             <WifiOff className="size-4" />
             <span className="hidden sm:inline">{t("offlineMode")}</span>
           </span>
+        )}
+        {/* Home shows no robot status with the idle screen on: the way to
+            look on purpose. */}
+        {isHome && (
+          <Button
+            variant="unstyled"
+            size="unstyled"
+            type="button"
+            onClick={() => void navigate("/?idle=1")}
+            className="flex min-h-11 items-center gap-2 rounded-full bg-subtle px-3 text-sm font-bold sm:px-4"
+            aria-label={t("workflow.home.showIdle")}
+          >
+            <Bot className="size-5" />
+            <span className="hidden sm:inline">
+              {t("workflow.home.showIdle")}
+            </span>
+          </Button>
         )}
         <Button
           variant="unstyled"

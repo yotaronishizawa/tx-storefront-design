@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-import { Bot, ChevronRight, Power } from "lucide-react"
+import { ChevronRight, Power } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
@@ -56,7 +56,6 @@ export function HomeDashboardView({
   idle,
   idleScreenEnabled,
   onWake,
-  onShowIdle,
   onAttentionPanelChange,
 }: {
   busyAction: BusyAction
@@ -91,8 +90,6 @@ export function HomeDashboardView({
   /** Off: no idle screen, and Home shows the robot status beside the actions. */
   idleScreenEnabled: boolean
   onWake: () => void
-  /** Back to the idle screen, to look at the robot on purpose. */
-  onShowIdle: () => void
   /** The attention panel (or its "recovered" note) opened or closed. */
   onAttentionPanelChange: (open: boolean) => void
 }) {
@@ -246,25 +243,6 @@ export function HomeDashboardView({
         />
       ) : (
         <section className="flex min-h-0 min-w-0 flex-col gap-3 p-4 lg:gap-4">
-          <div className="flex shrink-0 items-center justify-between gap-4">
-            <h1 className="p-2 text-[2.5rem]/tight font-bold tracking-tight text-primary">
-              {t("workflow.home.pageHeading")}
-            </h1>
-            {/* With the idle screen on, Home shows no robot status: a way
-                back to it for staff who want to look. */}
-            {idleScreenEnabled && (
-              <Button
-                variant="unstyled"
-                size="unstyled"
-                type="button"
-                onClick={onShowIdle}
-                className="h-12 shrink-0 gap-2 rounded-full border border-black/20 px-5 text-lg font-bold text-primary active:bg-subtle"
-              >
-                <Bot aria-hidden="true" className="size-6" />
-                {t("workflow.home.showIdle")}
-              </Button>
-            )}
-          </div>
           {cause && (
             <div
               className={cn(
@@ -405,6 +383,7 @@ export function HomeDashboardView({
               {!framedLayout && !walkInEntryAsParent && (
                 <HomePurposeAction
                   icon="enter"
+                  tall
                   title={t("workflow.home.enterWalkIn")}
                   disabled={busy || robotHeld}
                   onClick={onEnterWalkIn}
@@ -479,6 +458,7 @@ function HomePurposeAction({
   disabled,
   onClick,
   quiet = false,
+  tall = false,
 }: {
   icon: "enter" | "layout" | "reservation" | "stock-count"
   title: string
@@ -487,6 +467,8 @@ function HomePurposeAction({
   onClick: () => void
   /** A step back from the panel above: a thin line, no fill. */
   quiet?: boolean
+  /** Room to hit easily: the walk-in entry under the cards. */
+  tall?: boolean
 }) {
   return (
     <Button
@@ -499,7 +481,8 @@ function HomePurposeAction({
         "w-full min-w-0 shrink-0 justify-start gap-3 rounded-lg px-4 py-3 text-left whitespace-normal active:bg-subtle",
         quiet
           ? "min-h-16 border border-black/30"
-          : "min-h-20 border-2 border-black/20 bg-default"
+          : "min-h-20 border-2 border-black/20 bg-default",
+        tall && "min-h-24"
       )}
     >
       <span
