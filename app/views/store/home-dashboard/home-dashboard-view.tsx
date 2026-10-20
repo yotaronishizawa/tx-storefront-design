@@ -25,6 +25,7 @@ import {
   HomeRecoveredPanel,
 } from "./components/home-attention-panel"
 import { HomeIdleScreen } from "./components/home-idle-screen"
+import { HomeMoreActions } from "./components/home-more-actions"
 import { HomeObjectAction } from "./components/home-object-action"
 import { HomeRobotStatus, type IdleLook } from "./components/home-robot-status"
 import { HomeWalkInGate } from "./components/home-walk-in-gate"
@@ -411,29 +412,60 @@ export function HomeDashboardView({
               )}
             </div>
           )}
-          <HomePurposeAction
-            icon="layout"
-            title={t("workflow.home.layout")}
-            disabled={busy || robotHeld}
-            onClick={onShowEdit}
-            quiet={splitLayout}
-          />
-          <div className="grid shrink-0 grid-cols-1 gap-3 min-[440px]:grid-cols-2 lg:gap-4">
-            <HomePurposeAction
-              icon="reservation"
-              title={t("workflow.home.v5.reservations")}
+          {splitLayout ? (
+            <HomeMoreActions
               disabled={busy}
-              onClick={onShowDisplay}
-              quiet={splitLayout}
+              actions={[
+                {
+                  key: "layout",
+                  icon: "layout",
+                  title: t("workflow.home.layout"),
+                  disabled: busy || robotHeld,
+                  onClick: onShowEdit,
+                },
+                {
+                  key: "reservations",
+                  icon: "reservation",
+                  title: t("workflow.home.v5.reservations"),
+                  disabled: busy,
+                  onClick: onShowDisplay,
+                },
+                {
+                  key: "count",
+                  icon: "stock-count",
+                  title: t("workflow.home.count"),
+                  disabled: busy,
+                  onClick: onShowRecommendations,
+                },
+              ]}
             />
-            <HomePurposeAction
-              icon="stock-count"
-              title={t("workflow.home.count")}
-              disabled={busy}
-              onClick={onShowRecommendations}
-              quiet={splitLayout}
-            />
-          </div>
+          ) : (
+            <>
+              <HomePurposeAction
+                icon="layout"
+                title={t("workflow.home.layout")}
+                disabled={busy || robotHeld}
+                onClick={onShowEdit}
+                quiet={splitLayout}
+              />
+              <div className="grid shrink-0 grid-cols-1 gap-3 min-[440px]:grid-cols-2 lg:gap-4">
+                <HomePurposeAction
+                  icon="reservation"
+                  title={t("workflow.home.v5.reservations")}
+                  disabled={busy}
+                  onClick={onShowDisplay}
+                  quiet={splitLayout}
+                />
+                <HomePurposeAction
+                  icon="stock-count"
+                  title={t("workflow.home.count")}
+                  disabled={busy}
+                  onClick={onShowRecommendations}
+                  quiet={splitLayout}
+                />
+              </div>
+            </>
+          )}
         </section>
       )}
     </div>
