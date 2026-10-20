@@ -92,7 +92,8 @@ export function HomeAttentionPanel({
   stuck,
   busy,
   onRobotAction,
-  onEnterWalkIn,
+  holdPhase,
+  onHoldForWalkIn,
   onOtherWork,
 }: {
   cause: RobotAttentionCause
@@ -111,8 +112,10 @@ export function HomeAttentionPanel({
   busy: boolean
   /** Resume, or check and stop, as the cause asks. */
   onRobotAction: () => void
-  /** Go in through the walk-in screen, which keeps the robot stopped meanwhile. */
-  onEnterWalkIn: () => void
+  /** Stopping the robot for staff to go in, and then stopped. */
+  holdPhase: "holding" | "held" | null
+  /** Stop the robot as the store, so it stays stopped while staff are inside. */
+  onHoldForWalkIn: () => void
   onOtherWork: () => void
 }) {
   const { i18n, t } = useTranslation("app")
@@ -198,29 +201,44 @@ export function HomeAttentionPanel({
                 {t("workflow.home.attention.actionCheckAndStop")}
               </Button>
             )}
-            {/* Removing it means going in: through the walk-in screen, so
-                the robot stays stopped until staff come out, not only until
-                the detection clears. */}
-            {(cause === "obstacle" || cause === "fallenDrink") && (
-              <Button
-                size="lg"
-                variant={retryable ? "secondary" : undefined}
-                disabled={busy}
-                onClick={onEnterWalkIn}
-              >
-                {t("workflow.home.enterWalkIn")}
-              </Button>
-            )}
+            {/* Removing it means going in. Only the detection stops the
+                robot, so it could move once it clears with staff still
+                inside: stop it as the store first. After a task the app
+                already holds it (retryable), so not then. */}
+            {(cause === "obstacle" || cause === "fallenDrink") &&
+              !retryable && (
+                <Button size="lg" disabled={busy} onClick={onHoldForWalkIn}>
+                  {t("workflow.home.enterWalkIn")}
+                </Button>
+              )}
             {retryable && (
               <Button
                 size="lg"
-                disabled={busy || retryState === "checking"}
+                disabled={
+                  busy || retryState === "checking" || holdPhase === "holding"
+                }
                 onClick={onRetry}
               >
                 {t("workflow.home.attention.actionRetry")}
               </Button>
             )}
           </div>
+          {holdPhase !== null && retryState === "idle" && (
+            <p
+              role="status"
+              className={
+                holdPhase === "holding"
+                  ? "rounded-md bg-error-subtle px-4 py-2 text-base font-bold text-error"
+                  : "rounded-md bg-subtle px-4 py-2 text-base font-bold"
+              }
+            >
+              {t(
+                holdPhase === "holding"
+                  ? "workflow.home.attention.holding"
+                  : "workflow.home.attention.held"
+              )}
+            </p>
+          )}
           {retryable && retryState !== "idle" && (
             <p
               role="status"

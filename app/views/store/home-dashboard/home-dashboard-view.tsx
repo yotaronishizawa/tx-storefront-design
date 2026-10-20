@@ -50,6 +50,8 @@ export function HomeDashboardView({
   onRobotAction,
   onRetryRestart,
   onEnterWalkIn,
+  holdPhase,
+  onHoldForWalkIn,
   onEnterWalkInDirect,
   onShowDisplay,
   onShowEdit,
@@ -81,6 +83,9 @@ export function HomeDashboardView({
   /** The cause has not cleared for a while. */
   attentionStuck: boolean
   onEnterWalkIn: () => void
+  /** Stopping the robot for staff to go in and clear a detection, and then stopped. */
+  holdPhase: "holding" | "held" | null
+  onHoldForWalkIn: () => void
   /** Into the walk-in screen without asking again (the gate already said it stops the robot). */
   onEnterWalkInDirect: () => void
   onShowDisplay: () => void
@@ -245,7 +250,8 @@ export function HomeDashboardView({
           resumeMessage={resumeMessage}
           busy={busy}
           onRobotAction={onRobotAction}
-          onEnterWalkIn={onEnterWalkIn}
+          holdPhase={holdPhase}
+          onHoldForWalkIn={onHoldForWalkIn}
           cameras={attention?.cameras ?? []}
           stuck={attentionStuck}
           onOtherWork={() => (assist ? setOpened(null) : setSetAside(cause))}

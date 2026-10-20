@@ -15,6 +15,7 @@ import {
 } from "~/domains/app-shell"
 import {
   getActionPrompt,
+  readOperationsState,
   resumeRobotUnlessHeld,
   runBusy,
   useManualReplenishmentRequest,
@@ -152,6 +153,28 @@ export default function HomePage() {
     }
     void requestManualStart()
   }
+  // Going in to clear a detection: the store stops the robot too, so it
+  // stays stopped until staff restart it, not only until the detection
+  // clears. Home stays on the panel, camera images and all; the restart is
+  // held as after a task, so "Try again" brings the robot back.
+  const [holdingFor, setHoldingFor] = useState<RobotAttentionCause | null>(
+    null
+  )
+  const holdPhase =
+    holdingFor !== null && holdingFor === attention?.cause
+      ? robotWorkStatus === "RestPosition" &&
+        robotOperationMode === "StoppedByStore"
+        ? "held"
+        : "holding"
+      : null
+  async function holdForWalkIn() {
+    const detector = attention?.cause
+    if (detector !== "obstacle" && detector !== "fallenDrink") return
+    if (!(await robotActions.stopAutoPnpOperation(true))) return
+    readOperationsState().setRestartHeldBy(detector)
+    setHoldingFor(detector)
+  }
+
   // Going in stops the robot, so ask on Home first; the walk-in screen then
   // opens already stopping it.
   async function enterWalkIn() {
@@ -193,6 +216,8 @@ export default function HomePage() {
           : robotActions.startRobot())
       }
       onEnterWalkIn={() => void enterWalkIn()}
+      holdPhase={holdPhase}
+      onHoldForWalkIn={() => void holdForWalkIn()}
       onEnterWalkInDirect={() =>
         void navigate(`${ROUTES.walkIn().pathname}?start=1`)
       }
