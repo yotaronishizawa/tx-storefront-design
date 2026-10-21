@@ -1,8 +1,8 @@
-import type { ReactNode } from "react"
+import { useEffect, useState, type ReactNode } from "react"
 
 import { CircleAlert, Info, TriangleAlert, X } from "lucide-react"
 
-import { Button } from "~/core"
+import { Button, Dialog } from "~/core"
 import { cn } from "~/utils/cn"
 
 import { useDocText } from "./doc-lang"
@@ -67,10 +67,34 @@ export function DialogDoc() {
       id="dialog"
       title="Dialog & Panel"
       lead={{
-        en: "Two types. Dialog: short messages and decisions. Panel: long content, such as manuals and videos. The spec is decided (Ethan); the shared component is next, so build new dialogs to these rules.",
-        ja: "種類は2つ。Dialog：短いメッセージと判断。Panel：マニュアルや動画などの長い内容。仕様は決まっています（Ethan）。共通部品はこれから作るので、新しいポップアップはこのルールどおりに作ってください。",
+        en: "Two types. Dialog: short messages and decisions. Panel: long content, such as manuals and videos. Every popup in the app is a Dialog.Popup: the values below are built in, so you only choose the kind, the title and the buttons (Ethan's spec).",
+        ja: "種類は2つ。Dialog：短いメッセージと判断。Panel：マニュアルや動画などの長い内容。アプリのポップアップはすべて Dialog.Popup です。下の値は組み込み済みなので、選ぶのは種類・見出し・ボタンだけです（Ethan の仕様）。",
       }}
+      importLine={'import { Button, Dialog } from "~/core"'}
     >
+      <Example
+        label={{ en: "Open a real popup", ja: "実物を開いて試す" }}
+        note={{
+          en: "These are the real component. The waiting one closes by itself after 3 seconds.",
+          ja: "実物の部品です。待機中のポップアップは3秒後に自動で閉じます。",
+        }}
+        code={`<Dialog.Popup
+  open={open}
+  onClose={close}
+  closeLabel="閉じる"
+  title="ロボットの運転を開始しますか"
+  actions={
+    <Dialog.Actions>
+      <Button size="lg" onClick={start}>運転を開始</Button>
+      <Button size="lg" variant="secondary" onClick={close}>キャンセル</Button>
+    </Dialog.Actions>
+  }
+>
+  <p>ウォークインの中に人やモノがないことを確認してください。</p>
+</Dialog.Popup>`}
+      >
+        <LiveDialogs />
+      </Example>
       <SubTitle>{{ en: "Rules", ja: "ルール" }}</SubTitle>
       <ul className="flex max-w-4xl list-disc flex-col gap-2 ps-6 text-base">
         {(
@@ -124,7 +148,7 @@ export function DialogDoc() {
             en: "The app is busy and staff must wait. No buttons, no close icon. It closes by itself when the task ends.",
             ja: "アプリが処理中で、待つしかない時。ボタンも閉じるもなし。終わったら自動で閉じる。",
           }}
-          code={"<Dialog …> title + content, no actions"}
+          code={'<Dialog.Popup open title="…"> (no onClose, no actions)'}
         >
           <DialogPreview title="ロボットが動作中です" close={false} />
         </Example>
@@ -134,7 +158,9 @@ export function DialogDoc() {
             en: "Tells about a problem or a result. One button, full width. Close icon shown.",
             ja: "問題や結果を伝える。ボタンは1つで行いっぱい。閉じるあり。",
           }}
-          code={"<Dialog …> icon + title + content + one primary"}
+          code={
+            '<Dialog.Popup icon="error" title="…" onClose={…} actions={<Dialog.Actions><Button size="lg">再接続</Button></Dialog.Actions>}>'
+          }
         >
           <DialogPreview
             title="スキャナーが接続されていません"
@@ -152,7 +178,9 @@ export function DialogDoc() {
             en: "Asks to confirm before an action. Primary on the left, secondary on the right.",
             ja: "操作の前に確認する。左に primary、右に secondary。",
           }}
-          code={"<Dialog …> title + content + primary | secondary"}
+          code={
+            '<Dialog.Popup title="…" onClose={…} actions={<Dialog.Actions>primary | secondary</Dialog.Actions>}>'
+          }
         >
           <DialogPreview
             title="ロボットの運転を開始しますか"
@@ -173,7 +201,7 @@ export function DialogDoc() {
             ja: "Confirmation と同じだが、取り消せない操作。エラーのアイコンと destructive のボタン。",
           }}
           code={
-            "<Dialog …> error icon + title + content + destructive | secondary"
+            '<Dialog.Popup icon="error" … actions={<Dialog.Actions>destructive | secondary</Dialog.Actions>}>'
           }
         >
           <DialogPreview
@@ -201,7 +229,7 @@ export function DialogDoc() {
           en: "Wide: same parts as the 680 dialog, only wider (product search). Panel: same header, padding, radius and shadow, nearly full screen, content scrolls inside (help, manuals).",
           ja: "広い Dialog：680 と同じ部品で幅だけ広い（商品検索）。Panel：見出し・余白・角・影は同じで、ほぼ全画面。中身は内側でスクロール（ヘルプ、マニュアル）。",
         }}
-        code={"<Dialog wide …> / <Panel …>"}
+        code={'<Dialog.Popup size="wide" …> / <Dialog.Popup size="panel" …>'}
       >
         <DialogPreview
           title="商品検索"
@@ -322,5 +350,106 @@ function FixedValues() {
         </tbody>
       </table>
     </div>
+  )
+}
+
+type LiveKind = "confirm" | "destructive" | "info" | "blocking"
+
+/** Buttons that open the real popups, so the catalog shows the component itself. */
+function LiveDialogs() {
+  const tx = useDocText()
+  const [open, setOpen] = useState<LiveKind | null>(null)
+  const close = () => setOpen(null)
+  useEffect(() => {
+    if (open !== "blocking") return
+    const timer = window.setTimeout(close, 3000)
+    return () => window.clearTimeout(timer)
+  }, [open])
+  const closeLabel = tx({ en: "Close", ja: "閉じる" })
+  return (
+    <>
+      <div className="grid w-full max-w-3xl grid-cols-4 gap-3">
+        <Button
+          size="lg"
+          variant="secondary"
+          onClick={() => setOpen("confirm")}
+        >
+          Confirmation
+        </Button>
+        <Button
+          size="lg"
+          variant="secondary"
+          onClick={() => setOpen("destructive")}
+        >
+          Destructive
+        </Button>
+        <Button size="lg" variant="secondary" onClick={() => setOpen("info")}>
+          Info
+        </Button>
+        <Button
+          size="lg"
+          variant="secondary"
+          onClick={() => setOpen("blocking")}
+        >
+          Blocking
+        </Button>
+      </div>
+      <Dialog.Popup
+        open={open === "confirm"}
+        onClose={close}
+        closeLabel={closeLabel}
+        title="ロボットの運転を開始しますか"
+        actions={
+          <Dialog.Actions>
+            <Button size="lg" onClick={close}>
+              運転を開始
+            </Button>
+            <Button size="lg" variant="secondary" onClick={close}>
+              キャンセル
+            </Button>
+          </Dialog.Actions>
+        }
+      >
+        <p>ウォークインの中に人やモノがないことを確認してください。</p>
+      </Dialog.Popup>
+      <Dialog.Popup
+        open={open === "destructive"}
+        onClose={close}
+        closeLabel={closeLabel}
+        icon="error"
+        title="登録した棚割りを削除しますか"
+        actions={
+          <Dialog.Actions>
+            <Button size="lg" variant="destructive" onClick={close}>
+              削除する
+            </Button>
+            <Button size="lg" variant="secondary" onClick={close}>
+              キャンセル
+            </Button>
+          </Dialog.Actions>
+        }
+      >
+        <p>削除すると元に戻せません。</p>
+      </Dialog.Popup>
+      <Dialog.Popup
+        open={open === "info"}
+        onClose={close}
+        closeLabel={closeLabel}
+        icon="error"
+        title="スキャナーが接続されていません"
+        actions={
+          <Dialog.Actions>
+            <Button size="lg" onClick={close}>
+              再接続
+            </Button>
+          </Dialog.Actions>
+        }
+      >
+        <p>電源とペアリング状態を確認してください。</p>
+      </Dialog.Popup>
+      <Dialog.Popup open={open === "blocking"} title="ロボットが動作中です">
+        <p>完了までお待ちください。</p>
+      </Dialog.Popup>
+    </>
   )
 }

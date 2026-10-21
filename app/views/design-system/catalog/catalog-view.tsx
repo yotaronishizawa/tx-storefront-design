@@ -89,13 +89,6 @@ const PRINCIPLES: { title: DocText; body: DocText }[] = [
 /** Pieces found in the inventory that are still built several ways. */
 const COMING_NEXT: { name: string; what: DocText }[] = [
   {
-    name: "Dialog templates",
-    what: {
-      en: "The Dialog & Panel spec above as one shared component (blocking, info, confirmation, destructive, wide, panel)",
-      ja: "上の Dialog & Panel の仕様を共通部品に（blocking・info・confirmation・destructive・wide・panel）",
-    },
-  },
-  {
     name: "IconButton",
     what: {
       en: "Round and square icon-only buttons in three sizes",

@@ -1,3 +1,5 @@
+import type { Ref } from "react"
+
 import { Search, X } from "lucide-react"
 
 import { cn } from "~/utils/cn"
@@ -15,6 +17,7 @@ export function SearchField({
   placeholder,
   clearLabel,
   className,
+  inputRef,
 }: SearchField.Props) {
   return (
     <label
@@ -25,6 +28,7 @@ export function SearchField({
     >
       <Search aria-hidden="true" className="size-5 shrink-0 text-primary" />
       <Input
+        ref={inputRef}
         value={value}
         onValueChange={onValueChange}
         placeholder={placeholder}
@@ -54,5 +58,7 @@ export declare namespace SearchField {
     /** Accessible name of the clear button. */
     clearLabel: string
     className?: string
+    /** For a popup that opens with the cursor in the box (`initialFocus`). */
+    inputRef?: Ref<HTMLInputElement>
   }
 }

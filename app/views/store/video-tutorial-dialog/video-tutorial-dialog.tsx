@@ -3,7 +3,6 @@ import { useEffect, useMemo, useState, type ReactNode } from "react"
 import {
   BookOpen,
   ChevronLeft,
-  CircleHelp,
   LifeBuoy,
   Phone,
   PlayCircle,
@@ -132,33 +131,28 @@ export function VideoTutorialDialog({
   }
 
   return (
-    <Dialog.Root
-      className="grid h-full max-h-205 max-w-306 grid-rows-[auto_minmax(0,1fr)] overflow-hidden"
-      inset="wide"
-      layer="raised"
+    <Dialog.Popup
       open={open}
-      onDismiss={onClose}
+      onClose={onClose}
+      closeLabel={t("closeVideoTutorial")}
+      title={t("howToUse")}
+      size="panel"
+      layer="raised"
     >
-      <header className="flex h-20 items-center gap-4 border-b px-6">
-        <Dialog.Title className="flex shrink-0 items-center gap-3 leading-none font-bold">
-          <CircleHelp className="size-5 shrink-0 text-info" />
-          {t("howToUse")}
-        </Dialog.Title>
-        <SearchField
-          className="ms-6 flex-1"
-          value={query}
-          onValueChange={(next) => {
-            setQuery(next)
-            setOpened(null)
-          }}
-          placeholder={t("help.searchPlaceholder")}
-          clearLabel={t("manualSearch.clear")}
-        />
-        <Dialog.Close aria-label={t("closeVideoTutorial")} />
-      </header>
+      <SearchField
+        className="shrink-0"
+        value={query}
+        onValueChange={(next) => {
+          setQuery(next)
+          setOpened(null)
+        }}
+        placeholder={t("help.searchPlaceholder")}
+        clearLabel={t("manualSearch.clear")}
+      />
 
-      <div className="grid min-h-0 grid-cols-[14rem_minmax(0,1fr)]">
-        <nav className="flex min-h-0 flex-col gap-1 border-e p-3">
+      {/* Fills the panel's fixed height; the two columns scroll on their own. */}
+      <div className="grid min-h-0 flex-1 grid-cols-[14rem_minmax(0,1fr)] overflow-hidden border-t">
+        <nav className="flex min-h-0 flex-col gap-1 overflow-y-auto border-e p-3">
           {nav.map(({ key, icon }) => (
             <NavItem
               key={key}
@@ -261,7 +255,7 @@ export function VideoTutorialDialog({
           )}
         </div>
       </div>
-    </Dialog.Root>
+    </Dialog.Popup>
   )
 }
 

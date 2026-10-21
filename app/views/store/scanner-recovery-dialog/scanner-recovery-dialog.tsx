@@ -14,25 +14,26 @@ export function ScannerRecoveryDialog({
   const { t } = useTranslation(["app", "common"])
 
   return (
-    <Dialog.Root
-      className="grid max-w-130 gap-6 p-8 text-center"
+    <Dialog.Popup
       open={open}
-      onDismiss={onClose}
+      onClose={onClose}
+      closeLabel={t("common:actions.close")}
+      title={t("scannerRecoveryTitle")}
+      actions={
+        <Dialog.Actions>
+          <Button size="lg" onClick={onClose}>
+            {t("common:actions.close")}
+          </Button>
+        </Dialog.Actions>
+      }
     >
-      <div>
-        <Dialog.Title>{t("scannerRecoveryTitle")}</Dialog.Title>
-        <Dialog.Message className="mx-auto mt-4 max-w-97.5">
-          {t("scannerRecoveryMessage")}
-        </Dialog.Message>
-      </div>
+      <Dialog.Message className="text-left font-normal">
+        {t("scannerRecoveryMessage")}
+      </Dialog.Message>
 
       <div className="mx-auto rounded-md border bg-default p-4">
         <ScannerRecoveryQrCode />
       </div>
-
-      <Button className="mx-auto min-w-33 px-8" size="sm" onClick={onClose}>
-        {t("common:actions.close")}
-      </Button>
-    </Dialog.Root>
+    </Dialog.Popup>
   )
 }

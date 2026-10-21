@@ -15,7 +15,7 @@ export function RulesConfirmCheckbox({
   const { t } = useTranslation("app")
 
   return (
-    <label className="mx-auto mt-4 inline-flex shrink-0 items-center gap-2 text-sm font-bold text-primary">
+    <label className="flex shrink-0 items-center gap-3 text-lg font-bold text-primary">
       <Checkbox.Root
         checked={checked}
         className="size-6"

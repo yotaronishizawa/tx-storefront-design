@@ -40,74 +40,77 @@ export function ManualReplenishmentStartDialog({
   }, [open])
 
   return (
-    <Dialog.Root
-      className="flex max-h-[calc(100svh-2rem)] max-w-4xl flex-col overflow-hidden p-5"
+    <Dialog.Popup
+      open={open}
+      onClose={busy ? undefined : onCancel}
+      closeLabel={t("common:actions.close")}
+      title={t("manualStartDialogTitle")}
+      size="wide"
       initialFocus={cancelRef}
       layer="base"
-      open={open}
-      onDismiss={busy ? undefined : onCancel}
+      actions={
+        // The tick stays next to the button it unlocks, outside the scrolling rules.
+        <div className="flex shrink-0 flex-col gap-4">
+          <RulesConfirmCheckbox
+            checked={confirmed}
+            disabled={busy}
+            onCheckedChange={setConfirmed}
+          />
+          <Dialog.Actions>
+            <Button
+              busy={busy}
+              disabled={!confirmed}
+              size="lg"
+              onClick={onConfirm}
+            >
+              {t(
+                stopsRobot
+                  ? "workflow.start.stopAndStart"
+                  : "startManualReplenishment"
+              )}
+            </Button>
+            <Button
+              ref={cancelRef}
+              disabled={busy}
+              size="lg"
+              variant="secondary"
+              onClick={onCancel}
+            >
+              {t("common:actions.cancel")}
+            </Button>
+          </Dialog.Actions>
+        </div>
+      }
     >
-      <Dialog.Title className="shrink-0 text-center">
-        {t("manualStartDialogTitle")}
-      </Dialog.Title>
+      <p>{t("manualStartRulesIntro")}</p>
+      <RuleSection title={t("manualRulePickFromFront")}>
+        <div className="grid min-h-0 flex-1 gap-3 sm:grid-cols-2">
+          <RulePhoto
+            caption={t("manualRulePickSequentially")}
+            src={MANUAL_REPLENISHMENT_ASSETS.okRemoveFirstDrink}
+            tone="good"
+          />
+          <RulePhoto
+            caption={t("manualRuleDoNotPickFromBack")}
+            src={MANUAL_REPLENISHMENT_ASSETS.noRemoveFromBehind}
+            tone="bad"
+          />
+        </div>
+      </RuleSection>
 
-      <Dialog.Content>
-        <p className="mb-3 text-center text-xs font-bold text-primary">
-          {t("manualStartRulesIntro")}
-        </p>
-        <RuleSection title={t("manualRulePickFromFront")}>
-          <div className="grid min-h-0 flex-1 gap-3 sm:grid-cols-2">
-            <RulePhoto
-              caption={t("manualRulePickSequentially")}
-              src={MANUAL_REPLENISHMENT_ASSETS.okRemoveFirstDrink}
-              tone="good"
-            />
-            <RulePhoto
-              caption={t("manualRuleDoNotPickFromBack")}
-              src={MANUAL_REPLENISHMENT_ASSETS.noRemoveFromBehind}
-              tone="bad"
-            />
-          </div>
+      <div className="grid gap-4 lg:grid-cols-[0.85fr_1.15fr]">
+        <RuleSection title={t("manualRuleDoNotReturn")}>
+          <RulePhoto
+            caption={t("manualRuleDoNotReturnCaption")}
+            src={MANUAL_REPLENISHMENT_ASSETS.noReturnDrink}
+            tone="bad"
+          />
         </RuleSection>
 
-        <div className="mt-3 grid gap-3 lg:grid-cols-[0.85fr_1.15fr]">
-          <RuleSection title={t("manualRuleDoNotReturn")}>
-            <RulePhoto
-              caption={t("manualRuleDoNotReturnCaption")}
-              src={MANUAL_REPLENISHMENT_ASSETS.noReturnDrink}
-              tone="bad"
-            />
-          </RuleSection>
-
-          <RuleSection title={t("manualReplenishmentCompleteForwardHint")}>
-            <PackForwardPhotos />
-          </RuleSection>
-        </div>
-      </Dialog.Content>
-
-      <RulesConfirmCheckbox
-        checked={confirmed}
-        disabled={busy}
-        onCheckedChange={setConfirmed}
-      />
-
-      <Dialog.Footer className="mt-4 grid-cols-1 gap-3 sm:grid-cols-2">
-        <Button busy={busy} disabled={!confirmed} onClick={onConfirm}>
-          {t(
-            stopsRobot
-              ? "workflow.start.stopAndStart"
-              : "startManualReplenishment"
-          )}
-        </Button>
-        <Button
-          ref={cancelRef}
-          disabled={busy}
-          variant="secondary"
-          onClick={onCancel}
-        >
-          {t("common:actions.cancel")}
-        </Button>
-      </Dialog.Footer>
-    </Dialog.Root>
+        <RuleSection title={t("manualReplenishmentCompleteForwardHint")}>
+          <PackForwardPhotos />
+        </RuleSection>
+      </div>
+    </Dialog.Popup>
   )
 }

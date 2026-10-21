@@ -18,7 +18,7 @@ export function ConfirmDialog({
   busy?: boolean
   cancelLabel: string
   confirmLabel: string
-  /** A third choice, under the other two. */
+  /** A third choice, after the other two in the same row. */
   extraLabel?: string
   message: string
   open: boolean
@@ -30,41 +30,40 @@ export function ConfirmDialog({
   const cancelRef = useRef<HTMLButtonElement>(null)
 
   return (
-    <Dialog.Root
-      className="grid min-h-75 max-w-dialog grid-rows-[1fr_auto] px-8 pt-12 pb-10"
-      initialFocus={cancelRef}
-      label={t("actions.confirm")}
+    <Dialog.Popup
       open={open}
+      onClose={busy ? undefined : onCancel}
+      closeLabel={t("actions.close")}
+      initialFocus={cancelRef}
       role="alertdialog"
-      onDismiss={busy ? undefined : onCancel}
-    >
-      <Dialog.Message className="self-center">{message}</Dialog.Message>
-
-      <Dialog.Footer className="max-w-dialog-sm">
-        <Button disabled={busy} size="sm" onClick={onConfirm}>
-          {confirmLabel}
-        </Button>
-        <Button
-          ref={cancelRef}
-          disabled={busy}
-          size="sm"
-          variant="secondary"
-          onClick={onCancel}
-        >
-          {cancelLabel}
-        </Button>
-        {extraLabel && (
-          <Button
-            className="col-span-2"
-            disabled={busy}
-            size="sm"
-            variant="secondary"
-            onClick={onExtra}
-          >
-            {extraLabel}
+      actions={
+        <Dialog.Actions>
+          <Button disabled={busy} size="lg" onClick={onConfirm}>
+            {confirmLabel}
           </Button>
-        )}
-      </Dialog.Footer>
-    </Dialog.Root>
+          <Button
+            ref={cancelRef}
+            disabled={busy}
+            size="lg"
+            variant="secondary"
+            onClick={onCancel}
+          >
+            {cancelLabel}
+          </Button>
+          {extraLabel && (
+            <Button
+              disabled={busy}
+              size="lg"
+              variant="secondary"
+              onClick={onExtra}
+            >
+              {extraLabel}
+            </Button>
+          )}
+        </Dialog.Actions>
+      }
+    >
+      <p className="whitespace-pre-line">{message}</p>
+    </Dialog.Popup>
   )
 }

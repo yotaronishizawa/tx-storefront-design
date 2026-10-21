@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 
 import type { Sku } from "~/api/opm/schemas"
 import { CabinetTabs } from "~/components/shelf/cabinet-tabs"
-import { Button, Dialog, ToggleGroup } from "~/core"
+import { Button, Dialog, Notice, ToggleGroup } from "~/core"
 import type { LayoutCabinet } from "~/model/shelf"
 import { cn } from "~/utils/cn"
 
@@ -32,7 +32,7 @@ export function LayoutChangeReview({
   onCancel: () => void
   onConfirm: () => void
 }) {
-  const { t } = useTranslation("app")
+  const { t } = useTranslation(["app", "common"])
   const cancelRef = useRef<HTMLButtonElement>(null)
   const [version, setVersion] = useState("after")
   const [cabinet, setCabinet] = useState(cabinetNumber ?? after[0]?.cabinet)
@@ -45,21 +45,33 @@ export function LayoutChangeReview({
     ).values(),
   ]
   return (
-    <Dialog.Root
-      className="flex h-[92dvh] max-w-dialog-xl flex-col gap-3 p-4 md:p-5"
-      initialFocus={cancelRef}
+    <Dialog.Popup
       open
-      onDismiss={busy ? undefined : onCancel}
+      onClose={busy ? undefined : onCancel}
+      closeLabel={t("common:actions.close")}
+      title={t("workflow.layout.reviewTitle")}
+      size="panel"
+      initialFocus={cancelRef}
+      actions={
+        <Dialog.Actions>
+          <Button busy={busy} icon={<Send />} size="lg" onClick={onConfirm}>
+            {t("workflow.layout.submit")}
+          </Button>
+          <Button
+            ref={cancelRef}
+            disabled={busy}
+            icon={<ArrowLeft />}
+            size="lg"
+            variant="secondary"
+            onClick={onCancel}
+          >
+            {t("workflow.layout.backToEdit")}
+          </Button>
+        </Dialog.Actions>
+      }
     >
       <div className="flex shrink-0 flex-wrap items-center justify-between gap-3">
-        <div>
-          <Dialog.Title className="text-xl">
-            {t("workflow.layout.reviewTitle")}
-          </Dialog.Title>
-          <p className="mt-1 text-base text-secondary">
-            {t("workflow.layout.reviewSubtitle")}
-          </p>
-        </div>
+        <p className="text-secondary">{t("workflow.layout.reviewSubtitle")}</p>
         <span className="rounded-full bg-warning-subtle px-4 py-2 text-base font-bold text-primary">
           {t("workflow.layout.unsentCount", { count: diff.changes.size })}
         </span>
@@ -130,30 +142,14 @@ export function LayoutChangeReview({
           />
         )}
       />
+      <p className="shrink-0 text-base text-secondary">
+        {t("workflow.layout.reviewLegend")}
+      </p>
       {robotWillStop && (
-        <p className="shrink-0 rounded-md bg-warning-subtle px-3 py-2 text-sm font-bold">
+        <Notice className="shrink-0" tone="warning">
           {t("layoutSendStopsRobot")}
-        </p>
+        </Notice>
       )}
-      <div className="flex shrink-0 flex-wrap items-center justify-between gap-3 border-t border-default pt-3">
-        <p className="text-sm font-bold text-secondary">
-          {t("workflow.layout.reviewLegend")}
-        </p>
-        <div className="flex gap-3">
-          <Button
-            ref={cancelRef}
-            disabled={busy}
-            icon={<ArrowLeft />}
-            variant="secondary"
-            onClick={onCancel}
-          >
-            {t("workflow.layout.backToEdit")}
-          </Button>
-          <Button busy={busy} icon={<Send />} onClick={onConfirm}>
-            {t("workflow.layout.submit")}
-          </Button>
-        </div>
-      </div>
-    </Dialog.Root>
+    </Dialog.Popup>
   )
 }

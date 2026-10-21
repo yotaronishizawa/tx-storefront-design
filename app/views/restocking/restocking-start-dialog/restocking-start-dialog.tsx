@@ -1,11 +1,10 @@
 import { useEffect, useRef, useState } from "react"
 
-import { TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { RuleSection } from "~/components/dialog/rule-section"
 import { RulesConfirmCheckbox } from "~/components/dialog/rules-confirm-checkbox"
-import { Button, Dialog } from "~/core"
+import { Button, Dialog, Notice } from "~/core"
 
 const RESTOCKING_RULE_ASSETS = {
   longSideFront: "/assets/restocking/long-side-front.png",
@@ -45,27 +44,55 @@ export function RestockingStartDialog({
   }, [open])
 
   return (
-    <Dialog.Root
-      className="flex max-h-[calc(100svh-2rem)] max-w-3xl flex-col overflow-hidden p-5"
+    <Dialog.Popup
+      open={open}
+      onClose={busy ? undefined : onCancel}
+      closeLabel={t("common:actions.close")}
+      title={
+        resuming ? t("restockingResumePrompt") : t("restockingStartDialogTitle")
+      }
+      size="wide"
       initialFocus={cancelRef}
       layer="base"
-      open={open}
-      onDismiss={busy ? undefined : onCancel}
+      actions={
+        // The tick stays next to the button it unlocks, outside the scrolling rules.
+        <div className="flex shrink-0 flex-col gap-4">
+          <RulesConfirmCheckbox
+            checked={confirmed}
+            disabled={busy}
+            onCheckedChange={setConfirmed}
+          />
+          <Dialog.Actions>
+            <Button
+              busy={busy}
+              disabled={!confirmed}
+              size="lg"
+              onClick={onConfirm}
+            >
+              {resuming
+                ? t("restockingResume")
+                : t(
+                    stopsRobot
+                      ? "workflow.start.stopAndStart"
+                      : "stockReplenishStart"
+                  )}
+            </Button>
+            <Button
+              ref={cancelRef}
+              disabled={busy}
+              size="lg"
+              variant="secondary"
+              onClick={onCancel}
+            >
+              {t("common:actions.cancel")}
+            </Button>
+          </Dialog.Actions>
+        </div>
+      }
     >
-      <Dialog.Title className="shrink-0 text-center">
-        {resuming
-          ? t("restockingResumePrompt")
-          : t("restockingStartDialogTitle")}
-      </Dialog.Title>
+      {shelfSafety && <Notice tone="warning">{t(shelfSafety)}</Notice>}
 
-      {shelfSafety && (
-        <p className="mt-3 flex shrink-0 items-center gap-2 rounded-md bg-warning-subtle px-3 py-2 text-xs font-bold text-primary">
-          <TriangleAlert className="size-5 shrink-0 text-warning" />
-          {t(shelfSafety)}
-        </p>
-      )}
-
-      <Dialog.Content className="mt-3 grid gap-3 md:grid-cols-[2fr_1fr]">
+      <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
         <RuleSection
           subtitle={t("restockingRuleTopView")}
           title={t("restockingRuleShortSideTitle")}
@@ -87,34 +114,8 @@ export function RestockingStartDialog({
             src={RESTOCKING_RULE_ASSETS.removeAndMove}
           />
         </RuleSection>
-      </Dialog.Content>
-
-      <RulesConfirmCheckbox
-        checked={confirmed}
-        disabled={busy}
-        onCheckedChange={setConfirmed}
-      />
-
-      <Dialog.Footer className="mt-4 grid-cols-1 gap-3 sm:grid-cols-2">
-        <Button busy={busy} disabled={!confirmed} onClick={onConfirm}>
-          {resuming
-            ? t("restockingResume")
-            : t(
-                stopsRobot
-                  ? "workflow.start.stopAndStart"
-                  : "stockReplenishStart"
-              )}
-        </Button>
-        <Button
-          ref={cancelRef}
-          disabled={busy}
-          variant="secondary"
-          onClick={onCancel}
-        >
-          {t("common:actions.cancel")}
-        </Button>
-      </Dialog.Footer>
-    </Dialog.Root>
+      </div>
+    </Dialog.Popup>
   )
 }
 
@@ -139,7 +140,7 @@ function RuleFigure({ caption, src }: { caption: string; src: string }) {
         draggable={false}
         src={src}
       />
-      <figcaption className="mt-1 text-center text-xs/tight font-bold text-primary">
+      <figcaption className="mt-1 text-center text-base/tight font-bold text-primary">
         {caption}
       </figcaption>
     </figure>

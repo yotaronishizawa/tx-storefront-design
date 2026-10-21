@@ -93,15 +93,22 @@ function RecommendationChangeDialog({
     }))
 
   return (
-    <Dialog.Root
-      className="grid max-h-[85dvh] max-w-dialog-lg grid-rows-[auto_1fr_auto] gap-6 p-8"
-      label={t("layoutRecommendationsChangedTitle")}
+    <Dialog.Popup
       open={Boolean(change)}
+      onClose={onClose}
+      closeLabel={t("common:actions.close")}
+      title={t("layoutRecommendationsChangedTitle")}
       role="alertdialog"
-      onDismiss={onClose}
+      actions={
+        <Dialog.Actions>
+          <Button size="lg" onClick={onClose}>
+            {t("common:actions.ok")}
+          </Button>
+        </Dialog.Actions>
+      }
     >
-      <Dialog.Message>{t("layoutRecommendationsChanged")}</Dialog.Message>
-      <div className="grid min-h-0 gap-6 overflow-auto sm:grid-cols-2">
+      <p>{t("layoutRecommendationsChanged")}</p>
+      <div className="grid gap-6 sm:grid-cols-2">
         <SkuNameList
           skus={named(change?.added ?? [])}
           title={t("layoutRecommendationsAdded")}
@@ -111,10 +118,7 @@ function RecommendationChangeDialog({
           title={t("layoutRecommendationsRemoved")}
         />
       </div>
-      <Button className="mx-auto min-w-28 px-8" size="sm" onClick={onClose}>
-        {t("common:actions.ok")}
-      </Button>
-    </Dialog.Root>
+    </Dialog.Popup>
   )
 }
 
@@ -127,11 +131,11 @@ function SkuNameList({
 }) {
   return (
     <section className="min-w-0">
-      <h3 className="mb-2 text-sm font-bold">{title}</h3>
+      <h3 className="mb-2 font-bold">{title}</h3>
       {skus.length === 0 ? (
-        <p className="text-xs font-bold text-secondary">—</p>
+        <p className="text-secondary">—</p>
       ) : (
-        <ul className="grid gap-1 text-xs font-bold">
+        <ul className="grid gap-1 text-base">
           {skus.map(({ name, skuId }) => (
             <li key={skuId}>{name}</li>
           ))}

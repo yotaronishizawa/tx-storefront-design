@@ -45,7 +45,7 @@ export function RulePhoto({
           <Icon className="size-5 stroke-4" />
         </span>
       </div>
-      <figcaption className="mt-1 shrink-0 text-center text-xs/tight font-bold text-primary">
+      <figcaption className="mt-1 shrink-0 text-center text-base/tight font-bold text-primary">
         {caption}
       </figcaption>
     </figure>

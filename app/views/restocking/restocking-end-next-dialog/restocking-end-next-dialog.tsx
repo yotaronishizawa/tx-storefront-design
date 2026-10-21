@@ -24,37 +24,33 @@ export function RestockingEndNextDialog({
   const manualRef = useRef<HTMLButtonElement>(null)
 
   return (
-    <Dialog.Root
-      className="grid min-h-75 max-w-dialog grid-rows-[auto_1fr_auto] gap-4 px-8 pt-12 pb-10"
-      initialFocus={manualRef}
+    <Dialog.Popup
       open={open}
+      title={t("restockingEndGoToManualTitle")}
+      initialFocus={manualRef}
       role="alertdialog"
+      actions={
+        <Dialog.Actions>
+          <Button
+            ref={manualRef}
+            disabled={busy}
+            size="lg"
+            onClick={onGoToManual}
+          >
+            {t("restockingEndGoToManualButton")}
+          </Button>
+          <Button
+            disabled={busy}
+            size="lg"
+            variant="secondary"
+            onClick={onStartRobot}
+          >
+            {t("restockingEndStartRobotButton")}
+          </Button>
+        </Dialog.Actions>
+      }
     >
-      <Dialog.Title className="text-center">
-        {t("restockingEndGoToManualTitle")}
-      </Dialog.Title>
-      <Dialog.Message className="self-center">
-        {t("restockingEndGoToManualMessage")}
-      </Dialog.Message>
-
-      <Dialog.Footer className="max-w-dialog-sm">
-        <Button
-          ref={manualRef}
-          disabled={busy}
-          size="sm"
-          onClick={onGoToManual}
-        >
-          {t("restockingEndGoToManualButton")}
-        </Button>
-        <Button
-          disabled={busy}
-          size="sm"
-          variant="secondary"
-          onClick={onStartRobot}
-        >
-          {t("restockingEndStartRobotButton")}
-        </Button>
-      </Dialog.Footer>
-    </Dialog.Root>
+      <p>{t("restockingEndGoToManualMessage")}</p>
+    </Dialog.Popup>
   )
 }

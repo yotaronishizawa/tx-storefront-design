@@ -1,11 +1,12 @@
 import { useRef } from "react"
 
+import { useTranslation } from "react-i18next"
+
 import { Button, Dialog } from "~/core"
 
 /**
- * A question with two answers, laid out as the walk-in popups are designed
- * (Figma "ポップアップ:中に入る" / "ウォークインから出る"): a left-aligned
- * heading, an optional line under it, then the answer and Cancel side by side.
+ * A question with two answers: a heading, an optional line under it, then
+ * the answer and Cancel side by side (the design system's popup).
  */
 export function ChoiceDialog({
   title,
@@ -25,41 +26,33 @@ export function ChoiceDialog({
   onConfirm: () => void
   onCancel: () => void
 }) {
+  const { t } = useTranslation("common")
   const cancelRef = useRef<HTMLButtonElement>(null)
   return (
-    <Dialog.Root
-      className="grid w-172 max-w-[calc(100vw-2rem)] gap-8 rounded-[1.25rem] p-6"
-      initialFocus={cancelRef}
+    <Dialog.Popup
       open={open}
+      onClose={onCancel}
+      closeLabel={t("actions.close")}
+      title={title}
+      initialFocus={cancelRef}
       role="alertdialog"
-      onDismiss={onCancel}
+      actions={
+        <Dialog.Actions>
+          <Button size="lg" onClick={onConfirm}>
+            {confirmLabel}
+          </Button>
+          <Button
+            ref={cancelRef}
+            size="lg"
+            variant="secondary"
+            onClick={onCancel}
+          >
+            {cancelLabel}
+          </Button>
+        </Dialog.Actions>
+      }
     >
-      <div className="grid gap-4">
-        <Dialog.Title className="text-xl/snug">{title}</Dialog.Title>
-        {message && (
-          <Dialog.Message className="text-left text-base/relaxed font-normal">
-            {message}
-          </Dialog.Message>
-        )}
-      </div>
-      <div className="grid grid-cols-[minmax(0,1.13fr)_minmax(0,1fr)] gap-4">
-        <Button
-          size="lg"
-          className="h-16 rounded-xl text-lg whitespace-nowrap"
-          onClick={onConfirm}
-        >
-          {confirmLabel}
-        </Button>
-        <Button
-          ref={cancelRef}
-          size="lg"
-          variant="secondary"
-          className="h-16 rounded-xl text-lg"
-          onClick={onCancel}
-        >
-          {cancelLabel}
-        </Button>
-      </div>
-    </Dialog.Root>
+      {message && <p className="whitespace-pre-line">{message}</p>}
+    </Dialog.Popup>
   )
 }

@@ -2,6 +2,7 @@ import type { ComponentProps, ReactNode, RefObject } from "react"
 
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog"
 import { cva, type VariantProps } from "class-variance-authority"
+import { CircleAlert, Info, TriangleAlert } from "lucide-react"
 
 import { cn } from "~/utils/cn"
 
@@ -168,5 +169,129 @@ export function Footer({ className, ...props }: Footer.Props) {
 }
 
 export declare namespace Footer {
+  type Props = ComponentProps<"div">
+}
+
+const POPUP_ICON = {
+  error: { Icon: CircleAlert, className: "text-error" },
+  info: { Icon: Info, className: "text-info" },
+  warning: { Icon: TriangleAlert, className: "text-warning" },
+} as const
+
+const POPUP_SIZE = {
+  /** 680: messages and decisions. */
+  default: "w-170",
+  /** 1040: a grid, a list with pictures, or more than 3 items in a row. */
+  wide: "w-260",
+  /** Long content (manuals, videos): the screen less 40 on every side. */
+  panel: "h-[calc(100dvh-5rem)] w-[calc(100vw-5rem)]",
+}
+
+/**
+ * The popup of the design system (Ethan's Dialog & Panel spec): one shape,
+ * every value fixed. Title (with an icon only for error, info or warning),
+ * the content, then the actions; a close icon at the top right unless the
+ * popup is blocking (no `onClose`: it closes by itself when the task ends).
+ */
+export function Popup({
+  open,
+  onClose,
+  title,
+  icon,
+  size = "default",
+  actions,
+  children,
+  initialFocus,
+  layer,
+  role = "dialog",
+  closeLabel,
+}: Popup.Props) {
+  const iconSpec = icon ? POPUP_ICON[icon] : null
+  return (
+    <Root
+      className={cn(
+        "relative flex max-h-[calc(100dvh-5rem)] max-w-[calc(100vw-5rem)] flex-col gap-8 p-8",
+        POPUP_SIZE[size]
+      )}
+      // A stray tap beside an alert (an error, a confirmation) must not answer it.
+      dismissOnScrimClick={Boolean(onClose) && role !== "alertdialog"}
+      initialFocus={initialFocus}
+      label={title ? undefined : closeLabel}
+      layer={layer}
+      open={open}
+      role={role}
+      onDismiss={onClose}
+    >
+      {title && (
+        <div className="flex shrink-0 items-start gap-3 pe-12">
+          {iconSpec && (
+            <iconSpec.Icon
+              aria-hidden="true"
+              className={cn("size-8 shrink-0", iconSpec.className)}
+            />
+          )}
+          <Title className="min-w-0 flex-1 pt-0.5 text-left text-xl/tight">
+            {title}
+          </Title>
+        </div>
+      )}
+      {onClose && (
+        <Close aria-label={closeLabel} className="absolute inset-e-4 top-4" />
+      )}
+      {/* No content (a question in the title alone): no empty block either. */}
+      {children != null && children !== false && (
+        <div
+          className={cn(
+            "flex min-h-0 flex-1 flex-col gap-4 overflow-y-auto text-lg text-primary",
+            !title && onClose && "pe-12"
+          )}
+        >
+          {children}
+        </div>
+      )}
+      {actions}
+    </Root>
+  )
+}
+
+export declare namespace Popup {
+  type Props = {
+    open: boolean
+    /** Close icon and Escape (and a scrim tap, unless it is an alertdialog); leave out for a blocking popup. */
+    onClose?: () => void
+    title?: ReactNode
+    /** Only for error, info or warning. */
+    icon?: keyof typeof POPUP_ICON
+    size?: keyof typeof POPUP_SIZE
+    /** A `Dialog.Actions` row. */
+    actions?: ReactNode
+    /** The content: blocks stack 16 apart. */
+    children?: ReactNode
+    initialFocus?: RefObject<HTMLElement | null>
+    layer?: Root.Props["layer"]
+    role?: "alertdialog" | "dialog"
+    /** Accessible name of the close icon (and of a popup without a title). */
+    closeLabel?: string
+  }
+}
+
+/**
+ * The popup's buttons: full width, split evenly, 16 apart, never stacked.
+ * The main action goes first (on the left), as staff know it. Use
+ * `Button size="lg"` in it.
+ */
+export function Actions({ className, ...props }: Actions.Props) {
+  return (
+    <div
+      className={cn(
+        "grid shrink-0 auto-cols-fr grid-flow-col gap-4 *:w-full *:px-4",
+        className
+      )}
+      {...props}
+    />
+  )
+}
+
+export declare namespace Actions {
   type Props = ComponentProps<"div">
 }

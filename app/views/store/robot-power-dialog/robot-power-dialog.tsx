@@ -38,20 +38,14 @@ export function RobotPowerDialog({
   )
 
   return (
-    <Dialog.Root
-      className="grid max-w-150 gap-6 p-8"
+    <Dialog.Popup
       open={open}
-      onDismiss={onClose}
+      onClose={onClose}
+      closeLabel={t("common:actions.close")}
+      title={t("workflow.robotPower.title")}
     >
-      <div className="flex items-start justify-between gap-4">
-        <Dialog.Title>{t("workflow.robotPower.title")}</Dialog.Title>
-        <Dialog.Close />
-      </div>
-
       <div className="flex items-center justify-between gap-3">
-        <span className="text-base font-bold text-secondary">
-          {t("robotStatus")}
-        </span>
+        <span className="font-bold text-secondary">{t("robotStatus")}</span>
         <p
           role="status"
           className={cn(
@@ -67,7 +61,7 @@ export function RobotPowerDialog({
         </p>
       </div>
 
-      <div className="grid justify-items-center gap-4 pb-2">
+      <div className="grid justify-items-center gap-4">
         <Button
           variant="unstyled"
           size="unstyled"
@@ -86,6 +80,6 @@ export function RobotPowerDialog({
         </Button>
         <p className="text-xl font-bold">{label}</p>
       </div>
-    </Dialog.Root>
+    </Dialog.Popup>
   )
 }

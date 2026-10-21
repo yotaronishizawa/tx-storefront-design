@@ -11,15 +11,17 @@ export function ShelfMovingDialog({ open }: { open: boolean }) {
   const { t } = useTranslation("app")
 
   return (
-    <Dialog.Root
-      className="flex max-w-dialog flex-col items-center gap-6 px-8 py-12"
-      open={open}
-      role="alertdialog"
-    >
-      <Loader2 aria-hidden className="size-12 animate-spin text-primary-text" />
-      <Dialog.Message className="text-center">
-        {t("smartShelfMovingStayOut")}
-      </Dialog.Message>
-    </Dialog.Root>
+    <Dialog.Popup open={open} role="alertdialog">
+      <div className="flex items-center gap-4">
+        <Loader2
+          aria-hidden
+          className="size-8 shrink-0 animate-spin text-primary-text"
+        />
+        {/* Bold: it tells staff to stay out while the shelves move. */}
+        <Dialog.Message className="text-left">
+          {t("smartShelfMovingStayOut")}
+        </Dialog.Message>
+      </div>
+    </Dialog.Popup>
   )
 }

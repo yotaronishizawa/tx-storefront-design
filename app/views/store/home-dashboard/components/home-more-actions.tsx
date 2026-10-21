@@ -41,17 +41,13 @@ export function HomeMoreActions({
         chevron
       />
 
-      <Dialog.Root
-        className="grid w-260 max-w-[calc(100vw-5rem)] gap-6 p-6"
+      <Dialog.Popup
         open={open}
-        onDismiss={() => setOpen(false)}
+        onClose={() => setOpen(false)}
+        closeLabel={t("common:actions.close")}
+        size="wide"
+        title={t("workflow.home.moreActions")}
       >
-        <div className="flex items-center justify-between gap-4">
-          <Dialog.Title className="text-display/tight">
-            {t("workflow.home.moreActions")}
-          </Dialog.Title>
-          <Dialog.Close aria-label={t("common:actions.close")} />
-        </div>
         <div className="grid grid-cols-3 gap-4">
           {actions.map((action) => (
             <ChoiceCard
@@ -76,7 +72,7 @@ export function HomeMoreActions({
             />
           ))}
         </div>
-      </Dialog.Root>
+      </Dialog.Popup>
     </>
   )
 }

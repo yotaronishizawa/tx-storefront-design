@@ -20,27 +20,37 @@ export function ConnectingDialog({
   const { t } = useTranslation("app")
 
   return (
-    <Dialog.Root
-      className="flex max-w-dialog flex-col items-center gap-6 px-8 py-12"
+    <Dialog.Popup
       open={open}
       role="alertdialog"
+      actions={
+        failed && (
+          <Dialog.Actions>
+            <Button
+              size="lg"
+              icon={<RotateCw />}
+              type="button"
+              onClick={onReconnect}
+            >
+              {t("opmReconnect")}
+            </Button>
+          </Dialog.Actions>
+        )
+      }
     >
-      {failed ? (
-        <WifiOff aria-hidden className="size-12 text-error" />
-      ) : (
-        <Loader2
-          aria-hidden
-          className="size-12 animate-spin text-primary-text"
-        />
-      )}
-      <Dialog.Message className="text-center">
-        {failed ? t("opmReconnectionFailed") : t("opmConnecting")}
-      </Dialog.Message>
-      {failed && (
-        <Button icon={<RotateCw />} type="button" onClick={onReconnect}>
-          {t("opmReconnect")}
-        </Button>
-      )}
-    </Dialog.Root>
+      <div className="flex flex-col items-center gap-4 py-4">
+        {failed ? (
+          <WifiOff aria-hidden className="size-12 text-error" />
+        ) : (
+          <Loader2
+            aria-hidden
+            className="size-12 animate-spin text-primary-text"
+          />
+        )}
+        <Dialog.Message className="font-normal">
+          {failed ? t("opmReconnectionFailed") : t("opmConnecting")}
+        </Dialog.Message>
+      </div>
+    </Dialog.Popup>
   )
 }

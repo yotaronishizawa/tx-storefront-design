@@ -4,7 +4,7 @@ import { cn } from "~/utils/cn"
 
 import { Button } from "./button"
 
-/** The one close (X) look, shared by `Dialog.Close` and `Drawer.Close`; not exported from the kit. */
+/** The one close (X) look, shared by `Dialog.Close` and `Drawer.Close`: a 24 icon in a 56 tap area, no frame (Ethan's popup spec); not exported from the kit. */
 export function CloseButton({
   className,
   ...props
@@ -12,7 +12,7 @@ export function CloseButton({
   return (
     <Button
       className={cn(
-        "grid size-10 shrink-0 place-items-center rounded-full border border-strong text-secondary transition focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 active:bg-muted [&_svg]:size-5",
+        "grid size-14 shrink-0 place-items-center rounded-full text-secondary transition focus-visible:ring-2 focus-visible:ring-primary active:bg-subtle [&_svg]:size-6",
         className
       )}
       size="unstyled"

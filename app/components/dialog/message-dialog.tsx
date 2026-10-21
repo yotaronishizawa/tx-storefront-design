@@ -21,21 +21,21 @@ export function MessageDialog({
   const { t } = useTranslation("common")
 
   return (
-    <Dialog.Root
-      className="grid min-h-80 max-w-dialog grid-rows-[1fr_auto] gap-6 px-8 pt-12 pb-10"
-      label={t("entity.notice", { count: 1 })}
+    <Dialog.Popup
       open={open}
+      onClose={onClose}
+      closeLabel={t("actions.close")}
       role="alertdialog"
-      onDismiss={onClose}
+      actions={
+        <Dialog.Actions>
+          <Button size="lg" onClick={onClose}>
+            {okLabel}
+          </Button>
+        </Dialog.Actions>
+      }
     >
-      <div className="flex min-h-0 flex-col gap-4 self-center">
-        <Dialog.Message>{message}</Dialog.Message>
-        {children}
-      </div>
-
-      <Button className="mx-auto min-w-28 px-8" size="sm" onClick={onClose}>
-        {okLabel}
-      </Button>
-    </Dialog.Root>
+      <p className="whitespace-pre-line">{message}</p>
+      {children}
+    </Dialog.Popup>
   )
 }

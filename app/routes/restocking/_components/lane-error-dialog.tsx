@@ -1,6 +1,5 @@
 import { useEffect, useRef } from "react"
 
-import { TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Button, Dialog } from "~/core"
@@ -48,43 +47,39 @@ export function LaneErrorDialog() {
   }
 
   return (
-    <Dialog.Root
-      className="grid max-w-dialog gap-6 p-6"
-      // No visible heading; the count is the dialog's accessible name.
-      label={t("laneErrorCount", { count: Math.max(errorLaneCount, 1) })}
+    <Dialog.Popup
       open={open}
+      onClose={close}
+      closeLabel={t("common:actions.close")}
+      title={t("laneErrorCount", { count: Math.max(errorLaneCount, 1) })}
+      icon="error"
       role="alertdialog"
-      onDismiss={close}
+      actions={
+        <Dialog.Actions>
+          <Button size="lg" onClick={close}>
+            {t("common:actions.ok")}
+          </Button>
+        </Dialog.Actions>
+      }
     >
-      <div className="flex items-start gap-3">
-        <TriangleAlert
-          aria-hidden
-          className="size-7 shrink-0 text-error"
-          strokeWidth={2.5}
-        />
-        <Dialog.Message className="text-left font-bold">
-          {promptKind === "constraint"
-            ? t("laneErrorPromptConstraint")
-            : t("laneErrorPromptUnscanned")}
-        </Dialog.Message>
-      </div>
+      <p className="whitespace-pre-line">
+        {promptKind === "constraint"
+          ? t("laneErrorPromptConstraint")
+          : t("laneErrorPromptUnscanned")}
+      </p>
 
       {/* The code is what the operator reads out to the operations centre. */}
-      <ul className="grid gap-1 text-xs font-bold text-secondary">
+      <ul className="grid gap-1 text-base text-secondary">
         {prompt?.details.map((detail) => (
           <li key={detail.code}>
             {t(detail.messageKey)}{" "}
-            <span className="whitespace-nowrap">
+            <span className="font-bold whitespace-nowrap">
               {t("laneErrorCode", { code: detail.code })}
             </span>
           </li>
         ))}
       </ul>
-
-      <Button className="w-full" onClick={close}>
-        {t("common:actions.ok")}
-      </Button>
-    </Dialog.Root>
+    </Dialog.Popup>
   )
 }
 
