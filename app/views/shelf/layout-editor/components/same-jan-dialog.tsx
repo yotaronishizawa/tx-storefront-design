@@ -47,11 +47,12 @@ export function SameJanDialog({
       </div>
 
       <Dialog.Footer className="max-w-dialog-sm">
-        <Button ref={noRef} size="sm" variant="secondary" onClick={onNo}>
-          {t("common:boolean.no")}
-        </Button>
+        {/* Main action on the left, as in every popup; focus still starts on No. */}
         <Button size="sm" onClick={onYes}>
           {t("common:boolean.yes")}
+        </Button>
+        <Button ref={noRef} size="sm" variant="secondary" onClick={onNo}>
+          {t("common:boolean.no")}
         </Button>
       </Dialog.Footer>
     </Dialog.Root>
