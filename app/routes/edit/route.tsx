@@ -9,6 +9,8 @@ import { ROUTES } from "~/config/routes"
 import { useBusyAction } from "~/domains/app-shell"
 import { acknowledgeMisplacedStockForNextEntry } from "~/domains/restocking"
 import {
+  beginRobotStopWatch,
+  endRobotStopWatch,
   useRobotActions,
   useRobotStatusStale,
   useRobotWorkStatus,
@@ -153,7 +155,18 @@ export default function EditPage() {
         sendHandlers={{
           onCheckLayoutCurrent: isBaseLayoutCurrent,
           onReloadLatest: reloadLatest,
-          onSendLayoutChange: sendLayoutChange,
+          // Sending parks a moving robot first: watch it to the stop
+          // position (the popup), unless the send stops short.
+          onSendLayoutChange: async (needRobotCapture) => {
+            if (robotWillStop) beginRobotStopWatch()
+            const outcome = await sendLayoutChange(needRobotCapture)
+            if (
+              outcome.kind === "failed" ||
+              outcome.kind === "robot-not-resting"
+            )
+              endRobotStopWatch()
+            return outcome
+          },
           onRefreshLayoutStatus: refreshLayoutStatus,
           onReturnHome: async () => {
             const restarted = await startAutoPnpOperation()

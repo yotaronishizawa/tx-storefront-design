@@ -32,7 +32,13 @@ import {
   useRestockingActions,
   useShelvesFlat,
 } from "~/domains/restocking"
-import { useRobotOperationMode, useRobotWorkStatus } from "~/domains/robot"
+import {
+  beginRobotStopWatch,
+  endRobotStopWatch,
+  useRobotOperationMode,
+  useRobotStopWatch,
+  useRobotWorkStatus,
+} from "~/domains/robot"
 import { useSession } from "~/domains/session"
 import { useSelectedRobotId } from "~/domains/store-selection"
 import { isRequestInProgress } from "~/model/request-state"
@@ -47,6 +53,7 @@ import { AppUpdateBannerView } from "~/views/store/app-update-banner"
 import { ConnectingDialog } from "~/views/store/connecting-dialog"
 import { PwaInstallPromptView } from "~/views/store/pwa-install-prompt"
 import { RobotLockView } from "~/views/store/robot-lock"
+import { RobotStoppingDialog } from "~/views/store/robot-stopping-dialog"
 import { ScannerRecoveryDialog } from "~/views/store/scanner-recovery-dialog"
 import { VideoTutorialDialog } from "~/views/store/video-tutorial-dialog"
 
@@ -71,7 +78,8 @@ export function AppDialogs() {
     useManualReplenishmentRequest()
   )
   const prompt = useActionPrompt()
-  const robotLock = getRobotLock(useRobotOperationMode(), useRobotWorkStatus())
+  const workStatus = useRobotWorkStatus()
+  const robotLock = getRobotLock(useRobotOperationMode(), workStatus)
   const opmConnection = useOpmConnection()
   const appUpdateReady = useAppUpdateReady()
   const hasRobot = Boolean(useSelectedRobotId())
@@ -98,6 +106,18 @@ export function AppDialogs() {
   } = useRestockingActions()
   const requestManualStart = useRequestManualStart()
   const robotRunning = useRobotRunning()
+  // Starting restocking or manual replenishment stops a running robot; it
+  // then travels to the stop position, and staff must stay out meanwhile.
+  const robotWillTravel = robotRunning && workStatus !== "RestPosition"
+  const robotStopping = useRobotStoppingPopup(workStatus)
+  /** Watch the robot to the stop position, unless the start fails. */
+  function watchRobotStop(start: Promise<boolean>) {
+    if (robotWillTravel) beginRobotStopWatch()
+    void start.then((ok) => {
+      if (!ok) endRobotStopWatch()
+    })
+    return start
+  }
   const navigate = useNavigate()
   const videoTutorialOpen = activeDialog === "video-tutorial"
   const videoTutorialCatalog = useVideoTutorialCatalog(videoTutorialOpen)
@@ -139,16 +159,20 @@ export function AppDialogs() {
             }
             onConfirm={() => {
               if (continuation === "restock") {
-                void continueToManualReplenishment().then((started) => {
-                  if (started) {
-                    setContinuation(null)
-                    void navigate(ROUTES.manual().pathname)
+                void watchRobotStop(continueToManualReplenishment()).then(
+                  (started) => {
+                    if (started) {
+                      setContinuation(null)
+                      void navigate(ROUTES.manual().pathname)
+                    }
                   }
-                })
+                )
               } else {
-                void startManualReplenishment().then((started) => {
-                  if (started) void navigate(ROUTES.manual().pathname)
-                })
+                void watchRobotStop(startManualReplenishment()).then(
+                  (started) => {
+                    if (started) void navigate(ROUTES.manual().pathname)
+                  }
+                )
               }
             }}
           />
@@ -177,13 +201,13 @@ export function AppDialogs() {
             }
             onConfirm={() => {
               if (continuation === "manual") {
-                void continueToRestocking().then((started) => {
+                void watchRobotStop(continueToRestocking()).then((started) => {
                   if (started) {
                     setContinuation(null)
                     void navigate(ROUTES.restocking().pathname)
                   }
                 })
-              } else void startRestocking()
+              } else void watchRobotStop(startRestocking())
             }}
           />
           <FinishWorkDialog
@@ -201,8 +225,19 @@ export function AppDialogs() {
               })
             }}
           />
+          {/* While the robot travels, its popup also covers the shelves. */}
+          <RobotStoppingDialog
+            open={robotStopping.open && !prompt && !message}
+            shelvesMoving={isShelfMoving(busyAction)}
+            slow={robotStopping.slow}
+          />
           <ShelfMovingDialog
-            open={isShelfMoving(busyAction) && !prompt && !message}
+            open={
+              isShelfMoving(busyAction) &&
+              !robotStopping.open &&
+              !prompt &&
+              !message
+            }
           />
           {/* One popup at a time: waits behind any open prompt or message. */}
           <ScanAlertDialog blocked={Boolean(message || prompt)} />
@@ -314,6 +349,40 @@ function isEndingRestocking(busyAction: BusyAction): boolean {
   return (
     busyAction === "end-restocking" || busyAction === "end-restocking-to-manual"
   )
+}
+
+/** OPM gives a stop five minutes to reach the stop position; past that, stop watching. */
+const ROBOT_STOP_WATCH_MS = 5 * 60_000
+/** As on the walk-in screen: after this long, say it is slow and who to call. */
+const ROBOT_STOP_SLOW_MS = 90_000
+
+/**
+ * Open while an action's robot stop is travelling to the stop position;
+ * closes (and ends the watch) once the robot is parked.
+ */
+function useRobotStoppingPopup(workStatus: string | undefined) {
+  const since = useRobotStopWatch()
+  const parked = workStatus === "RestPosition"
+  const [slowSince, setSlowSince] = useState<number | null>(null)
+  useEffect(() => {
+    if (since !== null && parked) endRobotStopWatch()
+  }, [since, parked])
+  useEffect(() => {
+    if (since === null) return
+    const slow = window.setTimeout(
+      () => setSlowSince(since),
+      ROBOT_STOP_SLOW_MS
+    )
+    const giveUp = window.setTimeout(endRobotStopWatch, ROBOT_STOP_WATCH_MS)
+    return () => {
+      window.clearTimeout(slow)
+      window.clearTimeout(giveUp)
+    }
+  }, [since])
+  return {
+    open: since !== null && !parked,
+    slow: since !== null && slowSince === since,
+  }
 }
 
 /** Restocking's and manual replenishment's Start and End tilt the shelves. */

@@ -21,7 +21,7 @@ import {
 } from "../model/requests.mjs"
 import {
   OPERATION_MODE,
-  setRobotStoppedByStore,
+  parkRobotForTask,
   WORK_STATUS,
 } from "../model/robot.mjs"
 import { startRobotWithCapture } from "../model/workflow.mjs"
@@ -227,8 +227,7 @@ function startRestocking(storeId) {
     storeId,
     requestType: REQUEST_TYPE.restocking,
   })
-  state.robot.status = WORK_STATUS.restPosition
-  state.robot.opMode = OPERATION_MODE.restocking
+  parkRobotForTask(OPERATION_MODE.restocking)
   return {
     error: 0,
     stopRobotOperationError: 0,
@@ -280,7 +279,7 @@ function startManualReplenishment(storeId) {
     storeId,
     requestType: REQUEST_TYPE.manualReplenishment,
   })
-  setRobotStoppedByStore()
+  parkRobotForTask(OPERATION_MODE.stoppedByStore)
   state.curtainsOpen = true
   return { error: 0, stopRobotOperationError: 0, restockingId: manualId }
 }

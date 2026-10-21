@@ -50,6 +50,25 @@ export function setRobotStoppedByStore() {
 const STOP_TRAVEL_MS = 12_000
 let stopTravelTimer
 
+/**
+ * Restocking's and manual replenishment's Start stop the robot inside OPM:
+ * a moving robot travels to the rest position first, as a store stop does,
+ * then takes the task's operation mode. Already parked, it is instant.
+ */
+export function parkRobotForTask(opMode) {
+  clearTimeout(stopTravelTimer)
+  const park = () => {
+    state.robot.status = WORK_STATUS.restPosition
+    state.robot.opMode = opMode
+  }
+  if (Number(state.robot.status) === WORK_STATUS.restPosition) {
+    park()
+    return
+  }
+  state.robot.status = WORK_STATUS.movingToRestPosition
+  stopTravelTimer = setTimeout(park, STOP_TRAVEL_MS)
+}
+
 export function stopRobotWithTravel() {
   clearTimeout(stopTravelTimer)
   if (Number(state.robot.status) === WORK_STATUS.restPosition) {

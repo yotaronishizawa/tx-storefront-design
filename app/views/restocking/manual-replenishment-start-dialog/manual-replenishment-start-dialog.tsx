@@ -84,7 +84,7 @@ export function ManualReplenishmentStartDialog({
     >
       <p>{t("manualStartRulesIntro")}</p>
       <RuleSection title={t("manualRulePickFromFront")}>
-        <div className="grid min-h-0 flex-1 gap-3 sm:grid-cols-2">
+        <div className="grid gap-3 sm:grid-cols-2">
           <RulePhoto
             caption={t("manualRulePickSequentially")}
             src={MANUAL_REPLENISHMENT_ASSETS.okRemoveFirstDrink}

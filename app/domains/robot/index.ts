@@ -12,6 +12,11 @@ export {
   useRobotWorkStatus,
 } from "./use-robot"
 export { useRobotActions } from "./actions/use-robot-actions"
+export {
+  beginRobotStopWatch,
+  endRobotStopWatch,
+  useRobotStopWatch,
+} from "./services/robot-stop-watch"
 export { useNoRobotNotice } from "./effects/use-no-robot-notice"
 export { useRobotLockOverlayReport } from "./effects/use-robot-lock-overlay-report"
 export { useRobotAttention } from "./effects/use-robot-attention"
