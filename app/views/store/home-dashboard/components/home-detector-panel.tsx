@@ -166,8 +166,28 @@ export function HomeDetectorPanel({
       </div>
 
       <figure className="flex min-h-0 flex-col gap-4">
-        <figcaption className="text-base font-bold">
+        <figcaption className="flex items-center justify-between gap-4 text-base font-bold">
           {t("workflow.home.attention.cameraLabel")}
+          {/* The key to the red dashed box the robot draws round what it saw. */}
+          <span className="flex items-center gap-2">
+            <svg
+              aria-hidden="true"
+              viewBox="0 0 36 4"
+              className="h-1 w-9 text-[#FF2D20]"
+            >
+              {/* Four equal dashes, ending on a dash at both ends. */}
+              <line
+                x1="0"
+                y1="2"
+                x2="36"
+                y2="2"
+                stroke="currentColor"
+                strokeWidth="4"
+                strokeDasharray="6 4"
+              />
+            </svg>
+            {t("workflow.home.attention.detectedKey")}
+          </span>
         </figcaption>
         <div className="flex min-h-0 flex-1 flex-col overflow-hidden rounded-lg bg-inverse text-inverse">
           <div className="relative grid min-h-48 flex-1 place-items-center">
@@ -181,25 +201,6 @@ export function HomeDetectorPanel({
             ) : (
               <Camera className="size-12 opacity-40" />
             )}
-            {/* The key to the red dashed box the robot draws round what it saw. */}
-            <span className="absolute inset-e-3 top-3 flex items-center gap-2 rounded-md bg-black/60 px-3 py-1.5 text-base font-bold">
-              <svg
-                aria-hidden="true"
-                viewBox="0 0 36 4"
-                className="h-1 w-9 text-[#FF2D20]"
-              >
-                <line
-                  x1="0"
-                  y1="2"
-                  x2="36"
-                  y2="2"
-                  stroke="currentColor"
-                  strokeWidth="4"
-                  strokeDasharray="4 5 8 5 8 5"
-                />
-              </svg>
-              {t("workflow.home.attention.detectedKey")}
-            </span>
           </div>
           {camera?.capturedAt != null && (
             <p className="px-3 py-2 text-end text-sm font-bold opacity-70">
