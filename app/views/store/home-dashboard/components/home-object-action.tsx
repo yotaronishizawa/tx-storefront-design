@@ -91,7 +91,7 @@ export function HomeObjectAction({
       className={cn(
         // The same outline as every other button on Home, so the cards read as
         // buttons too (staff said they did not).
-        "relative size-full min-h-64 min-w-0 flex-col items-start justify-start overflow-hidden rounded-lg border-2 border-black/20 text-left whitespace-normal text-primary lg:min-h-56",
+        "relative size-full min-h-64 min-w-0 flex-col items-start justify-start overflow-hidden rounded-lg border-2 border-control text-left whitespace-normal text-primary lg:min-h-56",
         kind === "restock" ? "bg-home-restock" : "bg-home-manual"
       )}
     >

@@ -5,7 +5,7 @@ import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
 import type { RequestContext } from "~/api/opm/schemas"
-import { Button } from "~/core"
+import { Button, ChoiceCard } from "~/core"
 import { isActiveRequest, isRequestInProgress } from "~/model/request-state"
 import type {
   RobotAttention,
@@ -307,7 +307,16 @@ export function HomeDashboardView({
             </div>
             {/* Under the two cards so "above" points at them; the title
                 says it all, so no hint. */}
-            <HomeEnterWalkInAction
+            <ChoiceCard
+              className="shrink-0"
+              icon={
+                <img
+                  src="/assets/home-study-2026-10-06/enter.svg"
+                  alt=""
+                  draggable={false}
+                  className="h-7 w-auto"
+                />
+              }
               title={t("workflow.home.enterWalkIn")}
               disabled={busy || robotHeld}
               onClick={onEnterWalkIn}
@@ -342,40 +351,6 @@ export function HomeDashboardView({
         </section>
       )}
     </div>
-  )
-}
-
-/** The walk-in entry under the cards: room to hit easily. */
-function HomeEnterWalkInAction({
-  title,
-  disabled,
-  onClick,
-}: {
-  title: string
-  disabled: boolean
-  onClick: () => void
-}) {
-  return (
-    <Button
-      variant="unstyled"
-      size="unstyled"
-      aria-label={title}
-      disabled={disabled}
-      onClick={onClick}
-      className="min-h-24 w-full min-w-0 shrink-0 justify-start gap-3 rounded-lg border-2 border-black/20 bg-default px-4 py-3 text-left whitespace-normal active:bg-subtle"
-    >
-      <span className="flex size-10 shrink-0 items-center justify-center gap-0.5 rounded-md bg-subtle text-secondary">
-        <img
-          src="/assets/home-study-2026-10-06/enter.svg"
-          alt=""
-          draggable={false}
-          className="h-7 w-auto"
-        />
-      </span>
-      <span className="min-w-0 flex-1 text-xl/tight font-bold text-primary">
-        {title}
-      </span>
-    </Button>
   )
 }
 

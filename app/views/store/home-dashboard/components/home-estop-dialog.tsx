@@ -3,10 +3,11 @@ import { useId } from "react"
 import { OctagonX, Power } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
+import { SupportContact } from "~/components/support/support-contact"
 import { Button, Dialog } from "~/core"
 import type { RobotEStop } from "~/model/robot-attention"
 
-import { AttentionHeading, AttentionSupport } from "./attention-layout"
+import { AttentionHeading } from "./attention-layout"
 
 const ESTOP_ASSET = "/assets/estop/estop-released"
 
@@ -90,13 +91,13 @@ export function HomeEStopDialog({
         </>
       )}
       <div className="flex flex-col gap-12">
-        <AttentionSupport
+        <SupportContact
           heading={t(
             needsReset
               ? "workflow.home.attention.eStopResetSupport"
               : "workflow.home.attention.eStopSupport"
           )}
-          body={t(
+          message={t(
             needsReset
               ? "workflow.home.attention.eStopResetSupportBody"
               : "workflow.home.attention.supportBody"

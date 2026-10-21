@@ -14,8 +14,8 @@ import {
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router"
 
-import { OPERATIONS_CENTER_PHONE } from "~/config/app"
-import { Button, Dialog, Input } from "~/core"
+import { SupportContact } from "~/components/support/support-contact"
+import { Button, ChoiceCard, Dialog, Input } from "~/core"
 import { cn } from "~/utils/cn"
 import {
   loadManualIndex,
@@ -146,7 +146,7 @@ export function VideoTutorialDialog({
           <CircleHelp className="size-5 shrink-0 text-info" />
           {t("howToUse")}
         </Dialog.Title>
-        <label className="ms-6 flex h-13 min-w-0 flex-1 items-center gap-3 rounded-full border-2 border-black/20 px-5 focus-within:border-strong">
+        <label className="ms-6 flex h-13 min-w-0 flex-1 items-center gap-3 rounded-full border-2 border-control px-5 focus-within:border-strong">
           <Search
             aria-hidden="true"
             className="size-5 shrink-0 text-secondary"
@@ -273,13 +273,7 @@ export function VideoTutorialDialog({
               ) : (
                 <section className="grid gap-3">
                   <SectionTitle>{t("help.nav.contact")}</SectionTitle>
-                  <p className="text-lg">{t("help.contactLead")}</p>
-                  <a
-                    href={`tel:${OPERATIONS_CENTER_PHONE}`}
-                    className="text-display/tight font-bold"
-                  >
-                    {OPERATIONS_CENTER_PHONE}
-                  </a>
+                  <SupportContact message={t("help.contactLead")} />
                 </section>
               )}
               {(section !== "contact" || typed) && <ContactStrip />}
@@ -441,23 +435,14 @@ function DocList({
   return (
     <div className="grid grid-cols-2 gap-2">
       {docs.map((doc) => (
-        <Button
+        <ChoiceCard
           key={doc.key}
-          variant="unstyled"
-          size="unstyled"
-          type="button"
+          size="sm"
           onClick={() => onPage({ doc, page: 0 })}
-          className="flex w-full items-center gap-3 rounded-lg border border-black/20 px-4 py-3 text-left whitespace-normal active:bg-subtle"
-        >
-          <BookOpen
-            aria-hidden="true"
-            className="size-5 shrink-0 text-secondary"
-          />
-          <span className="flex-1 text-lg/tight font-bold">{doc.title}</span>
-          <span className="text-sm text-secondary">
-            {t("manualSearch.pageCount", { count: doc.pages.length })}
-          </span>
-        </Button>
+          icon={<BookOpen />}
+          title={doc.title}
+          description={t("manualSearch.pageCount", { count: doc.pages.length })}
+        />
       ))}
     </div>
   )

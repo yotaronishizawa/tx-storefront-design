@@ -9,6 +9,7 @@ export default [
   // Wraps every URL, including the splat, so the runtime provider never remounts.
   layout("routes/layout.tsx", [
     route("login", "routes/login/route.tsx"),
+    route("design-system", "routes/design-system/route.tsx"),
 
     layout("routes/protected-layout.tsx", [
       layout("routes/chrome-layout.tsx", [

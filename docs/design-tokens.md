@@ -1,5 +1,7 @@
 # Design tokens
 
+The catalog with live examples of tokens and components is at `/design-system` in the running app (StoreApp v2).
+
 Source: Figma [Store App (Web) Styles](https://www.figma.com/design/zBjgYmQ91cOXOaytUP6km7/Store-App--Web-?node-id=9-2)
 (draft, updated 2026-10-04). Colours are not final.
 
@@ -40,6 +42,7 @@ text is `text-primary-text`.
 | text/on-primary | `text-on-primary`   | Text and icons on `bg-primary`                                 |
 | border/default  | `border-default`    | Dividers, card and list borders (the default border colour)    |
 | border/strong   | `border-strong`     | Inputs and controls that need a visible edge                   |
+| (app) control   | `border-control`    | 2px outline of anything tappable that is not a Button (cards, tiles, list rows, search box). v2 only, not in Figma |
 | primary/default | `*-primary`         | Main buttons, selected state, active tab                       |
 | primary/pressed | `*-primary-pressed` | Primary button while pressed                                   |
 | primary/subtle  | `bg-primary-subtle` | Selected row or card background                                |

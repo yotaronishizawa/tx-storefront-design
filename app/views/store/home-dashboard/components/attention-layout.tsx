@@ -1,10 +1,10 @@
 import type { ReactNode } from "react"
 
-import { Camera, Phone, type LucideIcon } from "lucide-react"
+import { Camera, type LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RobotLiveCamera } from "~/api/opm/schemas"
-import { OPERATIONS_CENTER_PHONE } from "~/config/app"
+import { SupportContact } from "~/components/support/support-contact"
 import { formatDate } from "~/utils/date"
 
 /**
@@ -43,7 +43,7 @@ export function AttentionLayout({
         {children}
 
         <div className="flex flex-col gap-12">
-          <AttentionSupport heading={support.heading} body={support.body} />
+          <SupportContact heading={support.heading} message={support.body} />
           {action}
         </div>
       </div>
@@ -92,33 +92,6 @@ export function AttentionHeading({
           {body}
         </p>
       </div>
-    </div>
-  )
-}
-
-/** Who to call when this does not help, with the number to tap. */
-export function AttentionSupport({
-  heading,
-  body,
-}: {
-  heading: string
-  body: string
-}) {
-  return (
-    <div className="flex flex-col gap-2">
-      <p className="flex items-center gap-2 text-base font-bold">
-        <Phone aria-hidden="true" className="size-5 shrink-0" />
-        {heading}
-      </p>
-      <a
-        href={`tel:${OPERATIONS_CENTER_PHONE}`}
-        className="flex flex-col gap-1 rounded-lg border border-info/20 bg-info-subtle px-4 py-3"
-      >
-        <span className="text-base">{body}</span>
-        <span className="text-xl font-bold text-info">
-          {OPERATIONS_CENTER_PHONE}
-        </span>
-      </a>
     </div>
   )
 }

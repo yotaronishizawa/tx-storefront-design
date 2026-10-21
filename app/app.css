@@ -37,6 +37,10 @@
 
   --border-color-default: #e5e5e5;
   --border-color-strong: #737373;
+  /* The outline of anything staff tap that is not a Button: cards, tiles,
+     list rows. One weight (2px) and one shade, so tappable reads the same
+     everywhere. */
+  --border-color-control: rgb(0 0 0 / 20%);
 
   --color-primary: #f5c000;
   --color-primary-pressed: #d9aa00;

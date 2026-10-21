@@ -1,9 +1,9 @@
 import { useState } from "react"
 
-import { ChevronRight, Ellipsis } from "lucide-react"
+import { Ellipsis } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { Button, Dialog } from "~/core"
+import { ChoiceCard, Dialog } from "~/core"
 
 type MoreAction = {
   key: string
@@ -31,30 +31,15 @@ export function HomeMoreActions({
 
   return (
     <>
-      <Button
-        variant="unstyled"
-        size="unstyled"
-        type="button"
+      <ChoiceCard
+        className="mx-3 w-auto shrink-0"
         disabled={disabled}
         onClick={() => setOpen(true)}
-        className="mx-3 flex min-h-24 shrink-0 items-center justify-start gap-3 rounded-lg border border-black/30 px-4 py-3 text-left whitespace-normal active:bg-subtle"
-      >
-        <span className="flex size-10 shrink-0 items-center justify-center text-secondary">
-          <Ellipsis aria-hidden="true" className="size-7" />
-        </span>
-        <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
-          <span className="text-xl/tight font-bold text-primary">
-            {t("workflow.home.moreActions")}
-          </span>
-          <span className="text-base/tight text-secondary">
-            {actions.map((action) => action.title).join("・")}
-          </span>
-        </span>
-        <ChevronRight
-          aria-hidden="true"
-          className="size-6 shrink-0 text-secondary"
-        />
-      </Button>
+        icon={<Ellipsis />}
+        title={t("workflow.home.moreActions")}
+        description={actions.map((action) => action.title).join("・")}
+        chevron
+      />
 
       <Dialog.Root
         className="grid w-240 max-w-[calc(100vw-2rem)] gap-6 p-6"
@@ -69,19 +54,15 @@ export function HomeMoreActions({
         </div>
         <div className="grid grid-cols-3 gap-4">
           {actions.map((action) => (
-            <Button
+            <ChoiceCard
               key={action.key}
-              variant="unstyled"
-              size="unstyled"
-              type="button"
+              layout="tile"
               disabled={action.disabled}
               onClick={() => {
                 setOpen(false)
                 action.onClick()
               }}
-              className="flex min-h-40 w-full flex-col items-start justify-between gap-4 rounded-lg border-2 border-black/20 bg-default p-5 text-left whitespace-normal active:bg-subtle"
-            >
-              <span className="grid size-16 place-items-center rounded-lg bg-subtle">
+              icon={
                 <img
                   src={`/assets/home-study-2026-10-06/${action.icon}.${action.icon === "stock-count" ? "png" : "svg"}`}
                   alt=""
@@ -90,9 +71,9 @@ export function HomeMoreActions({
                     action.icon === "stock-count" ? "size-full" : "h-9 w-auto"
                   }
                 />
-              </span>
-              <span className="text-xl/tight font-bold">{action.title}</span>
-            </Button>
+              }
+              title={action.title}
+            />
           ))}
         </div>
       </Dialog.Root>

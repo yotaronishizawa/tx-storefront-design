@@ -3,7 +3,7 @@ import { Box, Milk, UserRound, type LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RobotLiveCamera } from "~/api/opm/schemas"
-import { Button } from "~/core"
+import { Button, Notice } from "~/core"
 import type { RobotDetector } from "~/model/robot-attention"
 
 import { AttentionLayout } from "./attention-layout"
@@ -104,36 +104,22 @@ export function HomeDetectorPanel({
       }
     >
       {holdPhase !== null && retryState === "idle" && (
-        <p
-          role="status"
-          className={
-            holdPhase === "holding"
-              ? "rounded-md bg-error-subtle px-4 py-2 text-base font-bold text-error"
-              : "rounded-md bg-subtle px-4 py-2 text-base font-bold"
-          }
-        >
+        <Notice tone={holdPhase === "holding" ? "error" : "neutral"}>
           {t(
             holdPhase === "holding"
               ? "workflow.home.attention.holding"
               : "workflow.home.attention.held"
           )}
-        </p>
+        </Notice>
       )}
       {retryState !== "idle" && (
-        <p
-          role="status"
-          className={
-            retryState === "still"
-              ? "rounded-md bg-error-subtle px-4 py-2 text-base font-bold text-error"
-              : "text-base text-secondary"
-          }
-        >
+        <Notice tone={retryState === "still" ? "error" : "neutral"}>
           {t(
             retryState === "still"
               ? "workflow.home.attention.retryStill"
               : "workflow.home.attention.retryChecking"
           )}
-        </p>
+        </Notice>
       )}
     </AttentionLayout>
   )
