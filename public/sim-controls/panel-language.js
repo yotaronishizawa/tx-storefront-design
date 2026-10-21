@@ -103,8 +103,7 @@
     '非常停止ボタンを押す': 'Press the emergency stop',
     '解除したがリセットが必要': 'Released, needs reset',
     '非常停止を解除する': 'Release the emergency stop',
-    '「検知だけ」は、補充中に店員が中にいるときのような、ロボットを止めない検知です。5分経過の表示は、ReactのURLに ': '"Detect without stopping" is detection that does not stop the robot, such as staff inside while restocking. To see the five-minute hint without waiting, add ',
-    ' を付けると待たずに確認できます。': ' to the React URL.',
+    '「検知だけ」は、補充中に店員が中にいるときのような、ロボットを止めない検知です。': '"Detect without stopping" is detection that does not stop the robot, such as staff inside while restocking.',
   };
   const key = 'storeapp-study-language';
   const query = new URL(location.href).searchParams.get('lang');

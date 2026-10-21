@@ -73,7 +73,6 @@ export default function HomePage() {
         1
       ).message
     : ""
-  // Study: `?stuck=1` skips the five-minute wait for the call-centre hint.
   const [searchParams, setSearchParams] = useSearchParams()
   // The idle screen: after Home sits untouched with nothing open, for the
   // time chosen in Settings. Only a touch on it (or a key, e.g. the scanner)
@@ -137,9 +136,6 @@ export default function HomePage() {
     window.addEventListener("keydown", wake)
     return () => window.removeEventListener("keydown", wake)
   }, [idle])
-  const attentionStuck =
-    useStuckAfter(attention?.cause ?? null, STUCK_AFTER_MS) ||
-    searchParams.get("stuck") === "1"
   const navigate = useNavigate()
   const { t } = useTranslation("app")
   const openEditLayout = useOpenEditLayout()
@@ -203,7 +199,6 @@ export default function HomePage() {
       robotStatusStale={robotStatusStale}
       robotWorkStatus={robotWorkStatus}
       attention={attention}
-      attentionStuck={attentionStuck}
       resumeMessage={resumeMessage}
       onRetryRestart={() =>
         runBusy("start-auto-pnp", () => resumeRobotUnlessHeld(1))
@@ -227,17 +222,4 @@ export default function HomePage() {
       onAttentionPanelChange={setAttentionPanelOpen}
     />
   )
-}
-
-/** After this long without the cause clearing, point staff to the operations center. */
-const STUCK_AFTER_MS = 5 * 60_000
-
-function useStuckAfter(cause: RobotAttentionCause | null, delay: number) {
-  const [stuckCause, setStuckCause] = useState<RobotAttentionCause | null>(null)
-  useEffect(() => {
-    if (!cause) return
-    const timer = window.setTimeout(() => setStuckCause(cause), delay)
-    return () => window.clearTimeout(timer)
-  }, [cause, delay])
-  return cause !== null && stuckCause === cause
 }

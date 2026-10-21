@@ -1,15 +1,14 @@
 import { useEffect, useState } from "react"
 
 import type { ParseKeys } from "i18next"
-import { Camera, CircleCheck, Phone, TriangleAlert } from "lucide-react"
+import { CircleCheck, Hand, OctagonX, Power, RotateCcw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RobotLiveCamera, TeleopErrorCodeName } from "~/api/opm/schemas"
-import { OPERATIONS_CENTER_PHONE } from "~/config/app"
 import { Button } from "~/core"
 import type { RobotAttentionCause, RobotEStop } from "~/model/robot-attention"
-import { formatDate } from "~/utils/date"
 
+import { AttentionLayout } from "./attention-layout"
 import { HomeDetectorPanel } from "./home-detector-panel"
 
 type Copy = { title: ParseKeys<"app">; sub: ParseKeys<"app"> }
@@ -78,7 +77,6 @@ export function HomeAttentionPanel({
   onRetry,
   resumeMessage,
   cameras,
-  stuck,
   busy,
   onRobotAction,
   holdPhase,
@@ -96,8 +94,6 @@ export function HomeAttentionPanel({
   /** Why the app's own restart failed, already translated (resumeFailed only). */
   resumeMessage: string
   cameras: RobotLiveCamera[]
-  /** Not fixed for a while: likely beyond what the store can do. */
-  stuck: boolean
   busy: boolean
   /** Resume, or check and stop, as the cause asks. */
   onRobotAction: () => void
@@ -107,61 +103,12 @@ export function HomeAttentionPanel({
   onHoldForWalkIn: () => void
   onOtherWork: () => void
 }) {
-  const { i18n, t } = useTranslation("app")
-  const copy = cause === "teleopFixable" ? teleopCopy(teleopError) : null
+  const { t } = useTranslation("app")
+  const copy = teleopCopy(teleopError)
 
   return (
     <section className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto p-4 lg:p-5">
-      {cause === "resumeFailed" ? (
-        <div className="flex flex-col gap-4 rounded-lg border-2 border-error bg-default p-5">
-          <h2 className="flex items-center gap-3 text-xl/tight font-bold">
-            <TriangleAlert className="size-8 shrink-0 text-error" />
-            {t("workflow.home.attention.titleResumeFailed")}
-          </h2>
-          <p className="text-lg/relaxed whitespace-pre-line">{resumeMessage}</p>
-          <Button
-            size="lg"
-            className="self-start"
-            disabled={busy}
-            onClick={onRobotAction}
-          >
-            {t("workflow.home.attention.actionResume")}
-          </Button>
-        </div>
-      ) : cause === "eStop" ? (
-        <div className="flex flex-col gap-4 rounded-lg border-2 border-error bg-default p-5">
-          <h2 className="flex items-center gap-3 text-xl/tight font-bold">
-            <TriangleAlert className="size-8 shrink-0 text-error" />
-            {t(
-              eStop === "needsReset"
-                ? "workflow.home.attention.eStopResetTitle"
-                : "workflow.home.attention.eStopTitle"
-            )}
-          </h2>
-          <ol className="grid gap-3 text-lg font-bold">
-            {(eStop === "needsReset"
-              ? ([
-                  "workflow.home.attention.eStopResetStep1",
-                  "workflow.home.attention.eStopResetStep2",
-                ] as const)
-              : ([
-                  "workflow.home.attention.eStopStep1",
-                  "workflow.home.attention.eStopStep2",
-                  "workflow.home.attention.eStopStep3",
-                ] as const)
-            ).map((key, index) => (
-              <li key={key} className="flex items-start gap-3">
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-inverse text-base text-inverse">
-                  {index + 1}
-                </span>
-                <span className="pt-0.5">{t(key)}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      ) : cause === "human" ||
-        cause === "obstacle" ||
-        cause === "fallenDrink" ? (
+      {cause === "human" || cause === "obstacle" || cause === "fallenDrink" ? (
         <HomeDetectorPanel
           detector={cause}
           retryable={retryable}
@@ -172,73 +119,85 @@ export function HomeAttentionPanel({
           cameras={cameras}
           busy={busy}
         />
-      ) : (
-        <>
-          <div className="flex flex-wrap items-end justify-between gap-3">
-            <div>
-              <h2 className="text-xl/tight font-bold">
-                {copy ? t(copy.title) : ""}
-              </h2>
-              <p className="mt-1 text-base text-secondary">
-                {copy ? t(copy.sub) : ""}
-              </p>
-            </div>
-            {cause === "teleopFixable" && (
-              // The existing stop flow: confirm, three-point check, then stop.
-              <Button size="lg" disabled={busy} onClick={onRobotAction}>
-                {t("workflow.home.attention.actionCheckAndStop")}
-              </Button>
-            )}
-          </div>
-          {/* The camera frames from GetRobotLiveData. */}
-          <div className="grid min-h-0 flex-1 grid-cols-2 gap-3">
-            {/* Until the first frames arrive, hold the space so nothing jumps. */}
-            {(cameras.length > 0
-              ? cameras
-              : ([1, 2] as const).map((camera) => ({
-                  camera,
-                  src: "",
-                  capturedAt: null,
-                }))
-            ).map(({ camera, src, capturedAt }) => (
-              <figure
-                key={camera}
-                className="flex min-h-48 flex-col overflow-hidden rounded-lg bg-inverse text-inverse"
-              >
-                <div className="relative grid min-h-0 flex-1 place-items-center">
-                  {src ? (
-                    <img
-                      src={src}
-                      alt={t("workflow.home.attention.camera", { camera })}
-                      className="absolute inset-0 size-full object-contain"
-                      draggable={false}
-                    />
-                  ) : (
-                    <Camera className="size-12 opacity-40" />
-                  )}
-                </div>
-                <figcaption className="flex items-center justify-between gap-2 px-3 py-2 text-sm font-bold">
-                  <span>{t("workflow.home.attention.camera", { camera })}</span>
-                  {capturedAt !== null && (
-                    <span className="opacity-70">
-                      {t("workflow.home.attention.capturedAt", {
-                        time: formatDate(capturedAt, "clock", i18n.language),
-                      })}
-                    </span>
-                  )}
-                </figcaption>
-              </figure>
+      ) : cause === "eStop" && eStop === "needsReset" ? (
+        <AttentionLayout
+          icon={Power}
+          title={t("workflow.home.attention.eStopResetTitle")}
+          body={t("workflow.home.attention.eStopResetSub")}
+          support={{
+            heading: t("workflow.home.attention.eStopResetSupport"),
+            body: t("workflow.home.attention.eStopResetSupportBody"),
+          }}
+        />
+      ) : cause === "eStop" ? (
+        // No button: the screen moves on by itself once the button is released.
+        <AttentionLayout
+          icon={OctagonX}
+          title={t("workflow.home.attention.eStopTitle")}
+          body={t("workflow.home.attention.eStopSub")}
+          support={{
+            heading: t("workflow.home.attention.eStopSupport"),
+            body: t("workflow.home.attention.supportBody"),
+          }}
+        >
+          <ol className="grid gap-3 text-lg font-bold">
+            {(
+              [
+                "workflow.home.attention.eStopStep1",
+                "workflow.home.attention.eStopStep2",
+              ] as const
+            ).map((key, index) => (
+              <li key={key} className="flex items-start gap-3">
+                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-inverse text-base text-inverse">
+                  {index + 1}
+                </span>
+                <span className="pt-0.5">{t(key)}</span>
+              </li>
             ))}
-          </div>
-        </>
-      )}
-      {stuck && (cause === "eStop" || cause === "resumeFailed") && (
-        <p className="flex items-center gap-2 rounded-md bg-error-subtle px-4 py-3 text-base font-bold text-error">
-          <Phone className="size-5 shrink-0" />
-          {t("workflow.home.attention.stuck", {
-            phone: OPERATIONS_CENTER_PHONE,
-          })}
-        </p>
+          </ol>
+        </AttentionLayout>
+      ) : cause === "resumeFailed" ? (
+        <AttentionLayout
+          icon={RotateCcw}
+          title={t("workflow.home.attention.titleResumeFailed")}
+          body={resumeMessage}
+          support={{
+            heading: t("workflow.home.attention.resumeSupport"),
+            body: t("workflow.home.attention.supportBody"),
+          }}
+          action={
+            <Button
+              size="lg"
+              className="w-full"
+              disabled={busy}
+              onClick={onRobotAction}
+            >
+              {t("workflow.home.attention.actionResume")}
+            </Button>
+          }
+        />
+      ) : (
+        <AttentionLayout
+          icon={Hand}
+          title={t(copy.title)}
+          body={t(copy.sub)}
+          support={{
+            heading: t("workflow.home.attention.teleopSupport"),
+            body: t("workflow.home.attention.supportBody"),
+          }}
+          camera={{ frames: cameras, showDetectedKey: false }}
+          action={
+            // The existing stop flow: confirm, three-point check, then stop.
+            <Button
+              size="lg"
+              className="w-full"
+              disabled={busy}
+              onClick={onRobotAction}
+            >
+              {t("workflow.home.attention.actionCheckAndStop")}
+            </Button>
+          }
+        />
       )}
       <Button
         variant="unstyled"

@@ -41,7 +41,6 @@ export function HomeDashboardView({
   robotStatusStale,
   robotWorkStatus,
   attention,
-  attentionStuck,
   resumeMessage,
   onRobotAction,
   onRetryRestart,
@@ -75,8 +74,6 @@ export function HomeDashboardView({
   onRobotAction: () => void
   /** Restart the robot once, after staff clear a detector stop that held a restart. */
   onRetryRestart: () => Promise<unknown>
-  /** The cause has not cleared for a while. */
-  attentionStuck: boolean
   onEnterWalkIn: () => void
   /** Stopping the robot for staff to go in and clear a detection, and then stopped. */
   holdPhase: "holding" | "held" | null
@@ -207,7 +204,6 @@ export function HomeDashboardView({
           holdPhase={holdPhase}
           onHoldForWalkIn={onHoldForWalkIn}
           cameras={attention?.cameras ?? []}
-          stuck={attentionStuck}
           onOtherWork={() => (assist ? setOpened(null) : setSetAside(cause))}
         />
       ) : (
