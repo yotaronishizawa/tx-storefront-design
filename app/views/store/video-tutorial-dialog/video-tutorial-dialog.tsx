@@ -7,15 +7,13 @@ import {
   LifeBuoy,
   Phone,
   PlayCircle,
-  Search,
   Target,
-  X,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useLocation } from "react-router"
 
 import { SupportContact } from "~/components/support/support-contact"
-import { Button, ChoiceCard, Dialog, Input } from "~/core"
+import { Button, ChoiceCard, Dialog, SearchField } from "~/core"
 import { cn } from "~/utils/cn"
 import {
   loadManualIndex,
@@ -146,34 +144,16 @@ export function VideoTutorialDialog({
           <CircleHelp className="size-5 shrink-0 text-info" />
           {t("howToUse")}
         </Dialog.Title>
-        <label className="ms-6 flex h-13 min-w-0 flex-1 items-center gap-3 rounded-full border-2 border-control px-5 focus-within:border-strong">
-          <Search
-            aria-hidden="true"
-            className="size-5 shrink-0 text-secondary"
-          />
-          <Input
-            value={query}
-            onValueChange={(next) => {
-              setQuery(next)
-              setOpened(null)
-            }}
-            placeholder={t("help.searchPlaceholder")}
-            aria-label={t("help.searchPlaceholder")}
-            className="h-full flex-1 text-lg"
-          />
-          {query && (
-            <Button
-              variant="unstyled"
-              size="unstyled"
-              type="button"
-              aria-label={t("manualSearch.clear")}
-              onClick={() => setQuery("")}
-              className="grid size-9 shrink-0 place-items-center rounded-full active:bg-subtle"
-            >
-              <X aria-hidden="true" className="size-5" />
-            </Button>
-          )}
-        </label>
+        <SearchField
+          className="ms-6 flex-1"
+          value={query}
+          onValueChange={(next) => {
+            setQuery(next)
+            setOpened(null)
+          }}
+          placeholder={t("help.searchPlaceholder")}
+          clearLabel={t("manualSearch.clear")}
+        />
         <Dialog.Close aria-label={t("closeVideoTutorial")} />
       </header>
 

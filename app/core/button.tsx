@@ -17,7 +17,8 @@ const buttonVariants = cva("", {
   variants: {
     variant: {
       primary: `${BASE} bg-primary text-on-primary active:bg-primary-pressed`,
-      secondary: `${BASE} border border-strong bg-default text-primary active:bg-muted disabled:border-default`,
+      /** White with a light 2px outline (Ethan's popup buttons). */
+      secondary: `${BASE} border-2 border-control bg-default text-primary active:bg-subtle disabled:border-transparent`,
       destructive: `${BASE} bg-error text-inverse active:bg-error-pressed`,
       /** Opt out and pass the whole look via `className`. */
       unstyled: UNSTYLED_BASE,

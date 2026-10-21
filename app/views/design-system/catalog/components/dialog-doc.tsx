@@ -28,7 +28,7 @@ function DialogPreview({
     <div className="grid w-full place-items-center rounded-lg bg-overlay p-6">
       <div
         className={cn(
-          "flex w-full flex-col gap-4 rounded-xl bg-default p-8 shadow-dialog",
+          "flex w-full flex-col gap-8 rounded-xl bg-default p-8 shadow-dialog",
           wide ? "max-w-3xl" : "max-w-lg"
         )}
       >
@@ -61,6 +61,7 @@ function DialogPreview({
 }
 
 export function DialogDoc() {
+  const tx = useDocText()
   return (
     <DocSection
       id="dialog"
@@ -87,8 +88,8 @@ export function DialogDoc() {
               ja: "高さの上限：画面の高さから上下40ずつ引いた高さ。長い中身は内側でスクロール。",
             },
             {
-              en: "The main action is on the right. Cancel or the other action is on the left.",
-              ja: "主な操作は右。キャンセルやもう一方の操作は左。",
+              en: "The main action is on the left, cancel or the other action on the right: the Store App's existing convention, which staff already know. (The Components page says the opposite; confirming with Ethan.)",
+              ja: "主な操作は左、キャンセルやもう一方の操作は右。今の Store App の決まりで、店員がもう慣れているため（Components のページは逆なので Ethan に確認中）。",
             },
             {
               en: "Every dialog and panel has the scrim (bg-overlay) behind it.",
@@ -107,6 +108,14 @@ export function DialogDoc() {
           <RuleItem key={rule.en} rule={rule} />
         ))}
       </ul>
+      <SubTitle>{{ en: "Fixed values", ja: "固定の値" }}</SubTitle>
+      <p className="text-base text-secondary">
+        {tx({
+          en: "The same in every popup; nobody chooses them. Ethan drew them on the old 1920×1440 canvas (in brackets); the values here are for the 1180×820 screen.",
+          ja: "どのポップアップでも同じで、選ぶものではありません。Ethan は旧 1920×1440 のキャンバスで決めています（括弧内）。ここの値は 1180×820 の画面用に直したものです。",
+        })}
+      </p>
+      <FixedValues />
       <SubTitle>{{ en: "Kinds", ja: "使い分け" }}</SubTitle>
       <div className="grid grid-cols-2 gap-4">
         <Example
@@ -140,19 +149,19 @@ export function DialogDoc() {
         <Example
           label="Confirmation"
           note={{
-            en: "Asks to confirm before an action. Secondary on the left, primary on the right.",
-            ja: "操作の前に確認する。左に secondary、右に primary。",
+            en: "Asks to confirm before an action. Primary on the left, secondary on the right.",
+            ja: "操作の前に確認する。左に primary、右に secondary。",
           }}
-          code={"<Dialog …> title + content + secondary | primary"}
+          code={"<Dialog …> title + content + primary | secondary"}
         >
           <DialogPreview
             title="ロボットの運転を開始しますか"
             actions={
               <div className="grid grid-cols-2 gap-4">
+                <Button size="lg">運転を開始</Button>
                 <Button size="lg" variant="secondary">
                   キャンセル
                 </Button>
-                <Button size="lg">運転を開始</Button>
               </div>
             }
           />
@@ -164,7 +173,7 @@ export function DialogDoc() {
             ja: "Confirmation と同じだが、取り消せない操作。エラーのアイコンと destructive のボタン。",
           }}
           code={
-            "<Dialog …> error icon + title + content + secondary | destructive"
+            "<Dialog …> error icon + title + content + destructive | secondary"
           }
         >
           <DialogPreview
@@ -172,11 +181,11 @@ export function DialogDoc() {
             icon="error"
             actions={
               <div className="grid grid-cols-2 gap-4">
-                <Button size="lg" variant="secondary">
-                  キャンセル
-                </Button>
                 <Button size="lg" variant="destructive">
                   削除する
+                </Button>
+                <Button size="lg" variant="secondary">
+                  キャンセル
                 </Button>
               </div>
             }
@@ -211,4 +220,107 @@ export function DialogDoc() {
 function RuleItem({ rule }: { rule: { en: string; ja: string } }) {
   const tx = useDocText()
   return <li>{tx(rule)}</li>
+}
+
+const FIXED: {
+  item: { en: string; ja: string }
+  value: string
+  unity: string
+}[] = [
+  {
+    item: { en: "Scrim", ja: "幕" },
+    value: "bg-overlay (black 30%)",
+    unity: "black 30%",
+  },
+  {
+    item: { en: "Container", ja: "器" },
+    value: "bg-default, rounded-xl, shadow-dialog",
+    unity: "white, radius 32",
+  },
+  { item: { en: "Padding", ja: "内側の余白" }, value: "p-8 · 32", unity: "48" },
+  {
+    item: { en: "Header icon", ja: "見出しのアイコン" },
+    value: "size-8 · 32, gap-3 · 12, left of the title",
+    unity: "56, gap 16",
+  },
+  {
+    item: { en: "Title", ja: "見出し" },
+    value: "text-xl · 24 bold, left aligned",
+    unity: "40 bold",
+  },
+  {
+    item: { en: "Title to body", ja: "見出しと本文の間" },
+    value: "gap-8 · 32",
+    unity: "48",
+  },
+  { item: { en: "Body text", ja: "本文" }, value: "text-lg · 20", unity: "32" },
+  {
+    item: { en: "Gap between content blocks", ja: "中身のブロックの間" },
+    value: "gap-4 · 16",
+    unity: "24",
+  },
+  {
+    item: { en: "Content to actions", ja: "中身とボタンの間" },
+    value: "gap-8 · 32",
+    unity: "48",
+  },
+  {
+    item: { en: "Button", ja: "ボタン" },
+    value: 'Button size="lg" · 60, rounded-md, text-lg bold',
+    unity: "100, radius 8, 32 bold",
+  },
+  {
+    item: { en: "Button row", ja: "ボタンの並び" },
+    value: "full width, split evenly, gap-4 · 16; never stacked",
+    unity: "gap 24",
+  },
+  {
+    item: { en: "Close icon", ja: "閉じる" },
+    value: "24 icon in a 56 tap area, 16 from the top and right",
+    unity: "40 in 88, 24 from edges",
+  },
+  {
+    item: { en: "Width", ja: "幅" },
+    value: "w-170 · 680 / w-260 · 1040",
+    unity: "1128 / 1688",
+  },
+  {
+    item: { en: "Panel", ja: "パネル" },
+    value: "screen − 40 each side; max height screen − 40 top and bottom",
+    unity: "1800, 60 margins",
+  },
+]
+
+function FixedValues() {
+  const tx = useDocText()
+  return (
+    <div className="overflow-hidden rounded-lg border border-default bg-default">
+      <table className="w-full text-left text-sm">
+        <thead className="bg-subtle text-secondary">
+          <tr>
+            <th className="px-4 py-2 font-bold">
+              {tx({ en: "Item", ja: "項目" })}
+            </th>
+            <th className="px-4 py-2 font-bold">
+              {tx({ en: "Value (1180×820)", ja: "値（1180×820）" })}
+            </th>
+            <th className="px-4 py-2 font-bold">
+              {tx({ en: "Unity canvas", ja: "旧キャンバス" })}
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {FIXED.map((row) => (
+            <tr key={row.item.en} className="border-t border-default align-top">
+              <td className="px-4 py-2 font-bold">{tx(row.item)}</td>
+              <td className="px-4 py-2 font-mono">{row.value}</td>
+              <td className="px-4 py-2 font-mono text-secondary">
+                {row.unity}
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
 }

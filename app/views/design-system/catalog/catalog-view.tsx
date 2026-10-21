@@ -16,6 +16,8 @@ import {
 import { DocSection } from "./components/doc-parts"
 import { Foundations } from "./components/foundations"
 import { NoticeDoc } from "./components/notice-doc"
+import { RadioCardDoc } from "./components/radio-card-doc"
+import { SearchFieldDoc } from "./components/search-field-doc"
 import { SupportContactDoc } from "./components/support-contact-doc"
 
 const LANG_KEY = "storeApp.designSystem.lang"
@@ -48,6 +50,8 @@ const NAV: { title: DocText; items: { id: string; label: DocText }[] }[] = [
       { id: "choice-card", label: "ChoiceCard" },
       { id: "notice", label: "Notice" },
       { id: "support-contact", label: "SupportContact" },
+      { id: "search-field", label: "SearchField" },
+      { id: "radio-card", label: "RadioCardGroup" },
     ],
   },
   {
@@ -123,7 +127,6 @@ const COMING_NEXT: { name: string; what: DocText }[] = [
       ja: "タブ、切り替え、横のメニュー",
     },
   },
-  { name: "SearchField", what: { en: "One search box", ja: "検索欄を1つに" } },
   {
     name: "EmptyState / Loading",
     what: {
@@ -257,6 +260,8 @@ function Catalog({
           <ChoiceCardDoc />
           <NoticeDoc />
           <SupportContactDoc />
+          <SearchFieldDoc />
+          <RadioCardDoc />
 
           <DocSection
             id="coming-next"
