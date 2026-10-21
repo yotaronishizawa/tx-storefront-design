@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-import { ChevronRight, Power } from "lucide-react"
+import { Power } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
@@ -18,7 +18,6 @@ import {
 } from "~/model/robot-status"
 import type { BusyAction } from "~/types/busy-action"
 import { cn } from "~/utils/cn"
-import { readStorage, writeStorage } from "~/utils/local-storage"
 
 import {
   HomeAttentionPanel,
@@ -27,12 +26,8 @@ import {
 } from "./components/home-attention-panel"
 import { HomeIdleScreen } from "./components/home-idle-screen"
 import { HomeMoreActions } from "./components/home-more-actions"
-import {
-  HomeObjectAction,
-  type CardStyle,
-} from "./components/home-object-action"
-import { HomeRobotStatus, type IdleLook } from "./components/home-robot-status"
-import { HomeWalkInGate } from "./components/home-walk-in-gate"
+import { HomeObjectAction } from "./components/home-object-action"
+import { HomeRobotStatus } from "./components/home-robot-status"
 
 export function HomeDashboardView({
   busyAction,
@@ -53,7 +48,6 @@ export function HomeDashboardView({
   onEnterWalkIn,
   holdPhase,
   onHoldForWalkIn,
-  onEnterWalkInDirect,
   onShowDisplay,
   onShowEdit,
   onShowRecommendations,
@@ -87,8 +81,6 @@ export function HomeDashboardView({
   /** Stopping the robot for staff to go in and clear a detection, and then stopped. */
   holdPhase: "holding" | "held" | null
   onHoldForWalkIn: () => void
-  /** Into the walk-in screen without asking again (the gate already said it stops the robot). */
-  onEnterWalkInDirect: () => void
   onShowDisplay: () => void
   onShowEdit: () => void
   onShowRecommendations: () => void
@@ -145,43 +137,6 @@ export function HomeDashboardView({
   // Study: `?runningPreview=1` shows both cards in progress without starting a task.
   const [searchParams] = useSearchParams()
   const runningPreview = searchParams.get("runningPreview") === "1"
-  // The idle screen is the signage look (2026-10-16). Study: `?idleLook=split`
-  // / `ambient` / `headline` brings back the looks it was chosen from.
-  const idleLookParam = searchParams.get("idleLook")
-  const idleLook: IdleLook =
-    idleLookParam === "split" ||
-    idleLookParam === "ambient" ||
-    idleLookParam === "headline"
-      ? idleLookParam
-      : "sign"
-  // Study: `?homeLayout=gate` / `split` switches Home's layout and remembers
-  // it on this tablet, so coming back from a task keeps the one on trial.
-  const layoutParam = searchParams.get("homeLayout")
-  if (
-    layoutParam === "gate" ||
-    layoutParam === "framed" ||
-    layoutParam === "split"
-  )
-    writeStorage(HOME_LAYOUT_KEY, layoutParam)
-  const storedLayout = readStorage(HOME_LAYOUT_KEY)
-  const gateLayout = storedLayout === "gate"
-  // `framed`: the walk-in actions boxed under "going in? pick here", with
-  // no extra tap.
-  const framedLayout = storedLayout === "framed"
-  // The current Home: the panel above, the rest a step back.
-  const splitLayout = !gateLayout && !framedLayout
-  // Study: `?walkInEntry=parent` makes the panel's top edge the way in
-  // ("go into the walk-in"), the two cards what to do there; `row` (default)
-  // keeps it a light row under the cards. Remembered like the layout.
-  const walkInEntryParam = searchParams.get("walkInEntry")
-  if (walkInEntryParam === "parent" || walkInEntryParam === "row")
-    writeStorage(WALK_IN_ENTRY_KEY, walkInEntryParam)
-  const walkInEntryAsParent = readStorage(WALK_IN_ENTRY_KEY) === "parent"
-  // Study: `?card=1`..`10` tries ways to make the two cards read as buttons.
-  const cardParam = searchParams.get("card")
-  if (cardParam !== null && /^(?:[0-9]|10)$/.test(cardParam))
-    writeStorage(CARD_STYLE_KEY, cardParam)
-  const cardStyle = Number(readStorage(CARD_STYLE_KEY) ?? "0") as CardStyle
   // With the idle screen on, the robot status lives only there: staff look at
   // it for reassurance, not to decide anything, so Home gives the width to
   // actions. With it off, Home shows the status beside them (the version to
@@ -224,11 +179,9 @@ export function HomeDashboardView({
               available={available}
               attention={attention}
               wide
-              look={idleLook}
             />
           }
           attention={cause !== null}
-          look={idleLook}
           onWake={() => {
             setWakeShield(true)
             onWake()
@@ -293,202 +246,83 @@ export function HomeDashboardView({
               </Button>
             </div>
           )}
-          {/* Study: `?homeLayout=gate` tries one way in to the walk-in. */}
-          {gateLayout ? (
-            <HomeWalkInGate
-              disabled={busy || robotHeld}
-              restockOpen={restockOpen}
-              manualOpen={manualOpen}
-              manualAvailable={manualReplenishmentAvailable}
-              onRestock={onShowRestocking}
-              onManual={onShowManualReplenishment}
-              onOther={onEnterWalkInDirect}
-            />
-          ) : (
-            <div
-              className={cn(
-                framedLayout
-                  ? "flex min-h-0 flex-col gap-3 rounded-xl border-2 border-strong bg-subtle p-4 lg:flex-1 lg:gap-4"
-                  : // The three whose steps stop the robot, said once at the
-                    // top of a quiet panel. Layout change stops it later, at
-                    // send, so it stays outside.
-                    // Set apart by space as well as by the panel.
-                    "mb-2 flex min-h-0 flex-col gap-3 rounded-xl bg-black/3 p-3 lg:flex-1"
-              )}
-            >
-              {!framedLayout &&
-                (walkInEntryAsParent ? (
-                  // All three go into the walk-in; going in is the parent,
-                  // the cards are what to do there.
-                  <Button
-                    variant="unstyled"
-                    size="unstyled"
-                    type="button"
-                    disabled={busy || robotHeld}
-                    onClick={onEnterWalkIn}
-                    className="flex min-h-18 w-full items-center gap-4 rounded-lg border-2 border-black/20 bg-default px-4 py-2 text-left whitespace-normal active:bg-subtle"
-                  >
-                    <img
-                      src="/assets/home-study-2026-10-06/walk-in-enter.svg"
-                      alt=""
-                      draggable={false}
-                      className="h-12 w-auto shrink-0"
-                    />
-                    <span className="flex min-w-0 flex-1 flex-col gap-0.5">
-                      <span className="text-xl/tight font-bold">
-                        {t("workflow.home.enterWalkIn")}
-                      </span>
-                      <span className="flex items-center gap-1.5 text-base text-secondary">
-                        <Power aria-hidden="true" className="size-4 shrink-0" />
-                        {t("workflow.home.stopsRobot")}
-                      </span>
-                    </span>
-                    <ChevronRight
-                      aria-hidden="true"
-                      className="size-7 shrink-0 text-secondary"
-                    />
-                  </Button>
-                ) : (
-                  <p className="flex items-center gap-2 px-1 text-lg/tight text-secondary">
-                    <Power aria-hidden="true" className="size-5 shrink-0" />
-                    {t("workflow.home.stopsRobot")}
-                  </p>
-                ))}
-              {framedLayout && (
-                <p className="flex items-center gap-3 text-xl font-bold text-primary">
-                  <img
-                    src="/assets/home-study-2026-10-06/enter.svg"
-                    alt=""
-                    draggable={false}
-                    className="h-7 w-auto"
-                  />
-                  {t("workflow.home.framedHeading")}
-                </p>
-              )}
-              {framedLayout && (
-                <HomePurposeAction
-                  icon="enter"
-                  title={t("workflow.home.v5.enter")}
-                  subtitle={t("workflow.home.v5.enterHint")}
-                  disabled={busy || robotHeld}
-                  onClick={onEnterWalkIn}
-                />
-              )}
-              <div className="grid min-h-64 shrink-0 grid-cols-2 gap-3 lg:min-h-56 lg:flex-1 lg:gap-4">
-                <HomeObjectAction
-                  cardStyle={cardStyle}
-                  startLabel={t("workflow.home.cardStart")}
-                  kind="restock"
-                  label={t("workflow.home.restock")}
-                  inProgress={
-                    restockOpen ? t("workflow.home.running.badge") : undefined
-                  }
-                  disabled={busy || robotHeld}
-                  onClick={onShowRestocking}
-                />
-                <HomeObjectAction
-                  cardStyle={cardStyle}
-                  startLabel={t("workflow.home.cardStart")}
-                  kind="manual"
-                  label={t("workflow.home.manual")}
-                  inProgress={
-                    manualOpen ? t("workflow.home.running.badge") : undefined
-                  }
-                  disabled={busy || robotHeld || !manualReplenishmentAvailable}
-                  onClick={onShowManualReplenishment}
-                />
-              </div>
-              {/* Under the two cards so "above" points at them; the title
-                  says it all, so no hint. */}
-              {!framedLayout && !walkInEntryAsParent && (
-                <HomePurposeAction
-                  icon="enter"
-                  tall
-                  title={t("workflow.home.enterWalkIn")}
-                  disabled={busy || robotHeld}
-                  onClick={onEnterWalkIn}
-                />
-              )}
-            </div>
-          )}
-          {splitLayout ? (
-            <HomeMoreActions
-              disabled={busy}
-              actions={[
-                {
-                  key: "layout",
-                  icon: "layout",
-                  title: t("workflow.home.layout"),
-                  disabled: busy || robotHeld,
-                  onClick: onShowEdit,
-                },
-                {
-                  key: "reservations",
-                  icon: "reservation",
-                  title: t("workflow.home.v5.reservations"),
-                  disabled: busy,
-                  onClick: onShowDisplay,
-                },
-                {
-                  key: "count",
-                  icon: "stock-count",
-                  title: t("workflow.home.count"),
-                  disabled: busy,
-                  onClick: onShowRecommendations,
-                },
-              ]}
-            />
-          ) : (
-            <>
-              <HomePurposeAction
-                icon="layout"
-                title={t("workflow.home.layout")}
+          {/* The three whose steps stop the robot, said once at the top of a
+              quiet panel. Layout change stops it later, at send, so it stays
+              outside. Set apart by space as well as by the panel. */}
+          <div className="mb-2 flex min-h-0 flex-col gap-3 rounded-xl bg-black/3 p-3 lg:flex-1">
+            <p className="flex items-center gap-2 px-1 text-lg/tight text-secondary">
+              <Power aria-hidden="true" className="size-5 shrink-0" />
+              {t("workflow.home.stopsRobot")}
+            </p>
+            <div className="grid min-h-64 shrink-0 grid-cols-2 gap-3 lg:min-h-56 lg:flex-1 lg:gap-4">
+              <HomeObjectAction
+                kind="restock"
+                label={t("workflow.home.restock")}
+                inProgress={
+                  restockOpen ? t("workflow.home.running.badge") : undefined
+                }
                 disabled={busy || robotHeld}
-                onClick={onShowEdit}
-                quiet={splitLayout}
+                onClick={onShowRestocking}
               />
-              <div className="grid shrink-0 grid-cols-1 gap-3 min-[440px]:grid-cols-2 lg:gap-4">
-                <HomePurposeAction
-                  icon="reservation"
-                  title={t("workflow.home.v5.reservations")}
-                  disabled={busy}
-                  onClick={onShowDisplay}
-                  quiet={splitLayout}
-                />
-                <HomePurposeAction
-                  icon="stock-count"
-                  title={t("workflow.home.count")}
-                  disabled={busy}
-                  onClick={onShowRecommendations}
-                  quiet={splitLayout}
-                />
-              </div>
-            </>
-          )}
+              <HomeObjectAction
+                kind="manual"
+                label={t("workflow.home.manual")}
+                inProgress={
+                  manualOpen ? t("workflow.home.running.badge") : undefined
+                }
+                disabled={busy || robotHeld || !manualReplenishmentAvailable}
+                onClick={onShowManualReplenishment}
+              />
+            </div>
+            {/* Under the two cards so "above" points at them; the title
+                says it all, so no hint. */}
+            <HomeEnterWalkInAction
+              title={t("workflow.home.enterWalkIn")}
+              disabled={busy || robotHeld}
+              onClick={onEnterWalkIn}
+            />
+          </div>
+          <HomeMoreActions
+            disabled={busy}
+            actions={[
+              {
+                key: "layout",
+                icon: "layout",
+                title: t("workflow.home.layout"),
+                disabled: busy || robotHeld,
+                onClick: onShowEdit,
+              },
+              {
+                key: "reservations",
+                icon: "reservation",
+                title: t("workflow.home.v5.reservations"),
+                disabled: busy,
+                onClick: onShowDisplay,
+              },
+              {
+                key: "count",
+                icon: "stock-count",
+                title: t("workflow.home.count"),
+                disabled: busy,
+                onClick: onShowRecommendations,
+              },
+            ]}
+          />
         </section>
       )}
     </div>
   )
 }
 
-function HomePurposeAction({
-  icon,
+/** The walk-in entry under the cards: room to hit easily. */
+function HomeEnterWalkInAction({
   title,
-  subtitle,
   disabled,
   onClick,
-  quiet = false,
-  tall = false,
 }: {
-  icon: "enter" | "layout" | "reservation" | "stock-count"
   title: string
-  subtitle?: string
   disabled: boolean
   onClick: () => void
-  /** A step back from the panel above: a thin line, no fill. */
-  quiet?: boolean
-  /** Room to hit easily: the walk-in entry under the cards. */
-  tall?: boolean
 }) {
   return (
     <Button
@@ -497,33 +331,18 @@ function HomePurposeAction({
       aria-label={title}
       disabled={disabled}
       onClick={onClick}
-      className={cn(
-        "w-full min-w-0 shrink-0 justify-start gap-3 rounded-lg px-4 py-3 text-left whitespace-normal active:bg-subtle",
-        quiet
-          ? "min-h-16 border border-black/30"
-          : "min-h-20 border-2 border-black/20 bg-default",
-        tall && "min-h-24"
-      )}
+      className="min-h-24 w-full min-w-0 shrink-0 justify-start gap-3 rounded-lg border-2 border-black/20 bg-default px-4 py-3 text-left whitespace-normal active:bg-subtle"
     >
-      <span
-        className={cn(
-          "flex size-10 shrink-0 items-center justify-center gap-0.5 rounded-md text-secondary",
-          !quiet && "bg-subtle"
-        )}
-      >
+      <span className="flex size-10 shrink-0 items-center justify-center gap-0.5 rounded-md bg-subtle text-secondary">
         <img
-          src={`/assets/home-study-2026-10-06/${icon}.${icon === "stock-count" ? "png" : "svg"}`}
+          src="/assets/home-study-2026-10-06/enter.svg"
           alt=""
           draggable={false}
-          className={icon === "stock-count" ? "size-full" : "h-7 w-auto"}
+          className="h-7 w-auto"
         />
       </span>
-      {/* Title and its hint side by side (24 / 20 px), the hint quieter. */}
-      <span className="flex min-w-0 flex-1 flex-wrap items-baseline gap-x-4 gap-y-1">
-        <span className="text-xl/tight font-bold text-primary">{title}</span>
-        {subtitle && (
-          <span className="text-lg/tight text-secondary">{subtitle}</span>
-        )}
+      <span className="min-w-0 flex-1 text-xl/tight font-bold text-primary">
+        {title}
       </span>
     </Button>
   )
@@ -533,9 +352,6 @@ function HomePurposeAction({
 // operator, so it has not necessarily resumed.
 /** How long a restart gets to move the robot before "Try again" reports it still held. */
 const RETRY_SETTLE_MS = 6000
-const HOME_LAYOUT_KEY = "storeApp.study.homeLayout"
-const WALK_IN_ENTRY_KEY = "storeApp.study.walkInEntry"
-const CARD_STYLE_KEY = "storeApp.study.cardStyle"
 /** How long taps are held after the idle screen wakes Home. */
 const WAKE_SHIELD_MS = 400
 

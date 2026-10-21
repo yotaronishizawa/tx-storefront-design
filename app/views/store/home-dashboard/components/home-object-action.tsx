@@ -1,7 +1,5 @@
 import type { CSSProperties } from "react"
 
-import { ArrowRight, ChevronRight } from "lucide-react"
-
 import { Button } from "~/core"
 import { cn } from "~/utils/cn"
 
@@ -70,35 +68,19 @@ function layer(
   }
 }
 
-/**
- * Study (`?card=1`..`10`): ways to make the card read as a button, after
- * staff said it did not look pressable. 0 is the card as it was.
- * 1 a key's deeper bottom edge · 2 a soft shadow · 3 an arrow in a circle,
- * top right · 4 a "start" pill, bottom right · 5 a "tap to start" strip ·
- * 6 an arrow after the title · 7 a darker outline · 8 the title on a white
- * footer · 9 an outline in the action colour · 10 edge, shadow and arrow.
- */
-export type CardStyle = 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10
-
 export function HomeObjectAction({
   kind,
   label,
   inProgress,
   disabled,
   onClick,
-  cardStyle = 0,
-  startLabel = "",
 }: {
   kind: "restock" | "manual"
   label: string
   inProgress?: string
   disabled: boolean
   onClick: () => void
-  cardStyle?: CardStyle
-  /** The words on the start pill or strip (styles 4 and 5). */
-  startLabel?: string
 }) {
-  const footerTitle = cardStyle === 8
   return (
     <Button
       variant="unstyled"
@@ -110,13 +92,7 @@ export function HomeObjectAction({
         // The same outline as every other button on Home, so the cards read as
         // buttons too (staff said they did not).
         "relative size-full min-h-64 min-w-0 flex-col items-start justify-start overflow-hidden rounded-lg border-2 border-black/20 text-left whitespace-normal text-primary lg:min-h-56",
-        kind === "restock" ? "bg-home-restock" : "bg-home-manual",
-        (cardStyle === 1 || cardStyle === 10) &&
-          "border-b-6 border-black/25 active:translate-y-0.5 active:border-b-2",
-        (cardStyle === 2 || cardStyle === 10) &&
-          "shadow-[0_2px_4px_rgb(0_0_0/0.08),0_8px_20px_rgb(0_0_0/0.10)] active:shadow-none",
-        cardStyle === 7 && "border-black/30",
-        cardStyle === 9 && "ring-3 ring-primary ring-inset"
+        kind === "restock" ? "bg-home-restock" : "bg-home-manual"
       )}
     >
       <span
@@ -206,17 +182,9 @@ export function HomeObjectAction({
           </span>
         </span>
       </span>
-      <span
-        className={cn(
-          "relative order-first flex w-full min-w-0 shrink-0 flex-col items-start px-4 pt-4 lg:px-5 lg:pt-5",
-          footerTitle && "hidden"
-        )}
-      >
+      <span className="relative order-first flex w-full min-w-0 shrink-0 flex-col items-start px-4 pt-4 lg:px-5 lg:pt-5">
         <span className="flex items-center gap-2 text-[2rem]/tight font-bold">
           {label}
-          {cardStyle === 6 && (
-            <ArrowRight aria-hidden="true" className="size-8 shrink-0" />
-          )}
         </span>
         {inProgress && (
           <span className="mt-2 inline-flex items-center gap-2.5 rounded-full bg-default px-5 py-2 text-xl font-bold text-primary">
@@ -235,38 +203,6 @@ export function HomeObjectAction({
             kind === "restock" ? "ring-home-restock" : "ring-home-manual"
           )}
         />
-      )}
-      {(cardStyle === 3 || cardStyle === 10) && (
-        <span
-          aria-hidden="true"
-          className="absolute top-4 right-4 grid size-12 place-items-center rounded-full bg-default shadow-[0_1px_3px_rgb(0_0_0/0.15)]"
-        >
-          <ChevronRight className="size-7" />
-        </span>
-      )}
-      {cardStyle === 4 && (
-        <span
-          aria-hidden="true"
-          className="absolute right-4 bottom-4 flex items-center gap-2 rounded-full bg-inverse px-5 py-3 text-lg font-bold text-inverse"
-        >
-          {startLabel}
-          <ArrowRight className="size-5" />
-        </span>
-      )}
-      {cardStyle === 5 && (
-        <span
-          aria-hidden="true"
-          className="flex w-full shrink-0 items-center justify-center gap-2 bg-black/10 py-3 text-lg font-bold"
-        >
-          {startLabel}
-          <ArrowRight className="size-5" />
-        </span>
-      )}
-      {footerTitle && (
-        <span className="flex w-full shrink-0 items-center gap-2 bg-default px-5 py-4">
-          <span className="flex-1 text-[1.75rem]/tight font-bold">{label}</span>
-          <ChevronRight aria-hidden="true" className="size-7 shrink-0" />
-        </span>
       )}
     </Button>
   )

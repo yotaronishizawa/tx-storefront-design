@@ -157,9 +157,7 @@ export default function HomePage() {
   // stays stopped until staff restart it, not only until the detection
   // clears. Home stays on the panel, camera images and all; the restart is
   // held as after a task, so "Try again" brings the robot back.
-  const [holdingFor, setHoldingFor] = useState<RobotAttentionCause | null>(
-    null
-  )
+  const [holdingFor, setHoldingFor] = useState<RobotAttentionCause | null>(null)
   const holdPhase =
     holdingFor !== null && holdingFor === attention?.cause
       ? robotWorkStatus === "RestPosition" &&
@@ -218,9 +216,6 @@ export default function HomePage() {
       onEnterWalkIn={() => void enterWalkIn()}
       holdPhase={holdPhase}
       onHoldForWalkIn={() => void holdForWalkIn()}
-      onEnterWalkInDirect={() =>
-        void navigate(`${ROUTES.walkIn().pathname}?start=1`)
-      }
       onShowDisplay={() => navigate(ROUTES.display().pathname)}
       onShowEdit={openEditLayout}
       onShowManualReplenishment={showManualReplenishment}
