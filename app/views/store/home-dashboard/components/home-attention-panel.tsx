@@ -1,3 +1,5 @@
+import { useEffect, useState } from "react"
+
 import type { ParseKeys } from "i18next"
 import { Camera, CircleCheck, Phone, TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
@@ -322,9 +324,29 @@ export function HomeAttentionPanel({
   )
 }
 
-/** Brief confirmation once the cause clears and the robot carries on. */
+/** How long the "fixed" confirmation stays before Home comes back. */
+export const RECOVERED_SECONDS = 5
+
+/**
+ * Brief confirmation once the cause clears and the robot carries on. It says
+ * where it goes next and when, so staff know there is nothing left to do.
+ */
 export function HomeRecoveredPanel() {
   const { t } = useTranslation("app")
+  const [secondsLeft, setSecondsLeft] = useState(RECOVERED_SECONDS)
+  const [started, setStarted] = useState(false)
+  useEffect(() => {
+    // Next frame, so the bar transitions from full rather than starting empty.
+    const frame = window.requestAnimationFrame(() => setStarted(true))
+    const timer = window.setInterval(
+      () => setSecondsLeft((seconds) => Math.max(seconds - 1, 1)),
+      1000
+    )
+    return () => {
+      window.cancelAnimationFrame(frame)
+      window.clearInterval(timer)
+    }
+  }, [])
   return (
     <section className="grid min-h-0 min-w-0 place-items-center p-4 lg:p-5">
       <div
@@ -338,6 +360,20 @@ export function HomeRecoveredPanel() {
         <p className="text-lg text-secondary">
           {t("workflow.home.recovered.body")}
         </p>
+        <div className="mt-6 flex w-64 flex-col items-center gap-2">
+          <div className="h-1.5 w-full overflow-hidden rounded-full bg-subtle">
+            <div
+              className={
+                started
+                  ? "h-full w-0 rounded-full bg-success transition-[width] duration-5000 ease-linear"
+                  : "size-full rounded-full bg-success"
+              }
+            />
+          </div>
+          <p className="text-base text-secondary">
+            {t("workflow.home.recovered.backIn", { seconds: secondsLeft })}
+          </p>
+        </div>
       </div>
     </section>
   )

@@ -23,6 +23,7 @@ import { readStorage, writeStorage } from "~/utils/local-storage"
 import {
   HomeAttentionPanel,
   HomeRecoveredPanel,
+  RECOVERED_SECONDS,
 } from "./components/home-attention-panel"
 import { HomeIdleScreen } from "./components/home-idle-screen"
 import { HomeMoreActions } from "./components/home-more-actions"
@@ -554,7 +555,10 @@ function useRecoveredFlash(cause: RobotAttentionCause | null) {
     previous.current = cause
     if (!cleared) return
     setRecovered(true)
-    const timer = window.setTimeout(() => setRecovered(false), 6000)
+    const timer = window.setTimeout(
+      () => setRecovered(false),
+      RECOVERED_SECONDS * 1000
+    )
     return () => window.clearTimeout(timer)
   }, [cause])
   return recovered && cause === null
