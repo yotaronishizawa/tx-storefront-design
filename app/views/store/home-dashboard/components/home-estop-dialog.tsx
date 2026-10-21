@@ -82,7 +82,7 @@ export function HomeEStopDialog({
                 <source src={`${ESTOP_ASSET}.webm`} type="video/webm" />
                 <source src={`${ESTOP_ASSET}.mp4`} type="video/mp4" />
               </video>
-              <figcaption className="text-base font-bold">
+              <figcaption className="text-base">
                 {t("workflow.home.attention.eStopReleasedCaption")}
               </figcaption>
             </figure>
