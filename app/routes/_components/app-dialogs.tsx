@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, type ComponentProps } from "react"
 
 import { useTranslation } from "react-i18next"
 import { useNavigate } from "react-router"
@@ -8,6 +8,7 @@ import { FinishWorkDialog } from "~/components/dialog/finish-work-dialog"
 import { MessageDialog } from "~/components/dialog/message-dialog"
 import { FEATURES } from "~/config/feature"
 import { ROUTES } from "~/config/routes"
+import type { StatusListStatus } from "~/core"
 import {
   applyAppUpdate,
   reconnectToOpm,
@@ -35,6 +36,7 @@ import {
 import {
   beginRobotStopWatch,
   endRobotStopWatch,
+  failRobotStopWatch,
   useRobotOperationMode,
   useRobotStopWatch,
   useRobotWorkStatus,
@@ -109,10 +111,13 @@ export function AppDialogs() {
   // Starting restocking or manual replenishment stops a running robot; it
   // then travels to the stop position, and staff must stay out meanwhile.
   const robotWillTravel = robotRunning && workStatus !== "RestPosition"
-  const robotStopping = useRobotStoppingPopup(workStatus)
+  const robotStopping = useRobotStoppingPopup(
+    workStatus,
+    isShelfMoving(busyAction)
+  )
   /** Watch the robot to the stop position, unless the start fails. */
   function watchRobotStop(start: Promise<boolean>) {
-    if (robotWillTravel) beginRobotStopWatch()
+    if (robotWillTravel) beginRobotStopWatch({ shelves: true })
     void start.then((ok) => {
       if (!ok) endRobotStopWatch()
     })
@@ -228,8 +233,9 @@ export function AppDialogs() {
           {/* While the robot travels, its popup also covers the shelves. */}
           <RobotStoppingDialog
             open={robotStopping.open && !prompt && !message}
-            shelvesMoving={isShelfMoving(busyAction)}
-            slow={robotStopping.slow}
+            state={robotStopping.state}
+            shelves={robotStopping.shelves}
+            onClose={endRobotStopWatch}
           />
           <ShelfMovingDialog
             open={
@@ -351,38 +357,51 @@ function isEndingRestocking(busyAction: BusyAction): boolean {
   )
 }
 
-/** OPM gives a stop five minutes to reach the stop position; past that, stop watching. */
+/** OPM gives a stop five minutes to reach the stop position; past that it has failed. */
 const ROBOT_STOP_WATCH_MS = 5 * 60_000
-/** As on the walk-in screen: after this long, say it is slow and who to call. */
-const ROBOT_STOP_SLOW_MS = 90_000
+type RobotStoppingState = ComponentProps<typeof RobotStoppingDialog>["state"]
+
+/** How long "the robot has stopped" stays before the popup closes. */
+const ROBOT_STOPPED_SHOWN_MS = 2_000
 
 /**
- * Open while an action's robot stop is travelling to the stop position;
- * closes (and ends the watch) once the robot is parked.
+ * The robot-stopping popup's state, from the watch an action started: moving
+ * until the robot parks (and the shelves, if any, are done), then "stopped"
+ * for a moment, then closed; "failed" if it has not parked in five minutes.
  */
-function useRobotStoppingPopup(workStatus: string | undefined) {
-  const since = useRobotStopWatch()
+function useRobotStoppingPopup(
+  workStatus: string | undefined,
+  shelvesMoving: boolean
+) {
+  const watch = useRobotStopWatch()
+  const watching = watch.since !== null
   const parked = workStatus === "RestPosition"
-  const [slowSince, setSlowSince] = useState<number | null>(null)
+  const shelves: StatusListStatus | null = watch.shelves
+    ? shelvesMoving
+      ? "running"
+      : "done"
+    : null
+  const stopped = watching && !watch.failed && parked && shelves !== "running"
   useEffect(() => {
-    if (since !== null && parked) endRobotStopWatch()
-  }, [since, parked])
+    if (!stopped) return
+    const timer = window.setTimeout(endRobotStopWatch, ROBOT_STOPPED_SHOWN_MS)
+    return () => window.clearTimeout(timer)
+  }, [stopped])
   useEffect(() => {
-    if (since === null) return
-    const slow = window.setTimeout(
-      () => setSlowSince(since),
-      ROBOT_STOP_SLOW_MS
-    )
-    const giveUp = window.setTimeout(endRobotStopWatch, ROBOT_STOP_WATCH_MS)
-    return () => {
-      window.clearTimeout(slow)
-      window.clearTimeout(giveUp)
-    }
-  }, [since])
-  return {
-    open: since !== null && !parked,
-    slow: since !== null && slowSince === since,
-  }
+    if (watch.since === null) return
+    const timer = window.setTimeout(failRobotStopWatch, ROBOT_STOP_WATCH_MS)
+    return () => window.clearTimeout(timer)
+  }, [watch.since])
+  const state: RobotStoppingState = watch.failed
+    ? "failed"
+    : stopped
+      ? "stopped"
+      : "moving"
+  // While it closes, keep showing what it last said ("stopped"), not "moving".
+  const [last, setLast] = useState({ state, shelves })
+  if (watching && (last.state !== state || last.shelves !== shelves))
+    setLast({ state, shelves })
+  return { open: watching, ...(watching ? { state, shelves } : last) }
 }
 
 /** Restocking's and manual replenishment's Start and End tilt the shelves. */

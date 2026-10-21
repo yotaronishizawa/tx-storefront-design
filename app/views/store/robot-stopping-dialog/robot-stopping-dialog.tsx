@@ -1,52 +1,92 @@
-import { Loader2 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { SupportContact } from "~/components/support/support-contact"
-import { Dialog, Notice } from "~/core"
+import { Button, Dialog, StatusList, type StatusListStatus } from "~/core"
+
+export type RobotStoppingState = "moving" | "stopped" | "failed"
 
 /**
- * Blocks the screen while a stopped robot travels to the stop position
- * (the design system's blocking popup): says what is happening, that staff
- * must stay out until it has stopped, and closes by itself once it parks.
+ * The robot travelling to the stop position after an action stopped it
+ * (restocking, manual replenishment, walk-in, layout send): one popup for
+ * all of them, listing what it waits for. The lines never change wording;
+ * only their icons do. The title changes only with the outcome:
+ * - moving: blocking; staff stay out until it parks.
+ * - stopped: every line done; shown briefly, then closes by itself.
+ * - failed: the robot never reached the stop position; call, do not go in.
  */
 export function RobotStoppingDialog({
   open,
-  shelvesMoving,
-  slow,
+  state,
+  shelves,
+  onClose,
 }: {
   open: boolean
-  /** Restocking and manual start also tilt the shelves meanwhile. */
-  shelvesMoving: boolean
-  /** Longer than usual: say so, and who to call. */
-  slow: boolean
+  state: RobotStoppingState
+  /** Restocking and manual start also tilt the shelves; `null` when not. */
+  shelves: StatusListStatus | null
+  /** For `failed` only: the close icon and the button. */
+  onClose: () => void
 }) {
-  const { t } = useTranslation("app")
+  const { t } = useTranslation(["app", "common"])
+  const robot: StatusListStatus =
+    state === "moving" ? "running" : state === "stopped" ? "done" : "failed"
+  const items: StatusList.Item[] = [
+    {
+      key: "robot",
+      label: t("workflow.robotStopping.stepRobot"),
+      status: robot,
+    },
+    ...(shelves
+      ? [
+          {
+            key: "shelves",
+            label: t("workflow.robotStopping.stepShelves"),
+            status: shelves,
+          },
+        ]
+      : []),
+  ]
+
+  if (state === "failed") {
+    return (
+      <Dialog.Popup
+        open={open}
+        onClose={onClose}
+        closeLabel={t("common:actions.close")}
+        icon="error"
+        title={t("workflow.robotStopping.failedTitle")}
+        role="alertdialog"
+        actions={
+          <Dialog.Actions>
+            <Button size="lg" onClick={onClose}>
+              {t("common:actions.close")}
+            </Button>
+          </Dialog.Actions>
+        }
+      >
+        <StatusList items={items} />
+        <SupportContact message={t("workflow.robotStopping.failedBody")} />
+      </Dialog.Popup>
+    )
+  }
+
   return (
     <Dialog.Popup
       open={open}
       role="alertdialog"
-      title={t("workflow.robotStopping.title")}
+      title={t(
+        state === "stopped"
+          ? "workflow.robotStopping.stoppedTitle"
+          : "workflow.robotStopping.title"
+      )}
     >
-      <div className="flex items-center gap-4">
-        <Loader2
-          aria-hidden="true"
-          className="size-8 shrink-0 animate-spin text-primary-text"
-        />
-        <p>{t("workflow.robotStopping.body")}</p>
-      </div>
-      {/* Bold: it tells staff to stay out while the robot moves. */}
-      <Notice tone="warning">{t("workflow.robotStopping.stayOut")}</Notice>
-      {shelvesMoving && (
-        <p className="text-secondary">{t("workflow.robotStopping.shelves")}</p>
-      )}
-      {slow && (
-        <SupportContact
-          heading={t("workflow.robotStopping.slowHeading")}
-          message={t("workflow.home.attention.supportBody")}
-        />
-      )}
+      <StatusList items={items} />
       <p className="text-base text-secondary">
-        {t("workflow.robotStopping.autoClose")}
+        {t(
+          state === "stopped"
+            ? "workflow.robotStopping.stoppedBody"
+            : "workflow.robotStopping.autoClose"
+        )}
       </p>
     </Dialog.Popup>
   )

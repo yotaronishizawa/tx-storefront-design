@@ -18,6 +18,9 @@ import {
   useRestockRequest,
 } from "~/domains/operations"
 import {
+  beginRobotStopWatch,
+  endRobotStopWatch,
+  failRobotStopWatch,
   readRobotState,
   useAutoPnpOperating,
   useRobotActions,
@@ -53,7 +56,6 @@ export default function WalkInPage() {
 }
 
 const STOP_WAIT_POLLS = 300
-const STOP_SLOW_AFTER_MS = 90_000
 
 const WALK_IN_BLOCK_KEYS = {
   connection: "workflow.walkIn.notConfirmed",
@@ -86,17 +88,6 @@ function WalkInSession() {
   // out, then the robot travelling to its rest position. No time is shown:
   // how long the travel takes depends on where on the rail the robot is.
   const [stopPhase, setStopPhase] = useState<"sending" | "moving">("sending")
-  // Past this with the robot still travelling, say it is taking a while.
-  // Shown as words only; the figure is provisional.
-  const [slow, setSlow] = useState(false)
-  useEffect(() => {
-    if (!checking || stopPhase !== "moving") {
-      setSlow(false)
-      return
-    }
-    const timer = window.setTimeout(() => setSlow(true), STOP_SLOW_AFTER_MS)
-    return () => window.clearTimeout(timer)
-  }, [checking, stopPhase])
   const inFlight = useRef(false)
   const mounted = useRef(true)
   useEffect(() => {
@@ -212,9 +203,15 @@ function WalkInSession() {
           )
           return
         }
-        // Quiet: this screen watches the stop itself, so no "check it
-        // stopped" popup on top.
-        if (!(await actions.stopAutoPnpOperation(true)) || !current()) return
+        // A moving robot travels to the stop position: the shared popup
+        // shows it, as for restocking and manual start. Quiet stop, so no
+        // "check it stopped" popup on top.
+        const travels = freshStatus !== "RestPosition"
+        if (travels) beginRobotStopWatch({ shelves: false })
+        if (!(await actions.stopAutoPnpOperation(true)) || !current()) {
+          if (travels) endRobotStopWatch()
+          return
+        }
       }
       setStopPhase("moving")
       const parked = await runBusy("refresh", async () => {
@@ -228,7 +225,11 @@ function WalkInSession() {
           { retries: STOP_WAIT_POLLS, intervalMs: 1000 }
         )
         if (!current()) return false
-        if (!result) throw new Error(t("workflow.walkIn.stopTimedOut"))
+        // Never parked: the popup says so (do not go in, call).
+        if (!result) {
+          failRobotStopWatch()
+          return false
+        }
         return (await refreshWorkflowRequests()) && !workflowIsOpen()
       })
       if (parked && current()) setConfirmed(true)
@@ -308,7 +309,6 @@ function WalkInSession() {
       robotMoving={reachable && ROBOT_MOVING_KINDS.has(controls.kind)}
       stopping={{
         phase: stopPhase,
-        slow,
         statusLost: !reachable,
         hold:
           attention?.cause && attention.cause !== "teleopFixable"

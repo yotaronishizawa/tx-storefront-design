@@ -18,6 +18,7 @@ import { Foundations } from "./components/foundations"
 import { NoticeDoc } from "./components/notice-doc"
 import { RadioCardDoc } from "./components/radio-card-doc"
 import { SearchFieldDoc } from "./components/search-field-doc"
+import { StatusListDoc } from "./components/status-list-doc"
 import { SupportContactDoc } from "./components/support-contact-doc"
 
 const LANG_KEY = "storeApp.designSystem.lang"
@@ -52,6 +53,7 @@ const NAV: { title: DocText; items: { id: string; label: DocText }[] }[] = [
       { id: "support-contact", label: "SupportContact" },
       { id: "search-field", label: "SearchField" },
       { id: "radio-card", label: "RadioCardGroup" },
+      { id: "status-list", label: "StatusList" },
     ],
   },
   {
@@ -255,6 +257,7 @@ function Catalog({
           <SupportContactDoc />
           <SearchFieldDoc />
           <RadioCardDoc />
+          <StatusListDoc />
 
           <DocSection
             id="coming-next"

@@ -158,7 +158,7 @@ export default function EditPage() {
           // Sending parks a moving robot first: watch it to the stop
           // position (the popup), unless the send stops short.
           onSendLayoutChange: async (needRobotCapture) => {
-            if (robotWillStop) beginRobotStopWatch()
+            if (robotWillStop) beginRobotStopWatch({ shelves: false })
             const outcome = await sendLayoutChange(needRobotCapture)
             if (
               outcome.kind === "failed" ||

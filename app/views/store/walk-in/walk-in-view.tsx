@@ -1,4 +1,3 @@
-import { TriangleAlert } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RobotArmControlProps } from "~/components/robot/robot-arm-control"
@@ -84,22 +83,22 @@ export function WalkInView({
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6">
         <div className="flex min-h-0 flex-col">
           {pill}
-          {stoppingNow ? (
-            <StopStatus {...stopping} />
-          ) : (
-            <p className="mt-4 max-w-md text-lg/relaxed">
-              {blockingTask
+          {/* While the robot travels, the shared popup says so; the
+              screen underneath keeps its place. */}
+          <p className="mt-4 max-w-md text-lg/relaxed">
+            {stoppingNow
+              ? t("workflow.walkIn.stepMove")
+              : blockingTask
                 ? t("workflow.walkIn.workOpenHint")
                 : ready
                   ? t("workflow.walkIn.stoppedHint")
                   : canPrepare
                     ? t("workflow.walkIn.stopFirstHint")
                     : notReadyReason}
-            </p>
-          )}
+          </p>
           <div className="mt-4 min-h-0 flex-1 overflow-hidden">{robot}</div>
         </div>
-        {stoppingNow ? <DontEnterCard /> : <RobotArmPanel {...arm} />}
+        <RobotArmPanel {...arm} />
       </div>
       {/* Hidden, not removed, while the robot stops: the layout stays put. */}
       <Button
@@ -131,63 +130,11 @@ export function WalkInView({
   )
 }
 
-/** Where the arm card will be: the one thing that matters while it stops. */
-function DontEnterCard() {
-  const { t } = useTranslation("app")
-  return (
-    <section className="flex min-h-0 flex-col items-start justify-center gap-6 rounded-xl border-2 border-warning bg-[#fde4d2] p-8 text-left text-primary">
-      <TriangleAlert className="size-20 shrink-0 text-warning" />
-      {/* One line per phrase, never broken mid-phrase. */}
-      <p className="text-display/tight font-bold">
-        {t("workflow.walkIn.dontEnterYet")
-          .split("\n")
-          .map((line) => (
-            <span key={line} className="block whitespace-nowrap">
-              {line}
-            </span>
-          ))}
-      </p>
-    </section>
-  )
-}
-
 type StopProgressProps = {
   /** The request going out, then the robot travelling to its rest position. */
   phase: "sending" | "moving"
-  /** Still travelling well past the usual; worded, never timed. */
-  slow: boolean
   /** The app has lost the robot's status (offline or polls failing). */
   statusLost: boolean
   /** What is holding the robot (a person, an obstacle, the e-stop), translated. */
   hold: string
-}
-
-/**
- * Under the pill while the robot stops: what it is doing, and anything
- * holding it. No time or progress bar: how long the travel takes depends on
- * where on the rail the robot is, which the app cannot know.
- */
-function StopStatus({ slow, statusLost, hold }: StopProgressProps) {
-  const { t } = useTranslation("app")
-  const trouble = statusLost || hold
-  return (
-    <div className="mt-4 grid max-w-md gap-3">
-      <p className="text-lg/relaxed">{t("workflow.walkIn.stepMove")}</p>
-      {(trouble || slow) && (
-        <p
-          role="status"
-          className={cn(
-            "text-lg/relaxed font-bold",
-            trouble ? "text-error" : "text-secondary"
-          )}
-        >
-          {statusLost
-            ? t("workflow.walkIn.statusLost")
-            : hold
-              ? t("workflow.walkIn.heldBy", { reason: hold })
-              : t("workflow.walkIn.takingLonger")}
-        </p>
-      )}
-    </div>
-  )
 }

@@ -15,6 +15,7 @@ export { useRobotActions } from "./actions/use-robot-actions"
 export {
   beginRobotStopWatch,
   endRobotStopWatch,
+  failRobotStopWatch,
   useRobotStopWatch,
 } from "./services/robot-stop-watch"
 export { useNoRobotNotice } from "./effects/use-no-robot-notice"
