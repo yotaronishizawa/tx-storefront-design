@@ -10,6 +10,7 @@ import { isActiveRequest, isRequestInProgress } from "~/model/request-state"
 import type {
   RobotAttention,
   RobotAttentionCause,
+  RobotEStop,
 } from "~/model/robot-attention"
 import {
   getRobotControls,
@@ -24,6 +25,7 @@ import {
   HomeRecoveredPanel,
   RECOVERED_SECONDS,
 } from "./components/home-attention-panel"
+import { HomeEStopDialog } from "./components/home-estop-dialog"
 import { HomeIdleScreen } from "./components/home-idle-screen"
 import { HomeMoreActions } from "./components/home-more-actions"
 import { HomeObjectAction } from "./components/home-object-action"
@@ -98,8 +100,25 @@ export function HomeDashboardView({
   // assist cause stays a bar until staff open it. Either way a new cause starts over.
   const [setAside, setSetAside] = useState<RobotAttentionCause | null>(null)
   const [opened, setOpened] = useState<RobotAttentionCause | null>(null)
+  // Closed for one e-stop state; "needs a restart" after "pressed" reopens it.
+  const [eStopClosed, setEStopClosed] = useState<RobotEStop | null>(null)
+  // Once it clears, the same cause coming back is a new one: show it again.
+  if (
+    cause === null &&
+    (setAside !== null || opened !== null || eStopClosed !== null)
+  ) {
+    setSetAside(null)
+    setOpened(null)
+    setEStopClosed(null)
+  }
+  // The emergency stop is a popup, not a takeover: nothing here fixes it.
+  const eStopCause = cause === "eStop"
   const showAttention =
-    cause !== null && (assist ? opened === cause : setAside !== cause)
+    cause !== null &&
+    !eStopCause &&
+    (assist ? opened === cause : setAside !== cause)
+  const eStopDialogOpen =
+    eStopCause && eStopClosed !== (attention?.eStop ?? null) && !idle
   // Nothing that moves the robot can work while an e-stop or a detector holds it.
   const robotHeld = cause !== null && !assist && cause !== "resumeFailed"
   const [retryState, setRetryState] = useState<"idle" | "checking" | "still">(
@@ -119,7 +138,7 @@ export function HomeDashboardView({
     setRetryState(causeRef.current === before ? "still" : "idle")
   }
   const recovered = useRecoveredFlash(cause)
-  const panelOpen = recovered || showAttention
+  const panelOpen = recovered || showAttention || eStopDialogOpen
   useEffect(() => {
     onAttentionPanelChange(panelOpen)
   }, [panelOpen, onAttentionPanelChange])
@@ -188,12 +207,16 @@ export function HomeDashboardView({
       {wakeShield && (
         <div aria-hidden="true" className="absolute inset-0 z-40" />
       )}
+      <HomeEStopDialog
+        open={eStopDialogOpen}
+        eStop={attention?.eStop ?? null}
+        onClose={() => setEStopClosed(attention?.eStop ?? null)}
+      />
       {recovered ? (
         <HomeRecoveredPanel />
       ) : showAttention ? (
         <HomeAttentionPanel
           cause={cause}
-          eStop={attention?.eStop ?? null}
           teleopError={attention?.teleopError ?? null}
           retryable={attention?.retryable ?? false}
           retryState={retryState}
@@ -220,7 +243,11 @@ export function HomeDashboardView({
               <span>
                 {assist
                   ? t("workflow.home.assist.bar")
-                  : `${t("workflow.home.attention.badge")}: ${t(`workflow.home.cause.${cause}`)}`}
+                  : `${t("workflow.home.attention.badge")}: ${t(
+                      eStopCause && attention?.eStop === "needsReset"
+                        ? "workflow.home.attention.eStopResetTitle"
+                        : `workflow.home.cause.${cause}`
+                    )}`}
                 {robotHeld && (
                   <span className="block font-normal">
                     {t("workflow.home.attention.robotTasksHeld")}
@@ -232,12 +259,20 @@ export function HomeDashboardView({
                 size="unstyled"
                 type="button"
                 className="shrink-0 underline underline-offset-4"
-                onClick={() => (assist ? setOpened(cause) : setSetAside(null))}
+                onClick={() =>
+                  assist
+                    ? setOpened(cause)
+                    : eStopCause
+                      ? setEStopClosed(null)
+                      : setSetAside(null)
+                }
               >
                 {t(
                   assist
                     ? "workflow.home.assist.open"
-                    : "workflow.home.attention.backToImages"
+                    : eStopCause
+                      ? "workflow.home.attention.showGuide"
+                      : "workflow.home.attention.backToImages"
                 )}
               </Button>
             </div>

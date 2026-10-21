@@ -38,42 +38,12 @@ export function AttentionLayout({
   return (
     <div className="grid min-h-0 flex-1 grid-cols-2 gap-5">
       <div className="flex min-w-0 flex-col gap-6">
-        <div className="flex items-start gap-4">
-          <span className="relative shrink-0 pt-1">
-            <Icon aria-hidden="true" className="size-16 text-error" />
-            <span
-              aria-hidden="true"
-              className="absolute -inset-e-2 -bottom-1 grid size-8 place-items-center rounded-full bg-error text-xl font-bold text-inverse"
-            >
-              !
-            </span>
-          </span>
-          <div className="min-w-0">
-            <h2 className="text-xl/tight font-bold">{title}</h2>
-            <p className="mt-2 text-lg whitespace-pre-line text-secondary">
-              {body}
-            </p>
-          </div>
-        </div>
+        <AttentionHeading icon={Icon} title={title} body={body} />
 
         {children}
 
         <div className="flex flex-col gap-12">
-          <div className="flex flex-col gap-2">
-            <p className="flex items-center gap-2 text-base font-bold">
-              <Phone aria-hidden="true" className="size-5 shrink-0" />
-              {support.heading}
-            </p>
-            <a
-              href={`tel:${OPERATIONS_CENTER_PHONE}`}
-              className="flex flex-col gap-1 rounded-lg border border-info/20 bg-info-subtle px-4 py-3"
-            >
-              <span className="text-base">{support.body}</span>
-              <span className="text-xl font-bold text-info">
-                {OPERATIONS_CENTER_PHONE}
-              </span>
-            </a>
-          </div>
+          <AttentionSupport heading={support.heading} body={support.body} />
           {action}
         </div>
       </div>
@@ -86,6 +56,69 @@ export function AttentionLayout({
       ) : (
         <span aria-hidden="true" />
       )}
+    </div>
+  )
+}
+
+/** The icon with its "!", what to do, and why. */
+export function AttentionHeading({
+  icon: Icon,
+  title,
+  body,
+  titleId,
+}: {
+  icon: LucideIcon
+  title: string
+  body: string
+  /** For a dialog to name itself after the title. */
+  titleId?: string
+}) {
+  return (
+    <div className="flex items-start gap-4">
+      <span className="relative shrink-0 pt-1">
+        <Icon aria-hidden="true" className="size-16 text-error" />
+        <span
+          aria-hidden="true"
+          className="absolute -inset-e-2 -bottom-1 grid size-8 place-items-center rounded-full bg-error text-xl font-bold text-inverse"
+        >
+          !
+        </span>
+      </span>
+      <div className="min-w-0">
+        <h2 id={titleId} className="text-xl/tight font-bold">
+          {title}
+        </h2>
+        <p className="mt-2 text-lg whitespace-pre-line text-secondary">
+          {body}
+        </p>
+      </div>
+    </div>
+  )
+}
+
+/** Who to call when this does not help, with the number to tap. */
+export function AttentionSupport({
+  heading,
+  body,
+}: {
+  heading: string
+  body: string
+}) {
+  return (
+    <div className="flex flex-col gap-2">
+      <p className="flex items-center gap-2 text-base font-bold">
+        <Phone aria-hidden="true" className="size-5 shrink-0" />
+        {heading}
+      </p>
+      <a
+        href={`tel:${OPERATIONS_CENTER_PHONE}`}
+        className="flex flex-col gap-1 rounded-lg border border-info/20 bg-info-subtle px-4 py-3"
+      >
+        <span className="text-base">{body}</span>
+        <span className="text-xl font-bold text-info">
+          {OPERATIONS_CENTER_PHONE}
+        </span>
+      </a>
     </div>
   )
 }

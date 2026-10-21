@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react"
 
 import type { ParseKeys } from "i18next"
-import { CircleCheck, Hand, OctagonX, Power, RotateCcw } from "lucide-react"
+import { CircleCheck, Hand, RotateCcw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RobotLiveCamera, TeleopErrorCodeName } from "~/api/opm/schemas"
 import { Button } from "~/core"
-import type { RobotAttentionCause, RobotEStop } from "~/model/robot-attention"
+import type { RobotAttentionCause } from "~/model/robot-attention"
 
 import { AttentionLayout } from "./attention-layout"
 import { HomeDetectorPanel } from "./home-detector-panel"
@@ -70,7 +70,6 @@ export function teleopCopy(code: TeleopErrorCodeName | null): Copy {
  */
 export function HomeAttentionPanel({
   cause,
-  eStop,
   teleopError,
   retryable,
   retryState,
@@ -84,7 +83,6 @@ export function HomeAttentionPanel({
   onOtherWork,
 }: {
   cause: RobotAttentionCause
-  eStop: RobotEStop | null
   teleopError: TeleopErrorCodeName | null
   /** Offer "Try again" (restart the robot) for a detector stop right after a restart. */
   retryable: boolean
@@ -119,43 +117,6 @@ export function HomeAttentionPanel({
           cameras={cameras}
           busy={busy}
         />
-      ) : cause === "eStop" && eStop === "needsReset" ? (
-        <AttentionLayout
-          icon={Power}
-          title={t("workflow.home.attention.eStopResetTitle")}
-          body={t("workflow.home.attention.eStopResetSub")}
-          support={{
-            heading: t("workflow.home.attention.eStopResetSupport"),
-            body: t("workflow.home.attention.eStopResetSupportBody"),
-          }}
-        />
-      ) : cause === "eStop" ? (
-        // No button: the screen moves on by itself once the button is released.
-        <AttentionLayout
-          icon={OctagonX}
-          title={t("workflow.home.attention.eStopTitle")}
-          body={t("workflow.home.attention.eStopSub")}
-          support={{
-            heading: t("workflow.home.attention.eStopSupport"),
-            body: t("workflow.home.attention.supportBody"),
-          }}
-        >
-          <ol className="grid gap-3 text-lg font-bold">
-            {(
-              [
-                "workflow.home.attention.eStopStep1",
-                "workflow.home.attention.eStopStep2",
-              ] as const
-            ).map((key, index) => (
-              <li key={key} className="flex items-start gap-3">
-                <span className="grid size-8 shrink-0 place-items-center rounded-full bg-inverse text-base text-inverse">
-                  {index + 1}
-                </span>
-                <span className="pt-0.5">{t(key)}</span>
-              </li>
-            ))}
-          </ol>
-        </AttentionLayout>
       ) : cause === "resumeFailed" ? (
         <AttentionLayout
           icon={RotateCcw}
