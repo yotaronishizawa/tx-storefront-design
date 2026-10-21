@@ -31,7 +31,7 @@ export function HomeEStopDialog({
 
   return (
     <Dialog.Root
-      className="flex w-200 max-w-[calc(100vw-2rem)] flex-col gap-6 p-6"
+      className="flex w-160 max-w-[calc(100vw-2rem)] flex-col gap-6 p-6"
       labelledById={titleId}
       open={open}
       role="alertdialog"
@@ -52,8 +52,8 @@ export function HomeEStopDialog({
             body={t("workflow.home.attention.eStopSub")}
             titleId={titleId}
           />
-          <div className="flex items-start gap-6">
-            <ol className="grid flex-1 gap-3 text-lg font-bold">
+          <div className="flex flex-col gap-4">
+            <ol className="grid gap-3 text-lg font-bold">
               {(
                 [
                   "workflow.home.attention.eStopStep1",
@@ -70,7 +70,7 @@ export function HomeEStopDialog({
             </ol>
             {/* How the button looks once released: it springs out and shows
                 its red collar. Plays once and stays on that state. */}
-            <figure className="flex w-56 shrink-0 flex-col items-center gap-2">
+            <figure className="ms-11 flex w-56 flex-col items-center gap-2">
               <video
                 aria-label={t("workflow.home.attention.eStopReleasedCaption")}
                 autoPlay
