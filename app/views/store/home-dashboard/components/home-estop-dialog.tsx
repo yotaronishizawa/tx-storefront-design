@@ -32,7 +32,7 @@ export function HomeEStopDialog({
 
   return (
     <Dialog.Root
-      className="flex w-160 max-w-[calc(100vw-2rem)] flex-col gap-6 p-6"
+      className="flex w-170 max-w-[calc(100vw-5rem)] flex-col gap-6 p-6"
       labelledById={titleId}
       open={open}
       role="alertdialog"

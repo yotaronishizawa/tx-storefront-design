@@ -25,7 +25,8 @@ const buttonVariants = cva("", {
     size: {
       sm: "min-h-10 gap-2 px-4 py-1.5 text-base/tight [&_svg]:size-4",
       md: "min-h-12 gap-2 px-5 py-2 text-lg/tight [&_svg]:size-5",
-      lg: "min-h-14 gap-3 px-6 py-2.5 text-lg/tight [&_svg]:size-6",
+      /** The design system's one size (60px, Ethan 2026-10-21); sm and md remain for screens carried over from v1. */
+      lg: "min-h-15 gap-3 px-6 py-2.5 text-lg/tight [&_svg]:size-6",
       unstyled: "",
     },
   },

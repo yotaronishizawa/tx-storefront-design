@@ -42,7 +42,7 @@ export function HomeMoreActions({
       />
 
       <Dialog.Root
-        className="grid w-240 max-w-[calc(100vw-2rem)] gap-6 p-6"
+        className="grid w-260 max-w-[calc(100vw-5rem)] gap-6 p-6"
         open={open}
         onDismiss={() => setOpen(false)}
       >
