@@ -10,22 +10,9 @@ import { Button } from "~/core"
 import type { RobotAttentionCause, RobotEStop } from "~/model/robot-attention"
 import { formatDate } from "~/utils/date"
 
-type Copy = { title: ParseKeys<"app">; sub: ParseKeys<"app"> }
+import { HomeDetectorPanel } from "./home-detector-panel"
 
-const DETECTOR_COPY: Record<"human" | "obstacle" | "fallenDrink", Copy> = {
-  human: {
-    title: "workflow.home.attention.titleHuman",
-    sub: "workflow.home.attention.subHuman",
-  },
-  obstacle: {
-    title: "workflow.home.attention.titleObstacle",
-    sub: "workflow.home.attention.subObstacle",
-  },
-  fallenDrink: {
-    title: "workflow.home.attention.titleFallenDrink",
-    sub: "workflow.home.attention.subFallenDrink",
-  },
-}
+type Copy = { title: ParseKeys<"app">; sub: ParseKeys<"app"> }
 
 /**
  * What happened and what to do, for each error the Unity app's
@@ -121,12 +108,7 @@ export function HomeAttentionPanel({
   onOtherWork: () => void
 }) {
   const { i18n, t } = useTranslation("app")
-  const copy =
-    cause === "teleopFixable"
-      ? teleopCopy(teleopError)
-      : cause in DETECTOR_COPY
-        ? DETECTOR_COPY[cause as keyof typeof DETECTOR_COPY]
-        : null
+  const copy = cause === "teleopFixable" ? teleopCopy(teleopError) : null
 
   return (
     <section className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto p-4 lg:p-5">
@@ -177,6 +159,19 @@ export function HomeAttentionPanel({
             ))}
           </ol>
         </div>
+      ) : cause === "human" ||
+        cause === "obstacle" ||
+        cause === "fallenDrink" ? (
+        <HomeDetectorPanel
+          detector={cause}
+          retryable={retryable}
+          retryState={retryState}
+          onRetry={onRetry}
+          holdPhase={holdPhase}
+          onHoldForWalkIn={onHoldForWalkIn}
+          cameras={cameras}
+          busy={busy}
+        />
       ) : (
         <>
           <div className="flex flex-wrap items-end justify-between gap-3">
@@ -185,16 +180,7 @@ export function HomeAttentionPanel({
                 {copy ? t(copy.title) : ""}
               </h2>
               <p className="mt-1 text-base text-secondary">
-                {/* After a restart the robot waits for staff to try again. */}
-                {retryable
-                  ? t(
-                      cause === "human"
-                        ? "workflow.home.attention.subRetryHuman"
-                        : "workflow.home.attention.subRetry"
-                    )
-                  : copy
-                    ? t(copy.sub)
-                    : ""}
+                {copy ? t(copy.sub) : ""}
               </p>
             </div>
             {cause === "teleopFixable" && (
@@ -203,61 +189,8 @@ export function HomeAttentionPanel({
                 {t("workflow.home.attention.actionCheckAndStop")}
               </Button>
             )}
-            {/* Removing it means going in. Only the detection stops the
-                robot, so it could move once it clears with staff still
-                inside: stop it as the store first. After a task the app
-                already holds it (retryable), so not then. */}
-            {(cause === "obstacle" || cause === "fallenDrink") &&
-              !retryable && (
-                <Button size="lg" disabled={busy} onClick={onHoldForWalkIn}>
-                  {t("workflow.home.enterWalkIn")}
-                </Button>
-              )}
-            {retryable && (
-              <Button
-                size="lg"
-                disabled={
-                  busy || retryState === "checking" || holdPhase === "holding"
-                }
-                onClick={onRetry}
-              >
-                {t("workflow.home.attention.actionRetry")}
-              </Button>
-            )}
           </div>
-          {holdPhase !== null && retryState === "idle" && (
-            <p
-              role="status"
-              className={
-                holdPhase === "holding"
-                  ? "rounded-md bg-error-subtle px-4 py-2 text-base font-bold text-error"
-                  : "rounded-md bg-subtle px-4 py-2 text-base font-bold"
-              }
-            >
-              {t(
-                holdPhase === "holding"
-                  ? "workflow.home.attention.holding"
-                  : "workflow.home.attention.held"
-              )}
-            </p>
-          )}
-          {retryable && retryState !== "idle" && (
-            <p
-              role="status"
-              className={
-                retryState === "still"
-                  ? "rounded-md bg-error-subtle px-4 py-2 text-base font-bold text-error"
-                  : "text-base text-secondary"
-              }
-            >
-              {t(
-                retryState === "still"
-                  ? "workflow.home.attention.retryStill"
-                  : "workflow.home.attention.retryChecking"
-              )}
-            </p>
-          )}
-          {/* The two detection camera frames from GetRobotLiveData. */}
+          {/* The camera frames from GetRobotLiveData. */}
           <div className="grid min-h-0 flex-1 grid-cols-2 gap-3">
             {/* Until the first frames arrive, hold the space so nothing jumps. */}
             {(cameras.length > 0
@@ -299,7 +232,7 @@ export function HomeAttentionPanel({
           </div>
         </>
       )}
-      {stuck && cause !== "teleopFixable" && (
+      {stuck && (cause === "eStop" || cause === "resumeFailed") && (
         <p className="flex items-center gap-2 rounded-md bg-error-subtle px-4 py-3 text-base font-bold text-error">
           <Phone className="size-5 shrink-0" />
           {t("workflow.home.attention.stuck", {
