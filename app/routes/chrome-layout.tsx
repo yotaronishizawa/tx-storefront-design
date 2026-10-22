@@ -6,6 +6,7 @@ import { AppScreen } from "~/components/layout/app-screen"
 import { FEATURES } from "~/config/feature"
 import { ROUTES } from "~/config/routes"
 import {
+  readAppShellState,
   useIdleScreenShown,
   useIsDialogOpen,
   useOpenDialog,
@@ -70,6 +71,9 @@ export default function ChromeLayout() {
           <AppHeaderScannerStatus
             scannerConnected={scannerConnected}
             onOpenScannerRecovery={() => openDialog("scanner-recovery")}
+            onOpenScannerHelp={() =>
+              readAppShellState().setNotice(t("restockingScannerDisconnected"))
+            }
             onOpenRobotPower={() => openDialog("robot-power")}
           />
         }
