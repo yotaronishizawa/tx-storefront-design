@@ -10,12 +10,11 @@ import type { RobotStatusKind } from "~/model/robot-status"
 import { cn } from "~/utils/cn"
 
 /**
- * The header robot popup.
- * - Robot running: staff who reach for "stop first" learn that every task
- *   stops the robot by itself. The note sits right above a quiet stop
- *   button, so it is read before pressing; stopping still works, with no
- *   "are you sure".
- * - Robot stopped: the robot status and one big start button.
+ * The header robot popup: the robot status, then one quiet power button,
+ * "stop" while the robot runs and "start" while it is stopped.
+ * While it runs, a note right above the button says the tasks stop the robot
+ * by themselves, so staff who reach for "stop first" read it before
+ * pressing; stopping still works, with no "are you sure".
  */
 export function RobotPowerDialog({
   open,
@@ -38,34 +37,6 @@ export function RobotPowerDialog({
   const { t } = useTranslation(["app", "common"])
   const moving = available && ROBOT_MOVING_KINDS.has(kind)
 
-  if (action === "stop") {
-    return (
-      <Dialog.Popup
-        open={open}
-        onClose={onClose}
-        closeLabel={t("common:actions.close")}
-        title={t("workflow.robotPower.title")}
-      >
-        <div className="flex flex-col gap-4">
-          <p className="text-base whitespace-pre-line text-secondary">
-            {t("workflow.robotPower.stopNote")}
-          </p>
-          <Button
-            variant="secondary"
-            size="lg"
-            className="self-start px-6"
-            disabled={busy}
-            onClick={onAction}
-          >
-            <Power aria-hidden="true" className="size-5" />
-            {t("workflow.robotPower.stop")}
-          </Button>
-        </div>
-      </Dialog.Popup>
-    )
-  }
-
-  const label = t("workflow.robotPower.start")
   return (
     <Dialog.Popup
       open={open}
@@ -90,19 +61,26 @@ export function RobotPowerDialog({
         </p>
       </div>
 
-      <div className="grid justify-items-center gap-4">
+      <div className="flex flex-col gap-4">
+        {action === "stop" && (
+          <p className="text-base whitespace-pre-line text-secondary">
+            {t("workflow.robotPower.stopNote")}
+          </p>
+        )}
         <Button
-          variant="unstyled"
-          size="unstyled"
-          type="button"
+          variant="secondary"
+          size="lg"
+          className="self-start px-6"
           disabled={busy}
-          aria-label={label}
-          className="grid size-36 place-items-center rounded-full bg-primary text-on-primary transition active:scale-95 active:bg-primary-pressed disabled:opacity-50"
           onClick={onAction}
         >
-          <Power className="size-16" strokeWidth={2.5} />
+          <Power aria-hidden="true" className="size-5" />
+          {t(
+            action === "stop"
+              ? "workflow.robotPower.stop"
+              : "workflow.robotPower.start"
+          )}
         </Button>
-        <p className="text-xl font-bold">{label}</p>
       </div>
     </Dialog.Popup>
   )
