@@ -5,6 +5,7 @@ import { CircleAlert, Info, TriangleAlert, X } from "lucide-react"
 import { Button, Dialog } from "~/core"
 import { cn } from "~/utils/cn"
 
+import { DialogWriting } from "./dialog-writing"
 import { useDocText } from "./doc-lang"
 import { DocSection, Example, SubTitle } from "./doc-parts"
 
@@ -132,6 +133,7 @@ export function DialogDoc() {
           <RuleItem key={rule.en} rule={rule} />
         ))}
       </ul>
+      <DialogWriting />
       <SubTitle>{{ en: "Fixed values", ja: "固定の値" }}</SubTitle>
       <p className="text-base text-secondary">
         {tx({

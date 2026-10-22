@@ -85,7 +85,7 @@ export async function stopWhileRequestingTeleoperation({
 
   const shell = readAppShellState()
   const confirmed = await shell.askOperator({
-    buttons: "yes-no",
+    buttons: "stop-cancel",
     home: false,
     message: translate("robotStopOperatorScheduledConfirm"),
   })

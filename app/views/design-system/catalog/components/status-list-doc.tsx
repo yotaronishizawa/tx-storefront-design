@@ -20,11 +20,15 @@ export function StatusListDoc() {
             ja: "ロボットや棚を待つ時：停止位置への移動、棚の角度調整",
           },
           {
-            en: "Short labels that name the process, not the outcome",
-            ja: "結果ではなく処理の名前を短く書く",
+            en: "Short labels that name the process, not the outcome (Move the robot to the stop position)",
+            ja: "結果ではなく処理の名前を短く書く（「ロボットを停止位置へ移動」）",
           },
         ]}
         donts={[
+          {
+            en: "A label in the -ing form (“moving…”): it still reads “moving” next to the done tick",
+            ja: "「〜中」の形のラベル → 完了のチェックの横でも「移動中」と読めてしまう",
+          },
           {
             en: "Steps staff carry out themselves: that is a numbered step list",
             ja: "店員が自分でやる手順 → 番号付きの手順",

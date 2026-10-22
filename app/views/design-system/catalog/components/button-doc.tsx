@@ -26,14 +26,22 @@ export function ButtonDoc() {
             ja: "secondary：キャンセルやその他の操作",
           },
           {
-            en: "Destructive: delete, stop, or anything that cannot be undone",
-            ja: "destructive：削除・停止など、取り消せない操作",
+            en: "Destructive: delete, or anything else that cannot be undone. Stopping the robot can be undone, so it is primary",
+            ja: "destructive：削除など、取り消せない操作。ロボットの停止は戻せるので primary",
+          },
+          {
+            en: "Label: the name of the action, a verb (Start, Stop the robot). Cancel for the other choice",
+            ja: "ラベル：操作の名前（動詞）。「開始する」「ロボットを止める」。もう一方は「キャンセル」",
           },
         ]}
         donts={[
           {
             en: "Choosing where to go or what to do next: that is a ChoiceCard",
             ja: "次にどこへ行くか・何をするかを選ぶもの → ChoiceCard",
+          },
+          {
+            en: "Yes, No or OK as a label: say what the button does",
+            ja: "「はい」「いいえ」「OK」のラベル → ボタンが何をするかを書く",
           },
           {
             en: 'variant="unstyled" with your own classes: if no variant fits, ask design',

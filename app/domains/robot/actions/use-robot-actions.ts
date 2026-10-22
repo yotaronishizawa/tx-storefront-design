@@ -42,7 +42,7 @@ export function useRobotActions() {
 
   function confirm(
     message: ParseKeys<"app">,
-    buttons: "yes-no" | "restart-no" = "yes-no"
+    buttons: "start-cancel" | "stop-cancel" | "boot-cancel" | "yes-no"
   ): Promise<boolean> {
     return readAppShellState()
       .askOperator({ buttons, home: false, message: translate(message) })
@@ -104,13 +104,13 @@ export function useRobotActions() {
       await bootRobotSoftware()
       return
     }
-    if (await confirm("robotStartConfirm", "restart-no")) {
+    if (await confirm("robotStartConfirm", "start-cancel")) {
       await startAutoPnpOperation()
     }
   }
 
   async function bootRobotSoftware(): Promise<void> {
-    if (!(await confirm("robotBootConfirm"))) {
+    if (!(await confirm("robotBootConfirm", "boot-cancel"))) {
       return
     }
     await readAppShellState().askOperator({
@@ -159,7 +159,7 @@ export function useRobotActions() {
       })
       return false
     }
-    if (!quiet && !(await confirm("robotStopConfirm"))) {
+    if (!quiet && !(await confirm("robotStopConfirm", "stop-cancel"))) {
       return false
     }
     return stopAutoPnpOperation(quiet)
@@ -171,7 +171,13 @@ export function useRobotActions() {
    * there is no separate curtain control. Kept for parity with the store app.
    */
   async function moveCurtains(action: StoreAction, open: boolean) {
-    if (!(await confirm(open ? "curtainOpenConfirm" : "curtainCloseConfirm"))) {
+    if (
+      !(await confirm(
+        open ? "curtainOpenConfirm" : "curtainCloseConfirm",
+        // Never shown (see above), so it keeps the old Yes / No.
+        "yes-no"
+      ))
+    ) {
       return
     }
     await runRobotCommand(action, (robotId, token) =>

@@ -17,7 +17,9 @@ type Labels = { confirm: string; dismiss?: string }
 const CHOICE_PROMPTS = new Set<PromptButtons>([
   "stop-and-enter",
   "start-and-home",
-  "restart-no",
+  "start-cancel",
+  "stop-cancel",
+  "boot-cancel",
 ])
 
 /** A lone button dismisses, except these. */
@@ -64,9 +66,17 @@ export function ActionPromptDialog({
       confirm: t("confirmed"),
       dismiss: t("common:actions.cancel"),
     },
-    "restart-no": {
-      confirm: t("restockingEndConfirmButton"),
-      dismiss: t("common:boolean.no"),
+    "start-cancel": {
+      confirm: t("workflow.robotPower.startConfirm"),
+      dismiss: t("common:actions.cancel"),
+    },
+    "stop-cancel": {
+      confirm: t("workflow.robotPower.stop"),
+      dismiss: t("common:actions.cancel"),
+    },
+    "boot-cancel": {
+      confirm: t("workflow.robotPower.bootConfirm"),
+      dismiss: t("common:actions.cancel"),
     },
     "stop-confirmed": { confirm: t("robotStopConfirmedButton") },
     "start-and-home": {
