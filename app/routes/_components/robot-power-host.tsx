@@ -16,6 +16,8 @@ import {
   useRestockRequest,
 } from "~/domains/operations"
 import {
+  beginRobotStopWatch,
+  endRobotStopWatch,
   useAutoPnpOperating,
   useRobotActions,
   useRobotOperationMode,
@@ -106,7 +108,9 @@ export function RobotPowerHost() {
       return
     }
     if (action === "stop") {
-      await robotActions.stopRobot()
+      // Same popup as the tasks while the robot travels to the stop position.
+      if (workStatus !== "RestPosition") beginRobotStopWatch({ shelves: false })
+      if (!(await robotActions.stopRobot({ quiet: true }))) endRobotStopWatch()
       return
     }
     await start()

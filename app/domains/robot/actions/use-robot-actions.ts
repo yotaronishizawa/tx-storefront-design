@@ -133,15 +133,21 @@ export function useRobotActions() {
     await runRobotCommand("start-robot-software", startRobotSoftware)
   }
 
-  /** The stop button, which hands a robot under operator control to its own flow. */
-  async function stopRobot(): Promise<void> {
+  /**
+   * The stop button, which hands a robot under operator control to its own
+   * flow. `quiet` skips "stop the robot?" and the "check it stopped" popup:
+   * the header popup says, right above its button, that the tasks stop the
+   * robot themselves, and the robot-stopping popup shows the stop.
+   * Resolves whether a stop was sent.
+   */
+  async function stopRobot({ quiet = false } = {}): Promise<boolean> {
     const robot = readRobotState().robot
     if (!session || !selectedStore || !robot) {
-      return
+      return false
     }
     if (robot.status === "Teleoperation") {
       await requestOperatorStop(selectedStore.id, session.token)
-      return
+      return false
     }
     if (robot.status === "RequestingTeleoperation") {
       await stopWhileRequestingTeleoperation({
@@ -151,11 +157,12 @@ export function useRobotActions() {
         token: session.token,
         stop: stopAutoPnpOperation,
       })
-      return
+      return false
     }
-    if (await confirm("robotStopConfirm")) {
-      await stopAutoPnpOperation()
+    if (!quiet && !(await confirm("robotStopConfirm"))) {
+      return false
     }
+    return stopAutoPnpOperation(quiet)
   }
 
   /**

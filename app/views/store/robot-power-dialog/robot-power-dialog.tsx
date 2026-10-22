@@ -10,8 +10,12 @@ import type { RobotStatusKind } from "~/model/robot-status"
 import { cn } from "~/utils/cn"
 
 /**
- * The header robot popup: the robot status and one power button, "stop" while
- * the robot runs and "start" while it is stopped.
+ * The header robot popup.
+ * - Robot running: staff who reach for "stop first" learn that every task
+ *   stops the robot by itself. The note sits right above a quiet stop
+ *   button, so it is read before pressing; stopping still works, with no
+ *   "are you sure".
+ * - Robot stopped: the robot status and one big start button.
  */
 export function RobotPowerDialog({
   open,
@@ -33,10 +37,35 @@ export function RobotPowerDialog({
 }) {
   const { t } = useTranslation(["app", "common"])
   const moving = available && ROBOT_MOVING_KINDS.has(kind)
-  const label = t(
-    action === "stop" ? "workflow.robotPower.stop" : "workflow.robotPower.start"
-  )
 
+  if (action === "stop") {
+    return (
+      <Dialog.Popup
+        open={open}
+        onClose={onClose}
+        closeLabel={t("common:actions.close")}
+        title={t("workflow.robotPower.title")}
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-base whitespace-pre-line text-secondary">
+            {t("workflow.robotPower.stopNote")}
+          </p>
+          <Button
+            variant="secondary"
+            size="lg"
+            className="self-start px-6"
+            disabled={busy}
+            onClick={onAction}
+          >
+            <Power aria-hidden="true" className="size-5" />
+            {t("workflow.robotPower.stop")}
+          </Button>
+        </div>
+      </Dialog.Popup>
+    )
+  }
+
+  const label = t("workflow.robotPower.start")
   return (
     <Dialog.Popup
       open={open}
@@ -68,12 +97,7 @@ export function RobotPowerDialog({
           type="button"
           disabled={busy}
           aria-label={label}
-          className={cn(
-            "grid size-36 place-items-center rounded-full transition active:scale-95 disabled:opacity-50",
-            action === "stop"
-              ? "bg-inverse text-inverse"
-              : "bg-primary text-on-primary active:bg-primary-pressed"
-          )}
+          className="grid size-36 place-items-center rounded-full bg-primary text-on-primary transition active:scale-95 active:bg-primary-pressed disabled:opacity-50"
           onClick={onAction}
         >
           <Power className="size-16" strokeWidth={2.5} />
