@@ -9,7 +9,6 @@ import {
   WifiOff,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { useNavigate } from "react-router"
 
 import { LanguageMenu } from "~/components/language/language-menu"
 import { APP_ENVIRONMENT_LABEL } from "~/config/app"
@@ -30,7 +29,7 @@ export function AppHeaderView({
   onSettings,
   onHome,
   leading,
-  idleScreenShown = false,
+  onRobotStatus,
 }: {
   isOnline: boolean
   isVideoTutorialOpen: boolean
@@ -43,15 +42,14 @@ export function AppHeaderView({
   onManualDocumentOpen?: () => void
   onSettings: () => void
   onHome: () => void
-  /** Home is showing the idle screen: no "see the robot" over it. */
-  idleScreenShown?: boolean
+  /** The robot popup: its status, and stopping or starting it. */
+  onRobotStatus: () => void
   /** Status shown after the logo (scanner state). */
   leading?: ReactNode
 }) {
   const { t } = useTranslation(["app", "common"])
   const [isLanguageMenuOpen, setIsLanguageMenuOpen] = useState(false)
 
-  const navigate = useNavigate()
   const isHome = isSamePathname(pathname, ROUTES.home().pathname)
 
   return (
@@ -92,23 +90,21 @@ export function AppHeaderView({
             <span className="hidden sm:inline">{t("offlineMode")}</span>
           </span>
         )}
-        {/* Home shows no robot status with the idle screen on: the way to
-            look on purpose. */}
-        {isHome && !idleScreenShown && (
-          <Button
-            variant="unstyled"
-            size="unstyled"
-            type="button"
-            onClick={() => void navigate("/?idle=1")}
-            className="flex min-h-11 items-center gap-2 rounded-full bg-subtle px-3 text-sm font-bold sm:px-4"
-            aria-label={t("workflow.home.showIdle")}
-          >
-            <Bot className="size-5" />
-            <span className="hidden sm:inline">
-              {t("workflow.home.showIdle")}
-            </span>
-          </Button>
-        )}
+        {/* The one way into the robot: its status, and stop or start. No
+            power icon of its own, so it does not invite "stop first". */}
+        <Button
+          variant="unstyled"
+          size="unstyled"
+          type="button"
+          onClick={onRobotStatus}
+          className="flex min-h-11 items-center gap-2 rounded-full bg-subtle px-3 text-sm font-bold sm:px-4"
+          aria-label={t("workflow.home.showIdle")}
+        >
+          <Bot className="size-5" />
+          <span className="hidden sm:inline">
+            {t("workflow.home.showIdle")}
+          </span>
+        </Button>
         <Button
           variant="unstyled"
           size="unstyled"

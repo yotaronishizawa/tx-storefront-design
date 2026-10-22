@@ -6,7 +6,6 @@ import { AppScreen } from "~/components/layout/app-screen"
 import { FEATURES } from "~/config/feature"
 import { ROUTES } from "~/config/routes"
 import {
-  useIdleScreenShown,
   useIsDialogOpen,
   useOpenDialog,
   useOpenVideoTutorial,
@@ -40,7 +39,6 @@ export default function ChromeLayout() {
   const isVideoTutorialOpen = useIsDialogOpen("video-tutorial")
   const openDialog = useOpenDialog()
   const openVideoTutorial = useOpenVideoTutorial()
-  const idleScreenShown = useIdleScreenShown()
   const navigate = useNavigate()
   const { pathname } = useLocation()
 
@@ -66,14 +64,13 @@ export default function ChromeLayout() {
         onLanguageChange={changeLanguage}
         onManualDocumentOpen={openManualDocument}
         onSettings={() => navigate(ROUTES.settings().pathname)}
-        idleScreenShown={idleScreenShown}
+        onRobotStatus={() => openDialog("robot-power")}
         leading={
           <AppHeaderScannerStatus
             scannerConnected={scannerConnected}
             battery={scannerBattery}
             onOpenScannerRecovery={() => openDialog("scanner-recovery")}
             onOpenScannerHelp={() => openDialog("scanner-help")}
-            onOpenRobotPower={() => openDialog("robot-power")}
           />
         }
       />

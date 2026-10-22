@@ -1,4 +1,4 @@
-import { Power, QrCode, ScanBarcode } from "lucide-react"
+import { QrCode, ScanBarcode } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "~/core"
@@ -6,7 +6,7 @@ import type { ScannerBattery } from "~/model/scanner-battery"
 import { cn } from "~/utils/cn"
 
 /**
- * Header left: the scanner group, then the robot popup button.
+ * Header left: the scanner group (the robot popup opens from "ロボット状態").
  * The scanner state and its recovery button share one grey group, so
  * "反応しない時" needs no subject: the group says it is the scanner.
  * Disconnected, the button is "?" and opens what to check instead.
@@ -16,13 +16,11 @@ export function AppHeaderScannerStatus({
   battery,
   onOpenScannerRecovery,
   onOpenScannerHelp,
-  onOpenRobotPower,
 }: {
   scannerConnected: boolean
   battery?: ScannerBattery
   onOpenScannerRecovery: () => void
   onOpenScannerHelp: () => void
-  onOpenRobotPower: () => void
 }) {
   const { t } = useTranslation("app")
   const label = !scannerConnected
@@ -90,16 +88,6 @@ export function AppHeaderScannerStatus({
           </Button>
         )}
       </div>
-      <Button
-        variant="unstyled"
-        size="unstyled"
-        aria-label={t("workflow.robotPower.open")}
-        className="grid size-11 shrink-0 place-items-center rounded-lg bg-primary text-on-primary transition active:bg-primary-pressed [&_svg]:size-6"
-        type="button"
-        onClick={onOpenRobotPower}
-      >
-        <Power strokeWidth={2.5} />
-      </Button>
     </div>
   )
 }
