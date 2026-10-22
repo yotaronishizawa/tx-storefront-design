@@ -17,6 +17,7 @@ type Labels = { confirm: string; dismiss?: string }
 const CHOICE_PROMPTS = new Set<PromptButtons>([
   "stop-and-enter",
   "start-and-home",
+  "restart-no",
 ])
 
 /** A lone button dismisses, except these. */
