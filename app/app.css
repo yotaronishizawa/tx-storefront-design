@@ -84,8 +84,6 @@
   --radius-md: 0.5rem;
   --radius-lg: 0.75rem;
   --radius-xl: 1rem;
-  /* Header scanner group and its button (Yotaro 2026-10-22; not in Ethan's scale). */
-  --radius-2xl: 1.25rem;
 
   --shadow-dialog: 0 8px 32px rgb(0 0 0 / 16%);
 }
