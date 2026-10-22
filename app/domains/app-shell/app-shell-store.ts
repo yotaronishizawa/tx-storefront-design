@@ -28,6 +28,7 @@ export type DialogKind =
   | "restocking-end-next"
   | "restocking-start"
   | "scanner-recovery"
+  | "scanner-help"
   | "robot-power"
   | "teleoperation-layout-block"
   | "video-tutorial"

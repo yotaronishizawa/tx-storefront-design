@@ -56,6 +56,7 @@ import { ConnectingDialog } from "~/views/store/connecting-dialog"
 import { PwaInstallPromptView } from "~/views/store/pwa-install-prompt"
 import { RobotLockView } from "~/views/store/robot-lock"
 import { RobotStoppingDialog } from "~/views/store/robot-stopping-dialog"
+import { ScannerHelpDialog } from "~/views/store/scanner-help-dialog"
 import { ScannerRecoveryDialog } from "~/views/store/scanner-recovery-dialog"
 import { VideoTutorialDialog } from "~/views/store/video-tutorial-dialog"
 
@@ -267,6 +268,10 @@ export function AppDialogs() {
       <ScannerRecoveryDialog
         open={activeDialog === "scanner-recovery"}
         onClose={() => closeDialog("scanner-recovery")}
+      />
+      <ScannerHelpDialog
+        open={activeDialog === "scanner-help"}
+        onClose={() => closeDialog("scanner-help")}
       />
       <MessageDialog
         message={message}
