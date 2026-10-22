@@ -38,10 +38,10 @@ export function AppHeaderScannerStatus({
 
   return (
     <div className="flex min-w-0 items-center gap-2">
-      <div className="flex shrink-0 items-center gap-1 rounded-full bg-muted p-1">
+      <div className="flex shrink-0 items-center gap-1 rounded-2xl bg-subtle p-1">
         <span
           className={cn(
-            "inline-flex min-h-11 items-center gap-1.5 rounded-full px-3 text-sm whitespace-nowrap",
+            "inline-flex min-h-11 items-center gap-1.5 rounded-2xl px-3 text-sm whitespace-nowrap",
             !scannerConnected && "text-secondary",
             battery === "low" &&
               scannerConnected &&
@@ -68,7 +68,7 @@ export function AppHeaderScannerStatus({
           <Button
             variant="unstyled"
             size="unstyled"
-            className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-full bg-primary px-3 text-sm font-bold text-on-primary transition active:bg-primary-pressed"
+            className="flex min-h-11 shrink-0 items-center gap-1.5 rounded-2xl bg-primary px-3 text-sm font-bold text-on-primary transition active:bg-primary-pressed"
             type="button"
             onClick={onOpenScannerRecovery}
           >
@@ -80,7 +80,7 @@ export function AppHeaderScannerStatus({
             variant="unstyled"
             size="unstyled"
             aria-label={t("scannerHelpOpen")}
-            className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-on-primary transition active:bg-primary-pressed"
+            className="grid size-11 shrink-0 place-items-center rounded-2xl bg-primary text-on-primary transition active:bg-primary-pressed"
             type="button"
             onClick={onOpenScannerHelp}
           >

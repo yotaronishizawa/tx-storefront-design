@@ -25,7 +25,7 @@ export function LanguageMenu({
         size="unstyled"
         aria-expanded={open}
         aria-label={t("common:entity.language", { count: 1 })}
-        className="h-10 gap-2 rounded-full border border-primary bg-default px-3 text-xs font-bold text-primary active:bg-muted [&_svg]:size-3.5"
+        className="flex min-h-11 items-center gap-2 rounded-full bg-subtle px-3 text-sm font-bold active:bg-muted sm:px-4 [&_svg]:size-5"
         type="button"
         onClick={onToggle}
       >
