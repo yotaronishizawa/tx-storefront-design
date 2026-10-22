@@ -1,7 +1,9 @@
 /**
  * Keyword search over the CX manual decks, page by page. The index is built
- * from the decks' PDFs (public/manual-search, local only: the decks are marked
- * Confidential) and read once, the first time someone searches.
+ * from the decks' PDFs (public/manual-search, kept out of git: the decks are
+ * marked Confidential; copied into the build when publishing to test-ui, which
+ * is not shared outside the company) and read once, the first time someone
+ * searches.
  */
 
 export type ManualDoc = {
