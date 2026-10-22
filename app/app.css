@@ -100,10 +100,10 @@
 
   /* User-study home, Store App node 7863:163508 (2026-10-06). */
   --background-color-home-restock: #f7eed9;
-  --background-color-home-manual: #ece8f6;
+  --background-color-home-manual: #e1f7d9;
   /* In-progress card edge: a deeper shade of each card's own background. */
   --ring-color-home-restock: #f5c000;
-  --ring-color-home-manual: #8f84dc;
+  --ring-color-home-manual: #62ce3b;
 
   --container-dialog-sm: 30rem;
   --container-dialog: 39.375rem;
