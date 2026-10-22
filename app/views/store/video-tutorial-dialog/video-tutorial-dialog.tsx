@@ -1,29 +1,17 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react"
 
-import {
-  BookOpen,
-  ChevronLeft,
-  LifeBuoy,
-  Phone,
-  PlayCircle,
-  Target,
-} from "lucide-react"
+import { BookOpen, ChevronLeft, Phone, PlayCircle } from "lucide-react"
 import { useTranslation } from "react-i18next"
-import { useLocation } from "react-router"
 
 import { SupportContact } from "~/components/support/support-contact"
 import { Button, ChoiceCard, Dialog, SearchField } from "~/core"
 import { cn } from "~/utils/cn"
 import {
   loadManualIndex,
-  manualPicksFor,
   searchByName,
-  troublePagesOf,
-  videoPicksFor,
   type ManualDoc,
   type ManualPage,
 } from "~/utils/manual-search"
-import { normalizePathname } from "~/utils/pathname"
 import type {
   VideoTutorial,
   VideoTutorialCatalog,
@@ -32,16 +20,11 @@ import type {
 } from "~/utils/video-tutorials"
 
 import { DeckReader } from "./components/deck-reader"
-import {
-  ContactStrip,
-  PageCard,
-  SectionTitle,
-  VideoCard,
-} from "./components/help-parts"
+import { ContactStrip, SectionTitle, VideoCard } from "./components/help-parts"
 import { VideoPlayerPanel } from "./components/video-player-panel"
 import { getVideoTitleKey, type VideoState } from "./utils/video-tutorial"
 
-type Section = "screen" | "videos" | "manual" | "trouble" | "contact"
+type Section = "videos" | "manual" | "contact"
 
 /** What fills the right side over a section: a video, or a manual page. */
 type Open =
@@ -51,8 +34,9 @@ type Open =
 
 /**
  * The help: one place for the tutorial videos and the CX manual, read in the
- * app. Left, where to look (this screen first); right, what is there. Staff
- * watch the videos more than they read, so videos lead. A search finds both.
+ * app. Left, where to look; right, what is there. Staff watch the videos
+ * more than they read, so videos lead. A search finds both (for now the way
+ * in; the per-screen and troubleshooting picks are gone).
  * The operations centre's number closes every section.
  */
 export function VideoTutorialDialog({
@@ -69,18 +53,17 @@ export function VideoTutorialDialog({
   onClose: () => void
 }) {
   const { t } = useTranslation(["app", "common"])
-  const pathname = normalizePathname(useLocation().pathname)
-  const [section, setSection] = useState<Section>("screen")
+  const [section, setSection] = useState<Section>("videos")
   const [query, setQuery] = useState("")
   const [opened, setOpened] = useState<Open>(null)
   const [docs, setDocs] = useState<ManualDoc[]>([])
   const [videoState, setVideoState] = useState<VideoState>("idle")
   const [retryNonce, setRetryNonce] = useState(0)
 
-  // Each opening starts on this screen, with nothing typed.
+  // Each opening starts on the videos, with nothing typed.
   useEffect(() => {
     if (!open) return
-    setSection("screen")
+    setSection("videos")
     setQuery("")
     setOpened(null)
   }, [open])
@@ -119,10 +102,8 @@ export function VideoTutorialDialog({
     : t(`help.nav.${section}` as const)
 
   const nav: { key: Section; icon: ReactNode }[] = [
-    { key: "screen", icon: <Target className="size-5" /> },
     { key: "videos", icon: <PlayCircle className="size-5" /> },
     { key: "manual", icon: <BookOpen className="size-5" /> },
-    { key: "trouble", icon: <LifeBuoy className="size-5" /> },
   ]
   const goTo = (key: Section) => {
     setSection(key)
@@ -213,19 +194,6 @@ export function VideoTutorialDialog({
                   onVideo={openVideo}
                   onPage={openPage}
                 />
-              ) : section === "screen" ? (
-                <>
-                  <VideoGrid
-                    title={t("help.screenVideos")}
-                    videos={videoPicksFor(videos, pathname)}
-                    onVideo={openVideo}
-                  />
-                  <PageGrid
-                    title={t("manualSearch.picksHeading")}
-                    pages={manualPicksFor(docs, pathname)}
-                    onPage={openPage}
-                  />
-                </>
               ) : section === "videos" ? (
                 <VideoGrid
                   title={t("help.allVideos")}
@@ -238,12 +206,6 @@ export function VideoTutorialDialog({
                   <SectionTitle>{t("manualSearch.library")}</SectionTitle>
                   <DocList docs={docs} onPage={openPage} />
                 </section>
-              ) : section === "trouble" ? (
-                <PageGrid
-                  title={t("help.troublePages")}
-                  pages={troublePagesOf(docs)}
-                  onPage={openPage}
-                />
               ) : (
                 <section className="grid gap-3">
                   <SectionTitle>{t("help.nav.contact")}</SectionTitle>
@@ -327,32 +289,6 @@ function VideoGrid({
             key={video.id}
             video={video}
             onOpen={() => onVideo(video)}
-          />
-        ))}
-      </div>
-    </section>
-  )
-}
-
-function PageGrid({
-  title,
-  pages,
-  onPage,
-}: {
-  title: string
-  pages: ManualPage[]
-  onPage: (at: ManualPage) => void
-}) {
-  if (pages.length === 0) return null
-  return (
-    <section className="grid gap-3">
-      <SectionTitle>{title}</SectionTitle>
-      <div className="grid grid-cols-2 gap-2">
-        {pages.map((at) => (
-          <PageCard
-            key={`${at.doc.key}-${at.page}`}
-            at={at}
-            onOpen={() => onPage(at)}
           />
         ))}
       </div>
