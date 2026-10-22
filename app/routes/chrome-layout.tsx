@@ -63,7 +63,15 @@ export default function ChromeLayout() {
         onHowToUse={() => openVideoTutorial(getVideoTutorialCategory(pathname))}
         onLanguageChange={changeLanguage}
         onManualDocumentOpen={openManualDocument}
-        onSettings={() => navigate(ROUTES.settings().pathname)}
+        onSettings={() => {
+          if (!isSamePathname(pathname, ROUTES.settings().pathname)) {
+            void navigate(ROUTES.settings().pathname)
+            return
+          }
+          // Pressed again on Settings: close it, back to where staff were.
+          const idx = (window.history.state as { idx?: number } | null)?.idx
+          void (idx ? navigate(-1) : navigate(ROUTES.home().pathname))
+        }}
         onRobotStatus={() => openDialog("robot-power")}
         leading={
           <AppHeaderScannerStatus
