@@ -10,8 +10,8 @@ import type { RobotStatusKind } from "~/model/robot-status"
 import { cn } from "~/utils/cn"
 
 /**
- * The header robot popup: the robot status, then one quiet power button,
- * "stop" while the robot runs and "start" while it is stopped.
+ * The header robot popup, a confirmation: the robot status, then "stop"
+ * while the robot runs or "start" while it is stopped, and Cancel.
  * While it runs, a note right above the button says the tasks stop the robot
  * by themselves, so staff who reach for "stop first" read it before
  * pressing; stopping still works, with no "are you sure".
@@ -43,6 +43,21 @@ export function RobotPowerDialog({
       onClose={onClose}
       closeLabel={t("common:actions.close")}
       title={t("workflow.robotPower.title")}
+      actions={
+        <Dialog.Actions>
+          <Button size="lg" disabled={busy} onClick={onAction}>
+            <Power aria-hidden="true" className="size-5" />
+            {t(
+              action === "stop"
+                ? "workflow.robotPower.stop"
+                : "workflow.robotPower.start"
+            )}
+          </Button>
+          <Button size="lg" variant="secondary" onClick={onClose}>
+            {t("common:actions.cancel")}
+          </Button>
+        </Dialog.Actions>
+      }
     >
       <div className="flex items-center justify-between gap-3">
         <span className="font-bold text-secondary">{t("robotStatus")}</span>
@@ -61,27 +76,11 @@ export function RobotPowerDialog({
         </p>
       </div>
 
-      <div className="flex flex-col gap-4">
-        {action === "stop" && (
-          <p className="text-base whitespace-pre-line text-secondary">
-            {t("workflow.robotPower.stopNote")}
-          </p>
-        )}
-        <Button
-          variant="secondary"
-          size="lg"
-          className="self-start px-6"
-          disabled={busy}
-          onClick={onAction}
-        >
-          <Power aria-hidden="true" className="size-5" />
-          {t(
-            action === "stop"
-              ? "workflow.robotPower.stop"
-              : "workflow.robotPower.start"
-          )}
-        </Button>
-      </div>
+      {action === "stop" && (
+        <p className="text-base whitespace-pre-line text-secondary">
+          {t("workflow.robotPower.stopNote")}
+        </p>
+      )}
     </Dialog.Popup>
   )
 }
