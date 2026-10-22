@@ -5,6 +5,7 @@ export {
   usePulledLane,
   useRestockingLaneAdditions,
   useRestockingPlacement,
+  useScannerBattery,
   useScannerConnected,
   useScannerConnectionSource,
   useShelvesFlat,

@@ -12,7 +12,7 @@ import {
   useOpenDialog,
   useOpenVideoTutorial,
 } from "~/domains/app-shell"
-import { useScannerConnected } from "~/domains/restocking"
+import { useScannerBattery, useScannerConnected } from "~/domains/restocking"
 import { useSelectedStore } from "~/domains/store-selection"
 import { useOnlineStatus } from "~/hooks/use-online-status"
 import { changeLanguage } from "~/initializer/i18n"
@@ -36,6 +36,7 @@ export default function ChromeLayout() {
         entity: t("common:entity.store", { count: 1 }),
       })
   const scannerConnected = useScannerConnected()
+  const scannerBattery = useScannerBattery()
   const isOnline = useOnlineStatus()
   const isVideoTutorialOpen = useIsDialogOpen("video-tutorial")
   const openDialog = useOpenDialog()
@@ -70,6 +71,7 @@ export default function ChromeLayout() {
         leading={
           <AppHeaderScannerStatus
             scannerConnected={scannerConnected}
+            battery={scannerBattery}
             onOpenScannerRecovery={() => openDialog("scanner-recovery")}
             onOpenScannerHelp={() =>
               readAppShellState().setNotice(t("restockingScannerDisconnected"))

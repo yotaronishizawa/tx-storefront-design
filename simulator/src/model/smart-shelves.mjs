@@ -36,6 +36,11 @@ export function smartShelvesStatus(storeId) {
       ? {
           isConnected: state.scannerConnected,
           modelName: "SIM-SCANNER",
+          // Only once set (`/sim/shelf/connection?battery=`): real scanners
+          // send no battery yet, so by default the field is left out.
+          ...(state.scannerBatteryLevel !== undefined && {
+            batteryLevel: state.scannerBatteryLevel,
+          }),
           latestScannedJanEanCode: null,
           latestScannedAt: null,
           ...state.latestScan,

@@ -2,13 +2,8 @@ import { Power, QrCode, ScanBarcode } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Button } from "~/core"
+import type { ScannerBattery } from "~/model/scanner-battery"
 import { cn } from "~/utils/cn"
-
-/**
- * The scanner's battery, once the scanner reports it (no source yet: OPM and
- * the stock-shelf hub carry no battery value, so only `undefined` is used).
- */
-export type ScannerBattery = "ok" | "low" | "critical" | "unknown"
 
 /**
  * Header left: the scanner group, then the robot popup button.

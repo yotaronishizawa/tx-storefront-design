@@ -47,6 +47,7 @@ export function createScannerConnectionTracker(storeId: string) {
       restocking.setScannerConnected(
         status?.scannerStatus?.isConnected ?? false
       )
+      restocking.setScannerBatteryLevel(status?.scannerStatus?.batteryLevel)
       restocking.setShelvesFlat(status?.mode === "Restocking")
       restocking.setSmartShelvesStatusKnown(true)
     },

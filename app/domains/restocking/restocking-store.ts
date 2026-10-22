@@ -93,6 +93,8 @@ type RestockingState = {
   pulledLane: PulledLane
   scanAlerts: ScanAlert[]
   scannerConnected: boolean
+  /** Percent; `undefined` while the scanner sends no battery at all. */
+  scannerBatteryLevel: number | null | undefined
   scannedSkuId: string
   /**
    * A scan was applied since the operator last came to the restocking page.
@@ -147,6 +149,7 @@ type RestockingActions = {
   setCurrentPathname: (currentPathname: string) => void
   setLocalShelfConnected: (localShelfConnected: boolean) => void
   setScannerConnected: (connected: boolean) => void
+  setScannerBatteryLevel: (level: number | null | undefined) => void
   setShelvesFlat: (shelvesFlat: boolean) => void
   setSmartShelvesStatusKnown: (known: boolean) => void
 }
@@ -168,6 +171,7 @@ const INITIAL_STATE: RestockingState = {
   nextErrorLaneRequested: false,
   pulledLane: { laneId: "", signal: 0 },
   scannerConnected: false,
+  scannerBatteryLevel: undefined,
   scanAlerts: [],
   scannedSkuId: "",
   scannedThisVisit: false,
@@ -380,6 +384,8 @@ export const useRestockingStore = create<RestockingState & RestockingActions>(
     setLocalShelfConnected: (localShelfConnected) =>
       set({ localShelfConnected }),
     setScannerConnected: (scannerConnected) => set({ scannerConnected }),
+    setScannerBatteryLevel: (scannerBatteryLevel) =>
+      set({ scannerBatteryLevel }),
     setShelvesFlat: (shelvesFlat) => set({ shelvesFlat }),
     setSmartShelvesStatusKnown: (smartShelvesStatusKnown) =>
       set({ smartShelvesStatusKnown }),

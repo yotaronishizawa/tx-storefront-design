@@ -50,6 +50,16 @@ export const scannerRoutes = [
   post("/sim/shelf/connection", (params) => {
     const shelf = params.get("connected")
     const scanner = params.get("scanner")
+    // battery=<percent> | unknown (sent as null) | none (field left out)
+    const battery = params.get("battery")
+    if (battery !== null) {
+      state.scannerBatteryLevel =
+        battery === "none"
+          ? undefined
+          : battery === "unknown"
+            ? null
+            : Number(battery)
+    }
     if (shelf !== null) {
       state.shelfConnected = shelf !== "false"
     }
@@ -65,6 +75,7 @@ export const scannerRoutes = [
       shelfConnected: state.shelfConnected,
       scannerPresent: state.scannerPresent,
       scannerConnected: state.scannerConnected,
+      scannerBatteryLevel: state.scannerBatteryLevel ?? "none",
     }
   }),
   post("/sim/shelf-hub/connection", (params) => {

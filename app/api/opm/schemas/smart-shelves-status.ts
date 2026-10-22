@@ -14,6 +14,9 @@ const smartShelvesStatusSchema = z.looseObject({
       isConnected: flag,
       latestScannedAt: text,
       latestScannedJanEanCode: text,
+      // Battery in percent. No scanner sends it yet; the name is a guess.
+      // Absent (undefined) and unknown (null) are told apart on purpose.
+      batteryLevel: z.number().nullish(),
     })
   ),
   // When the shelf client last reported, and what it runs: OPM refuses manual

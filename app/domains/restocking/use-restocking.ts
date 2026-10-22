@@ -8,6 +8,10 @@ import {
 import { useRestockRequest } from "~/domains/operations"
 import { useLaneErrorBlock, useStockLocations } from "~/domains/shelf"
 import { isActiveRequest } from "~/model/request-state"
+import {
+  scannerBatteryFrom,
+  type ScannerBattery,
+} from "~/model/scanner-battery"
 import type { ScannerConnectionSource } from "~/model/scanner-scan"
 import {
   getLaneErrorPrompt,
@@ -65,6 +69,13 @@ export function useCurrentScanAlert(): ScanAlert | undefined {
 
 export function useScannerConnected(): boolean {
   return useRestockingStore(selectScannerConnected)
+}
+
+/** `undefined` while the scanner sends no battery value at all. */
+export function useScannerBattery(): ScannerBattery | undefined {
+  return scannerBatteryFrom(
+    useRestockingStore((state) => state.scannerBatteryLevel)
+  )
 }
 
 export function useScannerConnectionSource(): ScannerConnectionSource {
