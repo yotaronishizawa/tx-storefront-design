@@ -3,7 +3,6 @@ import type { ReactNode } from "react"
 import { BookOpen, Play } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
-import { SupportContact } from "~/components/support/support-contact"
 import { ChoiceCard } from "~/core"
 import type { ManualPage } from "~/utils/manual-search"
 import type { VideoTutorial } from "~/utils/video-tutorials"
@@ -78,10 +77,4 @@ export function PageCard({
       }
     />
   )
-}
-
-/** The way out when nothing here helps; under every section. */
-export function ContactStrip() {
-  const { t } = useTranslation("app")
-  return <SupportContact variant="strip" message={t("help.callCenter")} />
 }

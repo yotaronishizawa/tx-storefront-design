@@ -20,7 +20,7 @@ import type {
 } from "~/utils/video-tutorials"
 
 import { DeckReader } from "./components/deck-reader"
-import { ContactStrip, SectionTitle, VideoCard } from "./components/help-parts"
+import { SectionTitle, VideoCard } from "./components/help-parts"
 import { VideoPlayerPanel } from "./components/video-player-panel"
 import { getVideoTitleKey, type VideoState } from "./utils/video-tutorial"
 
@@ -37,7 +37,7 @@ type Open =
  * app. Left, where to look; right, what is there. Staff watch the videos
  * more than they read, so videos lead. A search finds both (for now the way
  * in; the per-screen and troubleshooting picks are gone).
- * The operations centre's number closes every section.
+ * The operations centre's number is in its own section (Contact) only.
  */
 export function VideoTutorialDialog({
   catalog,
@@ -212,7 +212,6 @@ export function VideoTutorialDialog({
                   <SupportContact message={t("help.contactLead")} />
                 </section>
               )}
-              {(section !== "contact" || typed) && <ContactStrip />}
             </div>
           )}
         </div>
