@@ -205,6 +205,7 @@ export function SettingsView({
 
           <ChoiceCard
             chevron
+            className="border-0 bg-subtle p-6 active:bg-muted"
             description={t("settingsAccountHint")}
             icon={<UserRound />}
             title={t("settingsAccount")}
