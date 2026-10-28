@@ -40,6 +40,16 @@ const WRITING: {
   },
   {
     rule: {
+      en: "When pressing the action by mistake is the thing to prevent (sign out: signing back in can take a store a long time), both buttons are secondary and Cancel takes focus. Say what it costs in the body.",
+      ja: "押し間違いを防ぎたい操作（サインアウト：店舗によってはログインし直すのにとても時間がかかる）は、ボタンを2つとも控えめな見た目にし、最初に選ばれるのを「キャンセル」にする。本文には押すと何が起きるかを書く。",
+    },
+    example: {
+      en: "“Sign out?”, body “To use the app again, you will need to enter the login ID and password.”",
+      ja: "見出し「サインアウトしますか？」、本文「もう一度使うには、ログインIDとパスワードの入力が必要です。」",
+    },
+  },
+  {
+    rule: {
       en: "No “are you sure?” in front of an action that can be undone. Ask only for safety (is anyone in the walk-in?) or when it cannot be undone. Put the explanation where it is read before pressing: right above the button.",
       ja: "取り消せる操作の前に「本当に〜しますか？」を挟まない。聞くのは安全のため（中に人がいないか）か、取り消せない時だけ。説明は押す前に読める場所、ボタンのすぐ上に置く。",
     },

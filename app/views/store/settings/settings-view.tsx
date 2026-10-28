@@ -4,16 +4,15 @@ import {
   BadgeInfo,
   Clock,
   Download,
-  LogOut,
   RefreshCw,
   ShieldCheck,
   StoreIcon,
+  UserRound,
 } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { Store } from "~/api/opm/schemas"
-import { ConfirmDialog } from "~/components/dialog/confirm-dialog"
-import { Button, Combobox, ToggleGroup } from "~/core"
+import { Button, ChoiceCard, Combobox, ToggleGroup } from "~/core"
 import { getLocalizedStoreName } from "~/model/sku"
 import type { BusyAction } from "~/types/busy-action"
 
@@ -33,7 +32,7 @@ export function SettingsView({
   stores,
   titleLeading,
   onRefresh,
-  onSignOut,
+  onOpenAccount,
   onStoreChange,
   onIdleTimeoutChange,
 }: {
@@ -47,7 +46,8 @@ export function SettingsView({
   stores: Store[]
   titleLeading?: ReactNode
   onRefresh: () => void
-  onSignOut: () => void
+  /** Sign out sits behind this, one screen down. */
+  onOpenAccount: () => void
   onStoreChange: (storeId: string) => void
   onIdleTimeoutChange: (timeoutMs: number) => void
 }) {
@@ -56,7 +56,6 @@ export function SettingsView({
   const [updatingPwaContent, setUpdatingPwaContent] = useState(false)
   const [downloadingRootCertificate, setDownloadingRootCertificate] =
     useState(false)
-  const [confirmingSignOut, setConfirmingSignOut] = useState(false)
 
   const selectedStore = stores.find((store) => store.id === selectedStoreId)
   const selectedStoreName = selectedStore
@@ -127,16 +126,6 @@ export function SettingsView({
                 icon={<RefreshCw />}
               >
                 {t("common:actions.refresh")}
-              </Button>
-              <Button
-                aria-label={t("common:actions.logout")}
-                type="button"
-                onClick={() => setConfirmingSignOut(true)}
-                variant="secondary"
-                size="lg"
-                icon={<LogOut />}
-              >
-                {t("common:actions.logout")}
               </Button>
             </div>
           </SettingsSection>
@@ -213,17 +202,16 @@ export function SettingsView({
               {t("downloadRootCertificate")}
             </Button>
           </SettingsSection>
+
+          <ChoiceCard
+            chevron
+            description={t("settingsAccountHint")}
+            icon={<UserRound />}
+            title={t("settingsAccount")}
+            onClick={onOpenAccount}
+          />
         </div>
       </div>
-
-      <ConfirmDialog
-        cancelLabel={t("common:boolean.no")}
-        confirmLabel={t("common:boolean.yes")}
-        message={t("logoutConfirm")}
-        open={confirmingSignOut}
-        onCancel={() => setConfirmingSignOut(false)}
-        onConfirm={onSignOut}
-      />
     </section>
   )
 }

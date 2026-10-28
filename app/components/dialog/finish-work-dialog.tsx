@@ -1,6 +1,6 @@
 import { useRef } from "react"
 
-import { ArrowRightLeft, LogOut } from "lucide-react"
+import { ArrowRightLeft, CircleCheckBig } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import { Button, ChoiceCard, Dialog, Notice } from "~/core"
@@ -33,7 +33,12 @@ export function FinishWorkDialog({
       initialFocus={cancelRef}
       actions={
         <Dialog.Actions>
-          <Button busy={busy} icon={<LogOut />} size="lg" onClick={onFinish}>
+          <Button
+            busy={busy}
+            icon={<CircleCheckBig />}
+            size="lg"
+            onClick={onFinish}
+          >
             {t("workflow.handoff.finish")}
           </Button>
           <Button
