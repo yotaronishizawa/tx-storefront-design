@@ -150,11 +150,6 @@ const DETECTOR_ROWS: {
 }[] = [
   { detector: "human", key: "workflow.home.v5.person", Icon: UserRound },
   { detector: "obstacle", key: "workflow.home.v5.obstacle", Icon: Box },
-  {
-    detector: "fallenDrink",
-    key: "workflow.home.v5.droppedDrink",
-    Icon: BottleIcon,
-  },
 ]
 
 type DetectorState = "unknown" | "ok" | "alert"
@@ -214,36 +209,6 @@ function StateMark({
   const Mark =
     state === "ok" ? CircleCheck : state === "alert" ? TriangleAlert : Minus
   return <Mark aria-hidden="true" className={cn("shrink-0", className)} />
-}
-
-/**
- * A drink fallen over in its lane, for the fallen-drink detector: the bottle
- * (Figma "Group 247") on its side over a line. Fallen to the floor counts
- * as an obstacle, not this.
- */
-function BottleIcon({ className }: { className?: string }) {
-  return (
-    <svg
-      aria-hidden="true"
-      // A square like the Lucide icons beside it; stroke matched to their 2
-      // on a 24 grid.
-      viewBox="0 0 150 150"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={12}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      className={className}
-    >
-      {/* The bottle lying on its side, cap to the left... */}
-      <g transform="translate(8 100) rotate(-90)">
-        <path d="M45.8 5H27.2C23.7758 5 21 7.83553 21 11.3333V17.6667C21 21.1645 23.7758 24 27.2 24H45.8C49.2242 24 52 21.1645 52 17.6667V11.3333C52 7.83553 49.2242 5 45.8 5Z" />
-        <path d="M23.6 24V33.1765C23.6 39.2941 5 48.4706 5 63.7647V115.765C5 119.01 6.30642 122.122 8.63188 124.416C10.9573 126.711 14.1113 128 17.4 128H54.6C57.8887 128 61.0427 126.711 63.3681 124.416C65.6936 122.122 67 119.01 67 115.765V63.7647C67 48.4706 48.4 39.2941 48.4 33.1765V24" />
-      </g>
-      {/* ...on the lane it fell over in. */}
-      <path d="M6 120H144" />
-    </svg>
-  )
 }
 
 type StatusTone = "assist" | "cause" | "moving" | "rest"

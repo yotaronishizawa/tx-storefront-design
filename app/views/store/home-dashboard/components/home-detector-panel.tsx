@@ -1,5 +1,5 @@
 import type { ParseKeys } from "i18next"
-import { Box, Milk, UserRound, type LucideIcon } from "lucide-react"
+import { Box, UserRound, type LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RobotLiveCamera } from "~/api/opm/schemas"
@@ -29,12 +29,6 @@ const DETECTOR_COPY: Record<RobotDetector, DetectorCopy> = {
     title: "workflow.home.attention.titleObstacle",
     sub: "workflow.home.attention.subObstacle",
     notFound: "workflow.home.attention.notFoundObstacle",
-  },
-  fallenDrink: {
-    icon: Milk,
-    title: "workflow.home.attention.titleFallenDrink",
-    sub: "workflow.home.attention.subFallenDrink",
-    notFound: "workflow.home.attention.notFoundFallenDrink",
   },
 }
 

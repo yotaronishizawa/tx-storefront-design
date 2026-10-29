@@ -1,6 +1,6 @@
 import { getRobotDetection, startRobotOperation } from "~/api/opm"
-import type { RobotLiveDetector } from "~/api/opm/schemas"
 import { readStoreContext } from "~/domains/store-selection"
+import type { RobotDetector } from "~/model/robot-attention"
 import { delay } from "~/utils/poll"
 
 import {
@@ -58,14 +58,14 @@ function isStartRobotError(name: string): name is RobotResumeFailure {
   return name !== "UnrecognizedResponse"
 }
 
-const DETECTOR_ORDER: RobotLiveDetector[] = ["human", "obstacle", "fallenDrink"]
+const DETECTOR_ORDER: RobotDetector[] = ["human", "obstacle"]
 
 /**
  * What a detector sees right now, read fresh before handing the robot back.
  * `null` when nothing is seen, or when it cannot be read: the robot still
  * stops on its own if something is there.
  */
-export async function findRestartBlocker(): Promise<RobotLiveDetector | null> {
+export async function findRestartBlocker(): Promise<RobotDetector | null> {
   const context = readStoreContext()
   const robotId = context?.selectedStore.robotId
   if (!context || !robotId) return null

@@ -106,7 +106,7 @@ export function HomeAttentionPanel({
 
   return (
     <section className="flex min-h-0 min-w-0 flex-col gap-4 overflow-y-auto p-4 lg:p-5">
-      {cause === "human" || cause === "obstacle" || cause === "fallenDrink" ? (
+      {cause === "human" || cause === "obstacle" ? (
         <HomeDetectorPanel
           detector={cause}
           retryable={retryable}

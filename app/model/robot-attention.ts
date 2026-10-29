@@ -14,7 +14,13 @@ import { canStoreFixTeleopError, type WorkStatus } from "./robot-status"
  * cameras), the robot's work status and teleoperation error, and the app's
  * own failed restart.
  */
-export type RobotDetector = RobotLiveDetector
+/**
+ * The detectors that stop the robot. The fallen-drink one does not: the
+ * camera model has the class but it is not used and not reliable, and the
+ * robot keeps going (Macky, David Conde, Slack 2026-10-29). OPM's
+ * `StoppedDueToFallenDrink` is ignored for the same reason.
+ */
+export type RobotDetector = Exclude<RobotLiveDetector, "fallenDrink">
 
 export type RobotEStop = RobotLiveEStop
 
@@ -55,17 +61,12 @@ export type RobotAttention = {
   cameras: RobotLiveCamera[]
 }
 
-export const ROBOT_DETECTORS: RobotDetector[] = [
-  "human",
-  "obstacle",
-  "fallenDrink",
-]
+export const ROBOT_DETECTORS: RobotDetector[] = ["human", "obstacle"]
 
 /** Causes that show the detection camera frames. */
 export const CAMERA_CAUSES: ReadonlySet<RobotAttentionCause> = new Set([
   "human",
   "obstacle",
-  "fallenDrink",
   "teleopFixable",
 ])
 
@@ -108,19 +109,17 @@ export function toRobotAttention(
     TELEOP_REQUEST_STATUSES.has(robot.status) &&
     robot.teleopError !== null &&
     canStoreFixTeleopError(robot.teleopError)
-  // A dropped drink only staff can pick up, whichever signal arrives first.
-  const fallenDrinkAlso = teleopFixable && live?.detected?.fallenDrink
+  const stoppedBy =
+    live?.stoppedBy === "fallenDrink" ? null : (live?.stoppedBy ?? null)
   const cause: RobotAttentionCause | null = eStopHolds
     ? "eStop"
-    : (live?.stoppedBy ??
+    : (stoppedBy ??
       robot.restartHeldBy ??
-      (fallenDrinkAlso
-        ? "fallenDrink"
-        : robot.resumeFailed && robot.status === "RestPosition"
-          ? "resumeFailed"
-          : teleopFixable
-            ? "teleopFixable"
-            : null))
+      (robot.resumeFailed && robot.status === "RestPosition"
+        ? "resumeFailed"
+        : teleopFixable
+          ? "teleopFixable"
+          : null))
   return {
     detected: live?.detected ?? null,
     eStop: live?.eStop ?? null,
@@ -129,7 +128,7 @@ export function toRobotAttention(
       cause === null ? null : cause === "teleopFixable" ? "assist" : "blocking",
     retryable:
       (robot.justRestarted || robot.restartHeldBy !== null) &&
-      (cause === "human" || cause === "obstacle" || cause === "fallenDrink"),
+      (cause === "human" || cause === "obstacle"),
     teleopError: cause === "teleopFixable" ? robot.teleopError : null,
     cameras: live?.cameras ?? [],
   }

@@ -65,12 +65,11 @@ nav[aria-label="Language / 言語"] button[aria-pressed="true"]{background:#1e29
 </section>
 <section class="panel">
 <div class="step"><b>4</b><h2>ロボットの状態・検知・非常停止</h2></div>
-<p class="muted">ロボットが人・障害物・落下飲料を検知して止まった状態や、非常停止ボタンの状態を再現します。Reactのホームに約3秒で反映されます。</p>
+<p class="muted">ロボットが人・障害物を検知して止まった状態や、非常停止ボタンの状態を再現します。Reactのホームに約3秒で反映されます。</p>
 <label class="field" for="detection-kind">検知の種類</label>
 <select id="detection-kind">
 <option value="human">人（ウォークイン内に人がいる）</option>
 <option value="obstacle">障害物</option>
-<option value="fallenDrink">落下飲料</option>
 </select>
 <div class="actions"><button id="detect-stop" class="danger" data-mutation disabled>検知してロボットが止まる</button><button id="detect-only" data-mutation disabled>検知だけ（止まらない）</button><button id="detect-clear" data-mutation disabled>検知を解除する（直った）</button></div>
 <div class="actions"><button id="estop-press" class="danger" data-mutation disabled>非常停止ボタンを押す</button><button id="estop-reset" data-mutation disabled>解除したがリセットが必要</button><button id="estop-release" data-mutation disabled>非常停止を解除する</button></div>

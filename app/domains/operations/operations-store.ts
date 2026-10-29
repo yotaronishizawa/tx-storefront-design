@@ -3,10 +3,10 @@ import { create } from "zustand"
 import type {
   OpmShelfLocation,
   RequestContext,
-  RobotLiveDetector,
   StartRobotOperationErrorsName,
 } from "~/api/opm/schemas"
 import { isActiveRequest } from "~/model/request-state"
+import type { RobotDetector } from "~/model/robot-attention"
 
 /** The store's open OPM requests, refreshed on a 5s poll and after every action. */
 type OperationsState = {
@@ -23,7 +23,7 @@ type OperationsState = {
    * A detector saw something when staff handed the robot back, so the app did
    * not restart it; staff clear it and try again.
    */
-  restartHeldBy: RobotLiveDetector | null
+  restartHeldBy: RobotDetector | null
 }
 
 export type RobotResumeFailure = StartRobotOperationErrorsName | "Unreachable"
@@ -34,7 +34,7 @@ type OperationsActions = {
   setRequests: (requests: RequestContext[]) => void
   setResumeFailure: (resumeFailure: RobotResumeFailure | null) => void
   markRestarted: () => void
-  setRestartHeldBy: (detector: RobotLiveDetector | null) => void
+  setRestartHeldBy: (detector: RobotDetector | null) => void
 }
 
 const INITIAL_STATE: OperationsState = {

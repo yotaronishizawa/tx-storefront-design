@@ -1,6 +1,5 @@
 import * as opm from "~/api/opm"
 import { type RequestContext } from "~/api/opm/schemas"
-import type { RobotLiveDetector } from "~/api/opm/schemas"
 import { readAppShellState } from "~/domains/app-shell"
 import {
   ActionFailureNotice,
@@ -18,6 +17,7 @@ import {
   useSelectedStore,
 } from "~/domains/store-selection"
 import { translate } from "~/initializer/i18n"
+import type { RobotDetector } from "~/model/robot-attention"
 import { blocksRestockingStartOrEnd, getLaneErrorBlock } from "~/model/shelf"
 import {
   getEndableWorkflowRequest,
@@ -331,7 +331,7 @@ export function useRestockingActions() {
 }
 
 /** After ending a task: either a detector held the restart, or OPM restarted the robot. */
-function noteRestart(blocker: RobotLiveDetector | null) {
+function noteRestart(blocker: RobotDetector | null) {
   const operations = readOperationsState()
   if (blocker) operations.setRestartHeldBy(blocker)
   // A failed restart already left its reason; do not clear it.

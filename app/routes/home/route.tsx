@@ -163,7 +163,7 @@ export default function HomePage() {
       : null
   async function holdForWalkIn() {
     const detector = attention?.cause
-    if (detector !== "obstacle" && detector !== "fallenDrink") return
+    if (detector !== "obstacle") return
     if (!(await robotActions.stopAutoPnpOperation(true))) return
     readOperationsState().setRestartHeldBy(detector)
     setHoldingFor(detector)

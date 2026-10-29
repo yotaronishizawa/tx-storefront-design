@@ -653,7 +653,7 @@
   "workflow.home.v5.obstacle": "Obstacles",
   "workflow.home.v5.droppedDrink": "Drink fallen over",
   "workflow.home.v5.notReceived": "Not received",
-  "workflow.home.v5.detectorsSummary": "People / obstacles / drink fallen over: status not received",
+  "workflow.home.v5.detectorsSummary": "People / obstacles: status not received",
   "workflow.walkIn.title": "Enter the walk-in",
   "workflow.walkIn.workOpen": "A shelf task is still open",
   "workflow.walkIn.workOpenHint": "Return to the open restocking or manual task.",
