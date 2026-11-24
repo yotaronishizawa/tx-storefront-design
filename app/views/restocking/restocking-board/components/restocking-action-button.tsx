@@ -1,4 +1,4 @@
-import { Play, Send } from "lucide-react"
+import { Play } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RequestContext } from "~/api/opm/schemas"
@@ -11,12 +11,15 @@ export function RestockingActionButton({
   blocked,
   busyAction,
   restockRequest,
+  size = "sm",
   onEndRestocking,
   onStartRestocking,
 }: {
   blocked: boolean
   busyAction: BusyAction
   restockRequest?: RequestContext
+  /** "lg" in the restock study; the v1 board keeps "sm". */
+  size?: Button.Props["size"]
   onEndRestocking: () => void
   onStartRestocking: () => void
 }) {
@@ -36,7 +39,7 @@ export function RestockingActionButton({
       className="w-full"
       disabled={disabled}
       icon={<Play />}
-      size="sm"
+      size={size}
       type="button"
       onClick={onStartRestocking}
     >
@@ -53,13 +56,12 @@ export function RestockingActionButton({
       busy={sending}
       className="w-full"
       disabled={disabled}
-      icon={<Send />}
-      size="sm"
+      size={size}
       type="button"
       variant={inProgress ? "primary" : "secondary"}
       onClick={onEndRestocking}
     >
-      {inProgress ? t("common:actions.send") : t("endRestocking")}
+      {inProgress ? t("restockingComplete") : t("endRestocking")}
     </Button>
   )
 

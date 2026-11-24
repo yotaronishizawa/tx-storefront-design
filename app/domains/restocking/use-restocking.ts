@@ -91,6 +91,16 @@ export function useShelvesFlat(): boolean {
   return useRestockingStore((state) => state.shelvesFlat)
 }
 
+/** Restock study: the last "Fix the lane" pressed on the error popup. */
+export function useErrorFixRequest(): { laneId: string } | null {
+  return useRestockingStore((state) => state.errorFixRequest)
+}
+
+/** Restock study: the red lane whose recovery steps are open, or "". */
+export function useRecoveryLaneId(): string {
+  return useRestockingStore((state) => state.recoveryLaneId)
+}
+
 export function useLaneDrawerId(): string {
   return useRestockingStore((state) => state.laneDrawerId)
 }

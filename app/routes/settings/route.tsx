@@ -2,6 +2,8 @@ import { useNavigate, useSearchParams } from "react-router"
 
 import { APP_VERSION_LABEL } from "~/config/app"
 import {
+  IDLE_TIMEOUT_MAX_MINUTES,
+  IDLE_TIMEOUT_MIN_MINUTES,
   IDLE_TIMEOUT_OPTIONS_MS,
   setIdleTimeoutMs,
   useBusyAction,
@@ -55,11 +57,12 @@ export default function SettingsPage() {
       busyAction={busyAction}
       idleTimeoutMs={idleTimeoutMs}
       idleTimeoutOptionsMs={IDLE_TIMEOUT_OPTIONS_MS}
-      onIdleTimeoutChange={(ms) => {
-        const option = IDLE_TIMEOUT_OPTIONS_MS.find((value) => value === ms)
-        // 0 is "Off", so test for a match, not truthiness.
-        if (option !== undefined) setIdleTimeoutMs(option)
-      }}
+      idleTimeoutMinutesRange={[
+        IDLE_TIMEOUT_MIN_MINUTES,
+        IDLE_TIMEOUT_MAX_MINUTES,
+      ]}
+      // Values outside the presets and the minute range are ignored.
+      onIdleTimeoutChange={setIdleTimeoutMs}
       isOnline={isOnline}
       selectedStoreId={selectedStoreId}
       stores={stores}

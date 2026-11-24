@@ -63,6 +63,8 @@ const PULLED_LANE_FLASH_MS = 2400
  * The live restocking session. `currentPathname` lives here so the long-lived
  * scan and lane subscriptions can read the page without re-subscribing.
  */
+export type GuidePlan = { skuId: string; laneIds: string[] }
+
 type RestockingState = {
   currentPathname: string
   dismissedLaneErrorKey: string
@@ -78,6 +80,10 @@ type RestockingState = {
   scanGeneration: number
   laneAdditions: LaneAdditions
   laneCompatibilityKnown: boolean
+  /** Restock study: the lanes to fill, in order, for the drink in `skuId`. */
+  guidePlan: GuidePlan
+  /** Restock study: the lanes the before-entry list showed, by drink, so a scan keeps to them. */
+  entryPlans: Readonly<Record<string, string[]>>
   /** The lane whose drawer is open on the restocking board, or "". */
   laneDrawerId: string
   laneMarks: LaneMarks
@@ -89,6 +95,13 @@ type RestockingState = {
   localShelfConnected: boolean
   /** Asked to open the next error lane once no dialog is in the way. */
   nextErrorLaneRequested: boolean
+  /**
+   * Restock study: "Fix the lane" on the error popup, naming the lane it
+   * showed. A new object for every press, so the board can tell presses apart.
+   */
+  errorFixRequest: { laneId: string } | null
+  /** Restock study: the red lane whose recovery steps are open, or "". */
+  recoveryLaneId: string
   /** The lane a drink was last pulled from during manual replenishment; `signal` replays its flash. */
   pulledLane: PulledLane
   scanAlerts: ScanAlert[]
@@ -131,6 +144,10 @@ type RestockingActions = {
   /** Cancel on that prompt: the marks go and the lane stays open. */
   cancelLaneSwitch: () => void
   setNextErrorLaneRequested: (requested: boolean) => void
+  requestErrorFix: (laneId: string) => void
+  setRecoveryLaneId: (laneId: string) => void
+  setGuidePlan: (guidePlan: GuidePlan) => void
+  setEntryPlans: (entryPlans: Readonly<Record<string, string[]>>) => void
   /** Flashes the lane green. */
   flashPulledLane: (laneId: string) => void
   /** Ignored when the same alert is already showing or queued. */
@@ -164,11 +181,15 @@ const INITIAL_STATE: RestockingState = {
   scanRestorationAllowed: true,
   laneAdditions: NO_LANE_ADDITIONS,
   laneCompatibilityKnown: false,
+  guidePlan: { skuId: "", laneIds: [] },
+  entryPlans: {},
   laneDrawerId: "",
   laneMarks: NO_LANE_MARKS,
   laneSwitchTarget: null,
   localShelfConnected: false,
   nextErrorLaneRequested: false,
+  errorFixRequest: null,
+  recoveryLaneId: "",
   pulledLane: { laneId: "", signal: 0 },
   scannerConnected: false,
   scannerBatteryLevel: undefined,
@@ -278,6 +299,10 @@ export const useRestockingStore = create<RestockingState & RestockingActions>(
       set({ laneMarks: NO_LANE_MARKS, laneSwitchTarget: null }),
     setNextErrorLaneRequested: (nextErrorLaneRequested) =>
       set({ nextErrorLaneRequested }),
+    requestErrorFix: (laneId) => set({ errorFixRequest: { laneId } }),
+    setRecoveryLaneId: (recoveryLaneId) => set({ recoveryLaneId }),
+    setGuidePlan: (guidePlan) => set({ guidePlan }),
+    setEntryPlans: (entryPlans) => set({ entryPlans }),
     flashPulledLane: (laneId) => {
       const signal = get().pulledLane.signal + 1
       set({ pulledLane: { laneId, signal } })

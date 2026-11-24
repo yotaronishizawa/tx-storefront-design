@@ -30,12 +30,8 @@ export function RobotStoppingDialog({
   const { t } = useTranslation(["app", "common"])
   const robot: StatusListStatus =
     state === "moving" ? "running" : state === "stopped" ? "done" : "failed"
+  // The shelves settle first, so they lead.
   const items: StatusList.Item[] = [
-    {
-      key: "robot",
-      label: t("workflow.robotStopping.stepRobot"),
-      status: robot,
-    },
     ...(shelves
       ? [
           {
@@ -45,6 +41,11 @@ export function RobotStoppingDialog({
           },
         ]
       : []),
+    {
+      key: "robot",
+      label: t("workflow.robotStopping.stepRobot"),
+      status: robot,
+    },
   ]
 
   if (state === "failed") {

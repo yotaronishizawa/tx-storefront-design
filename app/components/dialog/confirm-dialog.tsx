@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next"
 
 import { Button, Dialog } from "~/core"
 
+import { splitTitle } from "./split-title"
+
 export function ConfirmDialog({
   busy = false,
   cancelLabel,
@@ -20,6 +22,7 @@ export function ConfirmDialog({
   confirmLabel: string
   /** A third choice, after the other two in the same row. */
   extraLabel?: string
+  /** The first line is the title, the rest the body (popup writing rules). */
   message: string
   open: boolean
   onCancel: () => void
@@ -27,6 +30,7 @@ export function ConfirmDialog({
   onExtra?: () => void
 }) {
   const { t } = useTranslation("common")
+  const { title, body } = splitTitle(message)
   const cancelRef = useRef<HTMLButtonElement>(null)
 
   return (
@@ -34,6 +38,7 @@ export function ConfirmDialog({
       open={open}
       onClose={busy ? undefined : onCancel}
       closeLabel={t("actions.close")}
+      title={title}
       initialFocus={cancelRef}
       role="alertdialog"
       actions={
@@ -63,7 +68,7 @@ export function ConfirmDialog({
         </Dialog.Actions>
       }
     >
-      <p className="whitespace-pre-line">{message}</p>
+      {body && <p className="whitespace-pre-line">{body}</p>}
     </Dialog.Popup>
   )
 }

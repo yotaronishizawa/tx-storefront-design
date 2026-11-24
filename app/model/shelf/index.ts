@@ -128,3 +128,18 @@ export {
 } from "./recommendations"
 export type { RecommendationChange } from "./recommendations"
 export { findStuckStockLanes, isStuckAtStockOutcome } from "./stuck-lanes"
+export type {
+  GuideLandmark,
+  GuideLane,
+  RestockEntryItemView,
+  RestockGuideView,
+} from "./restock-guide"
+export {
+  describeGuideLane,
+  findCellByLocationId,
+  findGuideTarget,
+  getNeighbourSide,
+  getRowNeighbours,
+  getShelfPosition,
+  planGuideLanes,
+} from "./restock-guide"

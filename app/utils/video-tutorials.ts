@@ -176,8 +176,11 @@ const CATEGORY_BY_ROUTE: Record<keyof typeof ROUTES, VideoTutorialCategory> = {
   manual: "ManualReplenishment",
   recommendations: "Target",
   restocking: "Modification",
+  restockStart: "Modification",
+  stock: "Modification",
   settings: "Settings",
   walkIn: "RobotControl",
+  workReport: "InitialPage",
 }
 
 const CATEGORY_BY_PATHNAME: Record<string, VideoTutorialCategory> =

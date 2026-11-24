@@ -24,6 +24,8 @@ export type RobotArmControlProps = {
   /** Only a parked robot can move its arm. */
   enabled: boolean
   onMove: (target: RobotArmTarget) => void
+  /** The trigger's size: "lg" on design-system screens, "sm" where v1 is kept. */
+  size?: Button.Props["size"]
 }
 
 /**
@@ -38,6 +40,7 @@ export function RobotArmControl({
   moving,
   enabled,
   onMove,
+  size = "sm",
 }: RobotArmControlProps) {
   const { t } = useTranslation("app")
   const { shown, targets, arrow, sliding, setSliding } = useRobotArmView(
@@ -51,7 +54,7 @@ export function RobotArmControl({
         render={
           <Button
             icon={<ArrowUpDown />}
-            size="sm"
+            size={size}
             type="button"
             variant="secondary"
           >

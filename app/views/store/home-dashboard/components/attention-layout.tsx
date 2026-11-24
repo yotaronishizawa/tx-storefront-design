@@ -5,14 +5,14 @@ import { useTranslation } from "react-i18next"
 
 import type { RobotLiveCamera } from "~/api/opm/schemas"
 import { SupportContact } from "~/components/support/support-contact"
-import { formatDate } from "~/utils/date"
+import { cn } from "~/utils/cn"
 
 /**
- * The one shape every "needs attention" screen takes, after the Unity app's
- * detection popup: on the left what to do and why, anything the case needs,
- * who to call when it does not help, then the one action; on the right the
- * camera picture, when there is one. Without a picture the right half stays
- * empty, so the title and the button sit where they always do.
+ * The one shape every "needs attention" screen takes: what to do and why
+ * across the top; below, the camera picture (or another picture for the case)
+ * on the left, and anything the case needs, who to call when it does not
+ * help, then the one action on the right. Without a picture the lower part is
+ * one column.
  */
 export function AttentionLayout({
   icon: Icon,
@@ -22,6 +22,7 @@ export function AttentionLayout({
   support,
   action,
   camera,
+  aside,
 }: {
   icon: LucideIcon
   /** What to do. */
@@ -34,28 +35,36 @@ export function AttentionLayout({
   support: { heading: string; body: string }
   action?: ReactNode
   camera?: { frames: RobotLiveCamera[]; showDetectedKey: boolean }
+  /** The right half when there is no camera picture. */
+  aside?: ReactNode
 }) {
+  const picture = camera ? (
+    <AttentionCamera
+      frames={camera.frames}
+      showDetectedKey={camera.showDetectedKey}
+    />
+  ) : (
+    aside
+  )
   return (
-    <div className="grid min-h-0 flex-1 grid-cols-2 gap-5">
-      <div className="flex min-w-0 flex-col gap-6">
-        <AttentionHeading icon={Icon} title={title} body={body} />
-
-        {children}
-
-        <div className="flex flex-col gap-12">
+    // What to do runs the full width at the top, so it reads from across the
+    // walk-in; below it the picture on the left, then who to call and the one
+    // action on the right, where the eye ends (Yotaro 2026-11-12).
+    <div className="flex min-h-0 flex-1 flex-col gap-6">
+      <AttentionHeading icon={Icon} title={title} body={body} />
+      <div
+        className={cn(
+          "grid min-h-0 flex-1 gap-6",
+          picture ? "grid-cols-[minmax(0,6fr)_minmax(0,5fr)]" : "grid-cols-1"
+        )}
+      >
+        {picture}
+        <div className="flex min-w-0 flex-col gap-6">
+          {children}
           <SupportContact heading={support.heading} message={support.body} />
-          {action}
+          {action && <div className="mt-auto">{action}</div>}
         </div>
       </div>
-
-      {camera ? (
-        <AttentionCamera
-          frames={camera.frames}
-          showDetectedKey={camera.showDetectedKey}
-        />
-      ) : (
-        <span aria-hidden="true" />
-      )}
     </div>
   )
 }
@@ -74,9 +83,10 @@ export function AttentionHeading({
   titleId?: string
 }) {
   return (
-    <div className="flex items-start gap-4">
+    // A container, so the title can size itself to stay on one line.
+    <div className="@container flex items-start gap-4">
       <span className="relative shrink-0 pt-1">
-        <Icon aria-hidden="true" className="size-16 text-error" />
+        <Icon aria-hidden="true" className="size-14 text-error" />
         <span
           aria-hidden="true"
           className="absolute -inset-e-2 -bottom-1 grid size-8 place-items-center rounded-full bg-error text-xl font-bold text-inverse"
@@ -85,10 +95,15 @@ export function AttentionHeading({
         </span>
       </span>
       <div className="min-w-0">
-        <h2 id={titleId} className="text-xl/tight font-bold">
+        {/* One line wherever it can: as large as 48px, smaller when the
+            longest titles (about 22 characters) would wrap. */}
+        <h2
+          id={titleId}
+          className="text-[min(3rem,calc((100cqw-5rem)/22))]/tight font-bold"
+        >
           {title}
         </h2>
-        <p className="mt-2 text-lg whitespace-pre-line text-secondary">
+        <p className="mt-3 text-xl whitespace-pre-line text-secondary">
           {body}
         </p>
       </div>
@@ -105,7 +120,7 @@ function AttentionCamera({
   /** The key to the red dashed box the robot draws round what it detected. */
   showDetectedKey: boolean
 }) {
-  const { i18n, t } = useTranslation("app")
+  const { t } = useTranslation("app")
   const camera = frames.find((frame) => frame.camera === 1)
   return (
     <figure className="flex min-h-0 flex-col gap-4">
@@ -146,13 +161,6 @@ function AttentionCamera({
             <Camera className="size-12 opacity-40" />
           )}
         </div>
-        {camera?.capturedAt != null && (
-          <p className="px-3 py-2 text-end text-sm font-bold opacity-70">
-            {t("workflow.home.attention.capturedAt", {
-              time: formatDate(camera.capturedAt, "clock", i18n.language),
-            })}
-          </p>
-        )}
       </div>
     </figure>
   )

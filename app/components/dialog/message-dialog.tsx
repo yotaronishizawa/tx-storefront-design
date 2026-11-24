@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next"
 
 import { Button, Dialog } from "~/core"
 
+import { splitTitle } from "./split-title"
+
 export function MessageDialog({
   children,
   message,
@@ -13,18 +15,21 @@ export function MessageDialog({
 }: {
   /** Shown under the message, e.g. photos. */
   children?: ReactNode
+  /** The first line is the title, the rest the body (popup writing rules). */
   message: string
   okLabel: string
   open: boolean
   onClose: () => void
 }) {
   const { t } = useTranslation("common")
+  const { title, body } = splitTitle(message)
 
   return (
     <Dialog.Popup
       open={open}
       onClose={onClose}
       closeLabel={t("actions.close")}
+      title={title}
       role="alertdialog"
       actions={
         <Dialog.Actions>
@@ -34,7 +39,7 @@ export function MessageDialog({
         </Dialog.Actions>
       }
     >
-      <p className="whitespace-pre-line">{message}</p>
+      {body && <p className="whitespace-pre-line">{body}</p>}
       {children}
     </Dialog.Popup>
   )

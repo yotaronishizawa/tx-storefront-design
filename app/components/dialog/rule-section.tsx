@@ -12,7 +12,7 @@ export function RuleSection({
 }) {
   return (
     <section className="flex shrink-0 flex-col rounded-lg border bg-default p-3">
-      <h3 className="mb-2 shrink-0 border-l-4 border-primary pl-2 text-lg/tight font-bold tracking-normal text-primary">
+      <h3 className="mb-2 shrink-0 text-lg/tight font-bold tracking-normal text-primary">
         {title}
         {subtitle && (
           <span className="ml-2 text-base font-normal text-secondary">

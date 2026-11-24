@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react"
-
 import type { ParseKeys } from "i18next"
-import { CircleCheck, Hand, RotateCcw } from "lucide-react"
+import { CircleCheck, Hand, OctagonX, RotateCcw } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RobotLiveCamera, TeleopErrorCodeName } from "~/api/opm/schemas"
+import { CloseCountdown } from "~/components/feedback/close-countdown"
 import { Button } from "~/core"
-import type { RobotAttentionCause } from "~/model/robot-attention"
+import type { RobotAttentionCause, RobotEStop } from "~/model/robot-attention"
 
 import { AttentionLayout } from "./attention-layout"
 import { HomeDetectorPanel } from "./home-detector-panel"
@@ -63,6 +62,8 @@ export function teleopCopy(code: TeleopErrorCodeName | null): Copy {
   return (code && TELEOP_COPY[code]) || TELEOP_FALLBACK
 }
 
+const ESTOP_ASSET = "/assets/estop/estop-released"
+
 /**
  * Takes over the action area. For a `blocking` cause the robot stays stopped
  * until staff act, so this comes before any other task; for the `assist`
@@ -70,6 +71,7 @@ export function teleopCopy(code: TeleopErrorCodeName | null): Copy {
  */
 export function HomeAttentionPanel({
   cause,
+  eStop,
   teleopError,
   retryable,
   retryState,
@@ -83,6 +85,8 @@ export function HomeAttentionPanel({
   onOtherWork,
 }: {
   cause: RobotAttentionCause
+  /** Pressed, or released but needing a restart (eStop only). */
+  eStop: RobotEStop | null
   teleopError: TeleopErrorCodeName | null
   /** Offer "Try again" (restart the robot) for a detector stop right after a restart. */
   retryable: boolean
@@ -117,6 +121,11 @@ export function HomeAttentionPanel({
           cameras={cameras}
           busy={busy}
         />
+      ) : cause === "eStop" ? (
+        // A panel like the detectors, not a popup: the robot is stopped until
+        // staff clear what stops it, the same ask (Yotaro 2026-11-11). Nothing
+        // here moves it, so there is no button: it clears when released.
+        <EStopPanel eStop={eStop} />
       ) : cause === "resumeFailed" ? (
         <AttentionLayout
           icon={RotateCcw}
@@ -177,6 +186,88 @@ export function HomeAttentionPanel({
   )
 }
 
+function EStopPanel({ eStop }: { eStop: RobotEStop | null }) {
+  const { t } = useTranslation("app")
+  const needsReset = eStop === "needsReset"
+  return (
+    <AttentionLayout
+      icon={OctagonX}
+      title={t(
+        needsReset
+          ? "workflow.home.attention.eStopResetTitle"
+          : "workflow.home.attention.eStopTitle"
+      )}
+      body={t(
+        needsReset
+          ? "workflow.home.attention.eStopResetSub"
+          : "workflow.home.attention.eStopSub"
+      )}
+      support={{
+        heading: t(
+          needsReset
+            ? "workflow.home.attention.eStopResetSupport"
+            : "workflow.home.attention.eStopSupport"
+        ),
+        body: t(
+          needsReset
+            ? "workflow.home.attention.eStopResetSupportBody"
+            : "workflow.home.attention.supportBody"
+        ),
+      }}
+      action={
+        // What happens next, so staff need not come back to the tablet.
+        <p className="text-lg text-secondary">
+          {t(
+            needsReset
+              ? "workflow.home.attention.eStopResetAutoClose"
+              : "workflow.home.attention.eStopAutoClose"
+          )}
+        </p>
+      }
+      aside={
+        needsReset ? undefined : (
+          // How the button looks once released: it springs out and shows its
+          // red collar. Plays once and stays on that state.
+          <figure className="flex min-h-0 flex-col items-center justify-center gap-3">
+            <video
+              aria-label={t("workflow.home.attention.eStopReleasedCaption")}
+              autoPlay
+              muted
+              playsInline
+              poster={`${ESTOP_ASSET}.png`}
+              className="aspect-640/598 max-h-full w-full max-w-80 rounded-lg ring-1 ring-black/10"
+            >
+              <source src={`${ESTOP_ASSET}.webm`} type="video/webm" />
+              <source src={`${ESTOP_ASSET}.mp4`} type="video/mp4" />
+            </video>
+            <figcaption className="text-lg">
+              {t("workflow.home.attention.eStopReleasedCaption")}
+            </figcaption>
+          </figure>
+        )
+      }
+    >
+      {!needsReset && (
+        <ol className="grid gap-3 text-lg font-bold">
+          {(
+            [
+              "workflow.home.attention.eStopStep1",
+              "workflow.home.attention.eStopStep2",
+            ] as const
+          ).map((key, index) => (
+            <li key={key} className="flex items-start gap-3">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-inverse text-base text-inverse">
+                {index + 1}
+              </span>
+              <span className="pt-0.5">{t(key)}</span>
+            </li>
+          ))}
+        </ol>
+      )}
+    </AttentionLayout>
+  )
+}
+
 /** How long the "fixed" confirmation stays before Home comes back. */
 export const RECOVERED_SECONDS = 5
 
@@ -186,20 +277,6 @@ export const RECOVERED_SECONDS = 5
  */
 export function HomeRecoveredPanel() {
   const { t } = useTranslation("app")
-  const [secondsLeft, setSecondsLeft] = useState(RECOVERED_SECONDS)
-  const [started, setStarted] = useState(false)
-  useEffect(() => {
-    // Next frame, so the bar transitions from full rather than starting empty.
-    const frame = window.requestAnimationFrame(() => setStarted(true))
-    const timer = window.setInterval(
-      () => setSecondsLeft((seconds) => Math.max(seconds - 1, 1)),
-      1000
-    )
-    return () => {
-      window.cancelAnimationFrame(frame)
-      window.clearInterval(timer)
-    }
-  }, [])
   return (
     <section className="grid min-h-0 min-w-0 place-items-center p-4 lg:p-5">
       <div
@@ -213,19 +290,11 @@ export function HomeRecoveredPanel() {
         <p className="text-lg text-secondary">
           {t("workflow.home.recovered.body")}
         </p>
-        <div className="mt-6 flex w-64 flex-col items-center gap-2">
-          <div className="h-1.5 w-full overflow-hidden rounded-full bg-subtle">
-            <div
-              className={
-                started
-                  ? "h-full w-0 rounded-full bg-success transition-[width] duration-5000 ease-linear"
-                  : "size-full rounded-full bg-success"
-              }
-            />
-          </div>
-          <p className="text-base text-secondary">
-            {t("workflow.home.recovered.backIn", { seconds: secondsLeft })}
-          </p>
+        <div className="mt-6">
+          <CloseCountdown
+            label={(seconds) => t("workflow.home.recovered.backIn", { seconds })}
+            seconds={RECOVERED_SECONDS}
+          />
         </div>
       </div>
     </section>

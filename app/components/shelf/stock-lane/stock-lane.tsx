@@ -15,7 +15,8 @@ import { LaneCard } from "../lane-card"
 import { LaneBadge } from "./lane-badge"
 import { getLaneBadge, getLaneTone, type LaneTone } from "./lane-states"
 
-const LANE_TONES = {
+/** Each lane tone as classes; shared with boards that draw lanes their own size. */
+export const LANE_TONES = {
   canPlace: "border-success bg-success-subtle",
   cannotPlace: "border-transparent bg-muted opacity-50 grayscale",
   empty: "border-transparent bg-default/70",
@@ -33,6 +34,7 @@ export function StockLane({
   cell,
   columnLabel,
   flashSignal = 0,
+  guideRole,
   lastAdded = false,
   misplaced = false,
   restockingPlacement,
@@ -48,6 +50,11 @@ export function StockLane({
   columnLabel: number
   /** Replays the green flash whenever it changes; 0 never flashes. */
   flashSignal?: number
+  /**
+   * Restock study: the lane to fill now (`target`), one planned after it
+   * (`next`), or a lane off the guided row (`dimmed`).
+   */
+  guideRole?: "dimmed" | "next" | "target"
   lastAdded?: boolean
   misplaced?: boolean
   restockingPlacement?: RestockingPlacementState
@@ -82,7 +89,10 @@ export function StockLane({
         // The unused overlay already says why the lane does not open.
         "disabled:opacity-100": unused,
         "ring-3 ring-info": lastAdded && !selected && !hasError,
-        "opacity-40": blocked && !unused,
+        "opacity-40": (blocked && !unused) || guideRole === "dimmed",
+        "border-dashed border-success": guideRole === "next",
+        "animate-pulse border-dashed border-success bg-success-subtle ring-4 ring-success":
+          guideRole === "target",
       })}
       columnLabel={columnLabel}
       disabled={cell.isEmpty || blocked}
@@ -91,6 +101,11 @@ export function StockLane({
       skuId={skuId}
       onClick={onSelect}
     >
+      {guideRole === "next" && (
+        <span className="absolute top-5 left-1/2 z-10 -translate-x-1/2 rounded-full bg-success px-1.5 text-base/5 font-bold text-inverse">
+          {t("restockGuideNextLane")}
+        </span>
+      )}
       {unused && (
         <span className="pointer-events-none absolute inset-1 z-20 flex items-center justify-center rounded-sm bg-inverse/70 px-1 text-xs font-bold tracking-widest text-inverse uppercase">
           {t("laneUnused")}

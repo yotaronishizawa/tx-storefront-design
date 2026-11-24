@@ -1,4 +1,4 @@
-import { Play, Square } from "lucide-react"
+import { Play } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RequestContext } from "~/api/opm/schemas"
@@ -43,13 +43,12 @@ export function ManualSessionControls({
     <Button
       busy={ending}
       disabled={starting}
-      icon={<Square />}
       size="sm"
       type="button"
       variant={inProgress ? "primary" : "secondary"}
       onClick={onFinish}
     >
-      {t("finishManualReplenishment")}
+      {t(inProgress ? "restockingComplete" : "finishManualReplenishment")}
     </Button>
   )
 

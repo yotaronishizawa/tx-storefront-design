@@ -1,5 +1,13 @@
+import { isRestockStudy } from "../study.mjs"
 import { randomUUID } from "../utils/id.mjs"
-import { createDisplayLocations, createStockLocations } from "./locations.mjs"
+import {
+  applyStudyDisplayLevels,
+  createDisplayLocations,
+  createStockLocations,
+  createStudyStockLocations,
+  createStudyStockSpec,
+  STUDY_NEEDED_COUNTS,
+} from "./locations.mjs"
 import { createSkus } from "./skus.mjs"
 
 const STORE_ID = "SIM-BY1"
@@ -18,13 +26,21 @@ export function createState() {
       { index: 2, maxPosX: 1.8, minPosX: 0.4 },
     ],
   }
-  const stockSpec = {
-    cabinets: [{ index: 1, curtainId: 0 }],
-    shelfCabinets: [{ index: 1, origin: { y: 0 } }],
-  }
+  const study = isRestockStudy()
+  const stockSpec = study
+    ? createStudyStockSpec()
+    : {
+        cabinets: [{ index: 1, curtainId: 0 }],
+        shelfCabinets: [{ index: 1, origin: { y: 0 } }],
+      }
   // The last SKU is left off the display shelf so the stock shelf has a misplaced drink.
   const displayLocations = createDisplayLocations(skus.slice(0, -1))
-  const stockLocations = createStockLocations(skus)
+  if (study) {
+    applyStudyDisplayLevels(displayLocations, skus)
+  }
+  const stockLocations = study
+    ? createStudyStockLocations()
+    : createStockLocations(skus)
 
   return {
     // `SetCabinetInfo` layouts, keyed `display-<index>` / `stock-<index>`.
@@ -61,9 +77,11 @@ export function createState() {
     // Manual jobs by id: the published context and its `PnpJobResult`.
     manualJobs: {},
     displaySpec,
-    recommendationCounts: Object.fromEntries(
-      skus.slice(0, 8).map((sku, index) => [sku.id, 18 - index])
-    ),
+    recommendationCounts: study
+      ? createStudyRecommendationCounts(stockLocations)
+      : Object.fromEntries(
+          skus.slice(0, 8).map((sku, index) => [sku.id, 18 - index])
+        ),
     // What `GetSkuRecommendations` answers: the list, `null` (a store OPM has
     // no recommendations document for yet) or `{ recommendations: null }`.
     recommendationsAnswer: "list",
@@ -124,4 +142,16 @@ export function createState() {
     ],
     tokens: new Map(),
   }
+}
+
+/** Each study drink's target: what is stocked now plus what the study asks for. */
+function createStudyRecommendationCounts(stockLocations) {
+  return Object.fromEntries(
+    Object.entries(STUDY_NEEDED_COUNTS).map(([skuId, needed]) => [
+      skuId,
+      stockLocations.flatMap((location) => location.skuIds).filter(
+        (id) => id === skuId
+      ).length + needed,
+    ])
+  )
 }

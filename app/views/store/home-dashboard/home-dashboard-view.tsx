@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react"
 
-import { Power } from "lucide-react"
+import { ClipboardList, Power } from "lucide-react"
 import { useTranslation } from "react-i18next"
 import { useSearchParams } from "react-router"
 
@@ -20,13 +20,19 @@ import {
 import type { BusyAction } from "~/types/busy-action"
 import { cn } from "~/utils/cn"
 
+import { AssistIdleTag } from "./components/assist-idle-tag"
 import {
   HomeAttentionPanel,
   HomeRecoveredPanel,
   RECOVERED_SECONDS,
+  teleopCopy,
 } from "./components/home-attention-panel"
-import { HomeEStopDialog } from "./components/home-estop-dialog"
+import {
+  HomeEntryStudy,
+  type HomeEntryVariant,
+} from "./components/home-entry-study"
 import { HomeIdleScreen } from "./components/home-idle-screen"
+import { HomeLayoutAction } from "./components/home-layout-action"
 import { HomeMoreActions } from "./components/home-more-actions"
 import { HomeObjectAction } from "./components/home-object-action"
 import { HomeRobotStatus } from "./components/home-robot-status"
@@ -53,6 +59,7 @@ export function HomeDashboardView({
   onShowEdit,
   onShowRecommendations,
   onShowRestocking,
+  onShowStock,
   onShowManualReplenishment,
   idle,
   idleScreenEnabled,
@@ -84,6 +91,8 @@ export function HomeDashboardView({
   onShowEdit: () => void
   onShowRecommendations: () => void
   onShowRestocking: () => void
+  /** The drinks-to-restock list, to look at without stopping the robot (restock study). */
+  onShowStock?: () => void
   onShowManualReplenishment: () => void
   /** Home has sat untouched: show the idle screen over it. */
   idle: boolean
@@ -111,14 +120,16 @@ export function HomeDashboardView({
     setOpened(null)
     setEStopClosed(null)
   }
-  // The emergency stop is a popup, not a takeover: nothing here fixes it.
+  // The emergency stop takes over like the detectors (Yotaro 2026-11-11). It
+  // is set aside per e-stop state: "needs a restart" after "pressed" reopens it.
   const eStopCause = cause === "eStop"
   const showAttention =
     cause !== null &&
-    !eStopCause &&
-    (assist ? opened === cause : setAside !== cause)
-  const eStopDialogOpen =
-    eStopCause && eStopClosed !== (attention?.eStop ?? null) && !idle
+    (assist
+      ? opened === cause
+      : eStopCause
+        ? eStopClosed !== (attention?.eStop ?? null)
+        : setAside !== cause)
   // Nothing that moves the robot can work while an e-stop or a detector holds it.
   const robotHeld = cause !== null && !assist && cause !== "resumeFailed"
   const [retryState, setRetryState] = useState<"idle" | "checking" | "still">(
@@ -138,7 +149,7 @@ export function HomeDashboardView({
     setRetryState(causeRef.current === before ? "still" : "idle")
   }
   const recovered = useRecoveredFlash(cause)
-  const panelOpen = recovered || showAttention || eStopDialogOpen
+  const panelOpen = recovered || showAttention
   useEffect(() => {
     onAttentionPanelChange(panelOpen)
   }, [panelOpen, onAttentionPanelChange])
@@ -153,6 +164,23 @@ export function HomeDashboardView({
   // Study: `?runningPreview=1` shows both cards in progress without starting a task.
   const [searchParams] = useSearchParams()
   const runningPreview = searchParams.get("runningPreview") === "1"
+  // Study: `?homeEntry=a|b|c`, the ways into the walk-in (home-entry-study).
+  const homeEntryParam = searchParams.get("homeEntry")
+  const homeEntry: HomeEntryVariant | null =
+    homeEntryParam === "a" || homeEntryParam === "b" || homeEntryParam === "c"
+      ? homeEntryParam
+      : null
+  // Layout change sits on Home's first level (biz review 2026-11-12: it must
+  // not hide under "More"). C, beside "More", is the adopted one and the
+  // default; `?homeLayout=a|b` shows the other two studied, `=old` the former
+  // Home with it inside "More".
+  const homeLayoutParam = searchParams.get("homeLayout")
+  const homeLayout =
+    homeLayoutParam === "old"
+      ? null
+      : homeLayoutParam === "a" || homeLayoutParam === "b"
+        ? homeLayoutParam
+        : "c"
   // With the idle screen on, the robot status lives only there: staff look at
   // it for reassurance, not to decide anything, so Home gives the width to
   // actions. With it off, Home shows the status beside them (the version to
@@ -173,6 +201,21 @@ export function HomeDashboardView({
   })
   const available = Boolean(robotId) && isOnline && !robotStatusStale
   const busy = Boolean(busyAction)
+  const layoutCard = (
+    <ChoiceCard
+      icon={
+        <img
+          src="/assets/home-study-2026-10-06/layout.svg"
+          alt=""
+          draggable={false}
+          className="h-7 w-auto"
+        />
+      }
+      title={t("workflow.home.layout")}
+      disabled={busy || robotHeld}
+      onClick={onShowEdit}
+    />
+  )
   return (
     <div
       className={cn(
@@ -195,9 +238,18 @@ export function HomeDashboardView({
               available={available}
               attention={attention}
               wide
+              // A task staff can take on: a tag under the checks, the
+              // status itself unchanged (Yotaro 2026-11-17).
+              assistNote={
+                assist ? (
+                  <AssistIdleTag
+                    title={t(teleopCopy(attention?.teleopError ?? null).title)}
+                    note={t("workflow.home.assist.idleNote")}
+                  />
+                ) : undefined
+              }
             />
           }
-          attention={cause !== null}
           onWake={() => {
             setWakeShield(true)
             onWake()
@@ -207,16 +259,12 @@ export function HomeDashboardView({
       {wakeShield && (
         <div aria-hidden="true" className="absolute inset-0 z-40" />
       )}
-      <HomeEStopDialog
-        open={eStopDialogOpen}
-        eStop={attention?.eStop ?? null}
-        onClose={() => setEStopClosed(attention?.eStop ?? null)}
-      />
       {recovered ? (
         <HomeRecoveredPanel />
       ) : showAttention ? (
         <HomeAttentionPanel
           cause={cause}
+          eStop={attention?.eStop ?? null}
           teleopError={attention?.teleopError ?? null}
           retryable={attention?.retryable ?? false}
           retryState={retryState}
@@ -227,7 +275,13 @@ export function HomeDashboardView({
           holdPhase={holdPhase}
           onHoldForWalkIn={onHoldForWalkIn}
           cameras={attention?.cameras ?? []}
-          onOtherWork={() => (assist ? setOpened(null) : setSetAside(cause))}
+          onOtherWork={() =>
+            assist
+              ? setOpened(null)
+              : eStopCause
+                ? setEStopClosed(attention?.eStop ?? null)
+                : setSetAside(cause)
+          }
         />
       ) : (
         <section className="flex min-h-0 min-w-0 flex-col gap-3 p-4 lg:gap-4">
@@ -285,69 +339,129 @@ export function HomeDashboardView({
               <Power aria-hidden="true" className="size-5 shrink-0" />
               {t("workflow.home.stopsRobot")}
             </p>
-            <div className="grid min-h-64 shrink-0 grid-cols-2 gap-3 lg:min-h-56 lg:flex-1 lg:gap-4">
-              <HomeObjectAction
-                kind="restock"
-                label={t("workflow.home.restock")}
+            {homeEntry ? (
+              <HomeEntryStudy
+                variant={homeEntry}
                 inProgress={
                   restockOpen ? t("workflow.home.running.badge") : undefined
                 }
                 disabled={busy || robotHeld}
-                onClick={onShowRestocking}
+                onEnterWalkIn={onEnterWalkIn}
+                onRestock={onShowRestocking}
               />
-              <HomeObjectAction
-                kind="manual"
-                label={t("workflow.home.manual")}
-                inProgress={
-                  manualOpen ? t("workflow.home.running.badge") : undefined
-                }
-                disabled={busy || robotHeld || !manualReplenishmentAvailable}
-                onClick={onShowManualReplenishment}
-              />
-            </div>
-            {/* Under the two cards so "above" points at them; the title
+            ) : (
+              <>
+                <div
+                  className={cn(
+                    "grid min-h-64 shrink-0 gap-3 lg:min-h-56 lg:flex-1 lg:gap-4",
+                    homeLayout === "b" ? "grid-cols-3" : "grid-cols-2"
+                  )}
+                >
+                  <HomeObjectAction
+                    kind="restock"
+                    label={t("workflow.home.restock")}
+                    inProgress={
+                      restockOpen ? t("workflow.home.running.badge") : undefined
+                    }
+                    disabled={busy || robotHeld}
+                    onClick={onShowRestocking}
+                  />
+                  <HomeObjectAction
+                    kind="manual"
+                    label={t("workflow.home.manual")}
+                    inProgress={
+                      manualOpen ? t("workflow.home.running.badge") : undefined
+                    }
+                    disabled={
+                      busy || robotHeld || !manualReplenishmentAvailable
+                    }
+                    onClick={onShowManualReplenishment}
+                  />
+                  {homeLayout === "b" && (
+                    <HomeLayoutAction
+                      label={t("workflow.home.layout")}
+                      disabled={busy || robotHeld}
+                      onClick={onShowEdit}
+                    />
+                  )}
+                </div>
+                {/* Under the two cards so "above" points at them; the title
                 says it all, so no hint. */}
-            <ChoiceCard
-              className="shrink-0"
-              icon={
-                <img
-                  src="/assets/home-study-2026-10-06/enter.svg"
-                  alt=""
-                  draggable={false}
-                  className="h-7 w-auto"
-                />
-              }
-              title={t("workflow.home.enterWalkIn")}
-              disabled={busy || robotHeld}
-              onClick={onEnterWalkIn}
+                <div
+                  className={cn(
+                    "grid shrink-0 gap-3 lg:gap-4",
+                    homeLayout === "a" ? "grid-cols-2" : "grid-cols-1"
+                  )}
+                >
+                  <ChoiceCard
+                    icon={
+                      <img
+                        src="/assets/home-study-2026-10-06/enter.svg"
+                        alt=""
+                        draggable={false}
+                        className="h-7 w-auto"
+                      />
+                    }
+                    title={t("workflow.home.enterWalkIn")}
+                    disabled={busy || robotHeld}
+                    onClick={onEnterWalkIn}
+                  />
+                  {homeLayout === "a" && layoutCard}
+                </div>
+              </>
+            )}
+          </div>
+          <div
+            className={cn(
+              "mx-3 grid shrink-0 gap-3 lg:gap-4",
+              homeLayout === "c" ? "grid-cols-2" : "grid-cols-1"
+            )}
+          >
+            {homeLayout === "c" && layoutCard}
+            <HomeMoreActions
+              className="w-full"
+              disabled={busy}
+              actions={[
+                ...(homeLayout
+                  ? []
+                  : [
+                      {
+                        key: "layout",
+                        icon: "layout" as const,
+                        title: t("workflow.home.layout"),
+                        disabled: busy || robotHeld,
+                        onClick: onShowEdit,
+                      },
+                    ]),
+                {
+                  key: "reservations",
+                  icon: "reservation",
+                  title: t("workflow.home.v5.reservations"),
+                  disabled: busy,
+                  onClick: onShowDisplay,
+                },
+                {
+                  key: "count",
+                  icon: "stock-count",
+                  title: t("workflow.home.count"),
+                  disabled: busy,
+                  onClick: onShowRecommendations,
+                },
+                // Outside the panel: looking stops nothing.
+                ...(onShowStock
+                  ? [
+                      {
+                        key: "stock",
+                        icon: <ClipboardList className="size-9" />,
+                        title: t("workflow.home.stockList"),
+                        disabled: busy,
+                        onClick: onShowStock,
+                      },
+                    ]
+                  : []),
+              ]}
             />
           </div>
-          <HomeMoreActions
-            disabled={busy}
-            actions={[
-              {
-                key: "layout",
-                icon: "layout",
-                title: t("workflow.home.layout"),
-                disabled: busy || robotHeld,
-                onClick: onShowEdit,
-              },
-              {
-                key: "reservations",
-                icon: "reservation",
-                title: t("workflow.home.v5.reservations"),
-                disabled: busy,
-                onClick: onShowDisplay,
-              },
-              {
-                key: "count",
-                icon: "stock-count",
-                title: t("workflow.home.count"),
-                disabled: busy,
-                onClick: onShowRecommendations,
-              },
-            ]}
-          />
         </section>
       )}
     </div>

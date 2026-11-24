@@ -1,1 +1,5 @@
-export { RestockingStartDialog } from "./restocking-start-dialog"
+export {
+  RESTOCKING_RULE_ASSETS,
+  RestockingStartDialog,
+  RuleFigure,
+} from "./restocking-start-dialog"

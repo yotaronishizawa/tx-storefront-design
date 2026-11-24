@@ -12,7 +12,7 @@ import {
 import { useTranslation } from "react-i18next"
 
 import type { Store } from "~/api/opm/schemas"
-import { Button, ChoiceCard, Combobox, ToggleGroup } from "~/core"
+import { Button, ChoiceCard, Combobox, NumberField, ToggleGroup } from "~/core"
 import { getLocalizedStoreName } from "~/model/sku"
 import type { BusyAction } from "~/types/busy-action"
 
@@ -21,12 +21,14 @@ import { refreshPwaContent } from "./utils/pwa-refresh"
 import { downloadRootCertificateFile } from "./utils/root-certificate"
 
 const SECTION_ICON_CLASS = "size-7 text-primary-text"
+const CUSTOM_VALUE = "custom"
 
 export function SettingsView({
   appVersion,
   busyAction,
   idleTimeoutMs,
   idleTimeoutOptionsMs,
+  idleTimeoutMinutesRange,
   isOnline,
   selectedStoreId,
   stores,
@@ -41,6 +43,8 @@ export function SettingsView({
   /** How long Home sits untouched before the idle screen shows. */
   idleTimeoutMs: number
   idleTimeoutOptionsMs: readonly number[]
+  /** The whole minutes staff can type in besides the presets. */
+  idleTimeoutMinutesRange: readonly [min: number, max: number]
   isOnline: boolean
   selectedStoreId: string
   stores: Store[]
@@ -54,6 +58,15 @@ export function SettingsView({
   const { i18n, t } = useTranslation(["app", "common"])
 
   const [updatingPwaContent, setUpdatingPwaContent] = useState(false)
+  // A stored value that is not a preset was typed in, so open on the custom field.
+  const [customIdleTimeout, setCustomIdleTimeout] = useState(
+    () => !idleTimeoutOptionsMs.includes(idleTimeoutMs)
+  )
+  const [minIdleMinutes, maxIdleMinutes] = idleTimeoutMinutesRange
+  const idleMinutes = Math.min(
+    maxIdleMinutes,
+    Math.max(minIdleMinutes, Math.round(idleTimeoutMs / 60_000))
+  )
   const [downloadingRootCertificate, setDownloadingRootCertificate] =
     useState(false)
 
@@ -142,18 +155,45 @@ export function SettingsView({
                   ? "h-12 min-w-24 rounded-md bg-primary px-4 text-base font-bold text-on-primary"
                   : "h-12 min-w-24 rounded-md border border-strong bg-default px-4 text-base font-bold text-primary"
               }
-              options={idleTimeoutOptionsMs.map((ms) => ({
-                value: String(ms),
-                label:
-                  ms === 0
-                    ? t("idleScreenOff")
-                    : ms < 60_000
+              options={idleTimeoutOptionsMs
+                .map((ms) => ({
+                  value: String(ms),
+                  label:
+                    ms < 60_000
                       ? t("idleScreenSeconds", { count: ms / 1000 })
                       : t("idleScreenMinutes", { count: ms / 60_000 }),
-              }))}
-              value={String(idleTimeoutMs)}
-              onValueChange={(value) => onIdleTimeoutChange(Number(value))}
+                }))
+                .concat({ value: CUSTOM_VALUE, label: t("idleScreenCustom") })}
+              value={customIdleTimeout ? CUSTOM_VALUE : String(idleTimeoutMs)}
+              onValueChange={(value) => {
+                if (value === CUSTOM_VALUE) {
+                  setCustomIdleTimeout(true)
+                  // Start from the current wait (1 min if the study turned it off).
+                  onIdleTimeoutChange(idleMinutes * 60_000)
+                  return
+                }
+                setCustomIdleTimeout(false)
+                onIdleTimeoutChange(Number(value))
+              }}
             />
+            {customIdleTimeout && (
+              <div className="mt-3 flex items-center justify-end gap-3">
+                <NumberField.Root
+                  aria-label={t("idleScreenTimeout")}
+                  className="w-28"
+                  inputClassName="h-12 rounded-md border border-strong bg-default px-4 text-right text-lg font-bold text-primary"
+                  max={maxIdleMinutes}
+                  min={minIdleMinutes}
+                  value={idleMinutes}
+                  onValueChange={(minutes) =>
+                    onIdleTimeoutChange(minutes * 60_000)
+                  }
+                />
+                <span className="text-lg font-bold text-primary">
+                  {t("idleScreenCustomUnit", { max: maxIdleMinutes })}
+                </span>
+              </div>
+            )}
           </SettingsSection>
 
           <SettingsSection

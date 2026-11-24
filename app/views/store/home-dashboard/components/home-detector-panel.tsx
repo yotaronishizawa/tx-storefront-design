@@ -1,5 +1,5 @@
 import type { ParseKeys } from "i18next"
-import { Box, UserRound, type LucideIcon } from "lucide-react"
+import { Box, TriangleAlert, UserRound, type LucideIcon } from "lucide-react"
 import { useTranslation } from "react-i18next"
 
 import type { RobotLiveCamera } from "~/api/opm/schemas"
@@ -39,11 +39,9 @@ const DETECTOR_COPY: Record<RobotDetector, DetectorCopy> = {
  */
 export function HomeDetectorPanel({
   detector,
-  retryable,
   retryState,
   onRetry,
   holdPhase,
-  onHoldForWalkIn,
   cameras,
   busy,
 }: {
@@ -53,15 +51,13 @@ export function HomeDetectorPanel({
   retryState: "idle" | "checking" | "still"
   onRetry: () => void
   holdPhase: "holding" | "held" | null
-  onHoldForWalkIn: () => void
+  /** Unused: staff no longer stop the robot before going in (Yotaro 2026-11-12). */
+  onHoldForWalkIn?: () => void
   cameras: RobotLiveCamera[]
   busy: boolean
 }) {
   const { t } = useTranslation("app")
   const copy = DETECTOR_COPY[detector]
-  // Going in mid-work: only the detection stops the robot, so the store
-  // stops it first. A human is already inside, so not for them.
-  const offerHold = !retryable && detector !== "human"
 
   return (
     <AttentionLayout
@@ -74,16 +70,10 @@ export function HomeDetectorPanel({
       }}
       camera={{ frames: cameras, showDetectedKey: true }}
       action={
-        offerHold ? (
-          <Button
-            size="lg"
-            className="w-full"
-            disabled={busy}
-            onClick={onHoldForWalkIn}
-          >
-            {t("workflow.home.enterWalkIn")}
-          </Button>
-        ) : (
+        // Always "Try again": staff remove the obstacle first, and while
+        // they are inside the human detector keeps the robot still, so it
+        // need not be stopped before going in (Yotaro 2026-11-12).
+        <div className="flex flex-col gap-3">
           <Button
             size="lg"
             className="w-full"
@@ -94,7 +84,18 @@ export function HomeDetectorPanel({
           >
             {t("workflow.home.attention.actionRetry")}
           </Button>
-        )
+          {/* The same caption as under the robot arm buttons: a warning mark
+              and grey words tied to the button above. 18px, not that one's
+              14px, as new screens use. */}
+          <p className="flex gap-2 text-lg text-secondary">
+            <TriangleAlert className="mt-0.5 size-5 shrink-0 text-primary-text" />
+            {t(
+              detector === "human"
+                ? "workflow.home.attention.retryHintHuman"
+                : "workflow.home.attention.retryHintObstacle"
+            )}
+          </p>
+        </div>
       }
     >
       {holdPhase !== null && retryState === "idle" && (
@@ -110,7 +111,9 @@ export function HomeDetectorPanel({
         <Notice tone={retryState === "still" ? "error" : "neutral"}>
           {t(
             retryState === "still"
-              ? "workflow.home.attention.retryStill"
+              ? detector === "human"
+                ? "workflow.home.attention.retryStillHuman"
+                : "workflow.home.attention.retryStill"
               : "workflow.home.attention.retryChecking"
           )}
         </Notice>

@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next"
 
 import type { RobotArmControlProps } from "~/components/robot/robot-arm-control"
 import { RobotArmPanel } from "~/components/robot/robot-arm-panel"
-import { RobotClip } from "~/components/robot/robot-clip"
+import { RobotStatusColumn } from "~/components/robot/robot-status-column"
 import { Button } from "~/core"
 import { cn } from "~/utils/cn"
 
@@ -55,38 +55,16 @@ export function WalkInView({
   // straight to the stopped screen instead of flashing this one.
   const stoppingNow =
     checking && !blockingTask && (robotMoving || stopping.phase === "moving")
-  const pill = (
-    <p
-      role="status"
-      className={cn(
-        "self-start rounded-full px-6 py-2 text-[2rem]/tight font-bold",
-        robotMoving && !ready
-          ? "bg-success text-inverse"
-          : "bg-muted text-primary"
-      )}
-    >
-      {statusLabel}
-    </p>
-  )
-  const robot = (
-    // Same clips as the robot status on Home: resting once stopped.
-    <RobotClip
-      clip={clip}
-      className="pointer-events-none h-full w-auto max-w-full object-contain object-bottom-left"
-    />
-  )
-
   // One frame for both states, so stopping only swaps the right card and
   // reveals the button: the robot and its status never jump.
   return (
     <section className="flex min-h-0 min-w-0 flex-1 flex-col gap-6 overflow-y-auto bg-subtle p-6">
       <div className="grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-6">
-        <div className="flex min-h-0 flex-col">
-          {pill}
-          {/* While the robot travels, the shared popup says so; the
-              screen underneath keeps its place. */}
-          <p className="mt-4 max-w-md text-lg/relaxed">
-            {stoppingNow
+        {/* While the robot travels, the shared popup says so; the screen
+            underneath keeps its place. */}
+        <RobotStatusColumn
+          hint={
+            stoppingNow
               ? t("workflow.walkIn.stepMove")
               : blockingTask
                 ? t("workflow.walkIn.workOpenHint")
@@ -94,10 +72,12 @@ export function WalkInView({
                   ? t("workflow.walkIn.stoppedHint")
                   : canPrepare
                     ? t("workflow.walkIn.stopFirstHint")
-                    : notReadyReason}
-          </p>
-          <div className="mt-4 min-h-0 flex-1 overflow-hidden">{robot}</div>
-        </div>
+                    : notReadyReason
+          }
+          label={statusLabel}
+          moving={robotMoving && !ready}
+          resting={clip === "resting"}
+        />
         <RobotArmPanel {...arm} />
       </div>
       {/* Hidden, not removed, while the robot stops: the layout stays put. */}

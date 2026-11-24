@@ -8,6 +8,7 @@ import {
   useRobotArmView,
   type RobotArmControlProps,
 } from "./robot-arm-control"
+import { WalkInCard } from "./walk-in-card"
 
 /**
  * "Move the robot up or down" laid out as a card, for the walk-in screen:
@@ -25,18 +26,8 @@ export function RobotArmPanel({
     moving
   )
   return (
-    <section className="flex min-h-0 flex-col rounded-xl bg-default p-6">
-      <h2 className="text-[1.875rem]/tight font-bold">
-        {t("workflow.robotArm.open")}
-      </h2>
-      <div className="flex min-h-0 flex-1 flex-col items-center justify-center gap-3 py-4">
-        <RobotArmIllustration
-          className="zoom-[1.4]"
-          arrow={arrow}
-          shown={shown}
-          animate={moving !== null || sliding}
-          onSlideEnd={() => setSliding(false)}
-        />
+    <WalkInCard
+      caption={
         <p className="text-sm text-secondary">
           {t("workflow.walkIn.armPosition", {
             position: t(
@@ -50,42 +41,53 @@ export function RobotArmPanel({
             ),
           })}
         </p>
-      </div>
-      <div className="grid gap-3">
-        {targets.map((target) => (
-          <Button
-            key={target}
-            disabled={!enabled || moving !== null}
-            busy={moving === target}
-            icon={
-              target === "top" ? (
-                <ArrowUp className="size-6" />
-              ) : (
-                <ArrowDown className="size-6" />
-              )
-            }
-            size="lg"
-            type="button"
-            variant="unstyled"
-            className="min-h-16 gap-3 rounded-xl border-2 border-default bg-default px-5 text-lg font-bold text-primary active:bg-subtle disabled:opacity-50"
-            onClick={() => onMove(target)}
-          >
+      }
+      footer={
+        <>
+          {targets.map((target) => (
+            <Button
+              key={target}
+              disabled={!enabled || moving !== null}
+              busy={moving === target}
+              icon={
+                target === "top" ? (
+                  <ArrowUp className="size-6" />
+                ) : (
+                  <ArrowDown className="size-6" />
+                )
+              }
+              size="lg"
+              type="button"
+              variant="unstyled"
+              className="min-h-16 gap-3 rounded-xl border-2 border-default bg-default px-5 text-lg font-bold text-primary active:bg-subtle disabled:opacity-50"
+              onClick={() => onMove(target)}
+            >
+              {t(
+                target === "top"
+                  ? "workflow.walkIn.armMoveTop"
+                  : "workflow.walkIn.armMoveBottom"
+              )}
+            </Button>
+          ))}
+          <p className="flex gap-2 text-sm text-secondary">
+            <TriangleAlert className="size-5 shrink-0 text-primary-text" />
             {t(
-              target === "top"
-                ? "workflow.walkIn.armMoveTop"
-                : "workflow.walkIn.armMoveBottom"
+              enabled
+                ? "workflow.robotArm.warning"
+                : "workflow.robotArm.unavailable"
             )}
-          </Button>
-        ))}
-        <p className="flex gap-2 text-sm text-secondary">
-          <TriangleAlert className="size-5 shrink-0 text-primary-text" />
-          {t(
-            enabled
-              ? "workflow.robotArm.warning"
-              : "workflow.robotArm.unavailable"
-          )}
-        </p>
-      </div>
-    </section>
+          </p>
+        </>
+      }
+      title={t("workflow.robotArm.open")}
+    >
+      <RobotArmIllustration
+        className="zoom-[1.4]"
+        arrow={arrow}
+        shown={shown}
+        animate={moving !== null || sliding}
+        onSlideEnd={() => setSliding(false)}
+      />
+    </WalkInCard>
   )
 }

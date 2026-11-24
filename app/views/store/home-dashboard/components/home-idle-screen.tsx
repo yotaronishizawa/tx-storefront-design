@@ -10,13 +10,10 @@ import { useTranslation } from "react-i18next"
  */
 export function HomeIdleScreen({
   robotStatus,
-  attention,
   onWake,
 }: {
   /** The robot status group (status, detectors, robot). */
   robotStatus: ReactNode
-  /** The robot needs staff: the ripple stops so the red status leads. */
-  attention: boolean
   onWake: () => void
 }) {
   const { t } = useTranslation("app")
@@ -41,12 +38,10 @@ export function HomeIdleScreen({
           className="relative grid size-13 shrink-0 place-items-center"
         >
           <span className="size-6 rounded-full bg-primary" />
-          {!attention && (
-            <>
-              <span className="idle-wake-ripple absolute inset-0 rounded-full border-3 border-primary" />
-              <span className="idle-wake-ripple absolute inset-0 rounded-full border-3 border-primary [animation-delay:2s]" />
-            </>
-          )}
+          {/* Keeps rippling when the robot needs staff too: touching is
+              how they reach what to do (Yotaro 2026-11-12). */}
+          <span className="idle-wake-ripple absolute inset-0 rounded-full border-3 border-primary" />
+          <span className="idle-wake-ripple absolute inset-0 rounded-full border-3 border-primary [animation-delay:2s]" />
         </span>
         {t("workflow.idle.wake")}
       </div>

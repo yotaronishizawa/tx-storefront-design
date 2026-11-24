@@ -2,19 +2,14 @@ import { createLogger } from "~/config/logger"
 import { ROUTES } from "~/config/routes"
 import { readOperationsState, selectRestockRequest } from "~/domains/operations"
 import { readSessionState } from "~/domains/session"
-import {
-  readShelfState,
-  selectLaneErrorBlock,
-  selectMisplacementCheck,
-} from "~/domains/shelf"
+import { readShelfState, selectMisplacementCheck } from "~/domains/shelf"
 import {
   getScanJanCode,
   getScanSkuId,
   type ScannerScan,
 } from "~/model/scanner-scan"
-import { blocksScan } from "~/model/shelf"
 import { normalizeJanCode } from "~/model/sku"
-import { AudioCues, playStoreAudio } from "~/utils/audio"
+import { playStoreAudio } from "~/utils/audio"
 import { isSamePathname } from "~/utils/pathname"
 
 import { readRestockingState } from "../restocking-store"
@@ -113,14 +108,9 @@ export function createRestockingScanGate({
       return
     }
 
+    // Red lanes never stop the next scan: they are put right on the guide,
+    // and Done waits for them.
     const shelf = readShelfState()
-    if (blocksScan(selectLaneErrorBlock(shelf))) {
-      log("scanner scan refused: a lane has an error")
-      void playStoreAudio(AudioCues.ScanErrorStockHasErrors)
-      readRestockingState().pushScanAlert({ kind: "lane-errors" })
-      forgetScanCodeKeys(scanKeys, processedScans)
-      return
-    }
 
     log("processing scanner scan", { eventId: scan.eventId })
     void processRestockingScan({
@@ -159,8 +149,7 @@ export function toastLocalShelfScan(
     !processingRef.current &&
     isRestockingActive() &&
     canApplyRestockingScan() &&
-    !otherStore &&
-    !blocksScan(selectLaneErrorBlock(readShelfState()))
+    !otherStore
   if (wouldTake) {
     showRestockingScanReceivedToast(scan, readShelfState().skus)
   }

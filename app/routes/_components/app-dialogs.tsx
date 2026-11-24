@@ -213,7 +213,13 @@ export function AppDialogs() {
                     void navigate(ROUTES.restocking().pathname)
                   }
                 })
-              } else void watchRobotStop(startRestocking())
+              } else {
+                // Started from Home or the list in the study: open restocking
+                // once it has started. Already there, this does nothing.
+                void watchRobotStop(startRestocking()).then((started) => {
+                  if (started) void navigate(ROUTES.restocking().pathname)
+                })
+              }
             }}
           />
           <FinishWorkDialog
@@ -232,8 +238,15 @@ export function AppDialogs() {
             }}
           />
           {/* While the robot travels, its popup also covers the shelves. */}
+          {/* The restock start screen shows the stop itself; only a failure
+              still needs the popup there. */}
           <RobotStoppingDialog
-            open={robotStopping.open && !prompt && !message}
+            open={
+              robotStopping.open &&
+              (!robotStopping.carryIn || robotStopping.state === "failed") &&
+              !prompt &&
+              !message
+            }
             state={robotStopping.state}
             shelves={robotStopping.shelves}
             onClose={endRobotStopWatch}
@@ -387,11 +400,13 @@ function useRobotStoppingPopup(
       : "done"
     : null
   const stopped = watching && !watch.failed && parked && shelves !== "running"
+  // The restock start screen ends its own watch once it moves on.
+  const carryIn = watch.carryIn
   useEffect(() => {
-    if (!stopped) return
+    if (!stopped || carryIn) return
     const timer = window.setTimeout(endRobotStopWatch, ROBOT_STOPPED_SHOWN_MS)
     return () => window.clearTimeout(timer)
-  }, [stopped])
+  }, [carryIn, stopped])
   useEffect(() => {
     if (watch.since === null) return
     const timer = window.setTimeout(failRobotStopWatch, ROBOT_STOP_WATCH_MS)
@@ -403,10 +418,18 @@ function useRobotStoppingPopup(
       ? "stopped"
       : "moving"
   // While it closes, keep showing what it last said ("stopped"), not "moving".
-  const [last, setLast] = useState({ state, shelves })
-  if (watching && (last.state !== state || last.shelves !== shelves))
-    setLast({ state, shelves })
-  return { open: watching, ...(watching ? { state, shelves } : last) }
+  const [last, setLast] = useState({ state, shelves, carryIn })
+  if (
+    watching &&
+    (last.state !== state ||
+      last.shelves !== shelves ||
+      last.carryIn !== carryIn)
+  )
+    setLast({ state, shelves, carryIn })
+  return {
+    open: watching,
+    ...(watching ? { state, shelves, carryIn } : last),
+  }
 }
 
 /** Restocking's and manual replenishment's Start and End tilt the shelves. */

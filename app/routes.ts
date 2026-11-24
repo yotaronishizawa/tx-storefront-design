@@ -17,10 +17,13 @@ export default [
         route("display", "routes/display/route.tsx"),
         route("recommendations", "routes/recommendations/route.tsx"),
         route("restocking", "routes/restocking/route.tsx"),
+        route("restocking/start", "routes/restock-start/route.tsx"),
+        route("stock", "routes/stock/route.tsx"),
         route("manual", "routes/manual/route.tsx"),
         route("walk-in", "routes/walk-in/route.tsx"),
         route("edit", "routes/edit/route.tsx"),
         route("settings", "routes/settings/route.tsx"),
+        route("work-report", "routes/work-report/route.tsx"),
       ]),
     ]),
 

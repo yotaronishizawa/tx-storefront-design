@@ -1,17 +1,55 @@
+import coffee from "./assets/drinks/coffee.jpg?url"
+import cola from "./assets/drinks/cola.jpg?url"
+import energy from "./assets/drinks/energy.jpg?url"
+import grape from "./assets/drinks/grape.jpg?url"
+import lemon from "./assets/drinks/lemon.jpg?url"
+import milktea from "./assets/drinks/milktea.jpg?url"
+import orange from "./assets/drinks/orange.jpg?url"
+import sparkling from "./assets/drinks/sparkling.jpg?url"
+import sports from "./assets/drinks/sports.jpg?url"
+import tea from "./assets/drinks/tea.jpg?url"
+import water from "./assets/drinks/water.jpg?url"
+
 const SKU_ROWS = [
-  ["SIM-COLA", "コーラ / Cola", "4900000000016", "500"],
-  ["SIM-WATER", "天然水 / Mineral Water", "4900000000023", "550"],
-  ["SIM-TEA", "緑茶 / Green Tea", "4900000000030", "600"],
-  ["SIM-COFFEE", "ブラックコーヒー / Black Coffee", "4900000000047", "390"],
-  ["SIM-SPORTS", "スポーツドリンク / Sports Drink", "4900000000054", "500"],
-  ["SIM-ORANGE", "オレンジジュース / Orange Juice", "4900000000061", "450"],
-  ["SIM-ENERGY", "エナジードリンク / Energy Drink", "4900000000078", "355"],
-  ["SIM-SPARKLING", "炭酸水 / Sparkling Water", "4900000000085", "500"],
-  ["SIM-MILKTEA", "ミルクティー / Milk Tea", "4900000000092", "440"],
-  ["SIM-LEMON", "レモンソーダ / Lemon Soda", "4900000000108", "500"],
+  ["SIM-COLA", "コカ・コーラ / Coca-Cola", "4900000000016", "500"],
+  ["SIM-WATER", "天然水 2L / Natural Water 2L", "4900000000023", "2000"],
+  ["SIM-TEA", "お〜いお茶 / Oi Ocha", "4900000000030", "600"],
+  ["SIM-COFFEE", "ボス ブラック / BOSS Black", "4900000000047", "390"],
+  ["SIM-SPORTS", "ポカリスエット / Pocari Sweat", "4900000000054", "500"],
+  ["SIM-ORANGE", "お〜いお茶 2L / Oi Ocha 2L", "4900000000061", "2000"],
+  [
+    "SIM-ENERGY",
+    "モンスター パイプラインパンチ / Monster Pipeline Punch",
+    "4900000000078",
+    "355",
+  ],
+  ["SIM-SPARKLING", "三ツ矢サイダー / Mitsuya Cider", "4900000000085", "500"],
+  [
+    "SIM-MILKTEA",
+    "紅茶花伝 ロイヤルミルクティー / Royal Milk Tea",
+    "4900000000092",
+    "440",
+  ],
+  ["SIM-LEMON", "三ツ矢 レモン / Mitsuya Lemon", "4900000000108", "500"],
   // Kept last: the seed leaves it off the display shelf, so it reads as misplaced.
-  ["SIM-GRAPE", "グレープソーダ / Grape Soda", "4900000000115", "500"],
+  ["SIM-GRAPE", "ファンタ グレープ / Fanta Grape", "4900000000115", "500"],
 ]
+
+// Photos of real drinks, for prototypes that should look like a store. The
+// names above match them; each id keeps its place in the seed layouts.
+const DRINK_PHOTOS = {
+  "SIM-COFFEE": coffee,
+  "SIM-COLA": cola,
+  "SIM-ENERGY": energy,
+  "SIM-GRAPE": grape,
+  "SIM-LEMON": lemon,
+  "SIM-MILKTEA": milktea,
+  "SIM-ORANGE": orange,
+  "SIM-SPARKLING": sparkling,
+  "SIM-SPORTS": sports,
+  "SIM-TEA": tea,
+  "SIM-WATER": water,
+}
 
 const BOTTLE_COLORS = [
   "#c40f1a",
@@ -32,7 +70,7 @@ export function createSkus() {
     eanCode,
     volume: Number(volume),
     isImageAvailable: true,
-    images: [createBottleSvg(skuId, index)],
+    images: [DRINK_PHOTOS[skuId] ?? createBottleSvg(skuId, index)],
   }))
 }
 

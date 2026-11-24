@@ -5,6 +5,7 @@ export {
   selectLaneErrorBlock,
   selectMisplacedStock,
   selectMisplacementCheck,
+  selectStockBoard,
 } from "./shelf-store"
 export {
   useDisplayBoard,

@@ -30,9 +30,14 @@ export const ROBOT_STATUS_LABELS: Record<RobotStatusKind, ParseKeys<"app">> = {
   unknown: "workflow.home.pill.unknown",
 }
 
-/** Green while the robot is moving or about to; grey otherwise. */
+/**
+ * Green while something is working the robot (automation or an operator
+ * driving it), or it is about to move; grey otherwise. Callers keep it grey
+ * while a task waits for staff: the robot is then stopped (Yotaro 2026-11-05).
+ */
 export const ROBOT_MOVING_KINDS: ReadonlySet<RobotStatusKind> = new Set([
   "operating",
+  "teleoperation",
   "scanning",
   "starting",
   "movingToRest",

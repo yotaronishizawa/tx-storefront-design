@@ -2,6 +2,7 @@ import { useState, type ReactNode } from "react"
 
 import {
   Bot,
+  CalendarCheck,
   CircleHelp,
   CupSoda,
   House,
@@ -18,6 +19,13 @@ import { cn } from "~/utils/cn"
 import type { Language } from "~/utils/i18n"
 import { isSamePathname } from "~/utils/pathname"
 
+/**
+ * The owner-facing work report's entry. Hidden: the report is still being
+ * designed and is not ready to show (Yotaro, 2026-10-26). The page and its
+ * route stay, at /work-report.
+ */
+const SHOW_WORK_REPORT = false
+
 export function AppHeaderView({
   isOnline,
   isVideoTutorialOpen,
@@ -28,8 +36,10 @@ export function AppHeaderView({
   onLanguageChange,
   onSettings,
   onHome,
+  onWorkReport,
   leading,
   onRobotStatus,
+  robotStatus,
 }: {
   isOnline: boolean
   isVideoTutorialOpen: boolean
@@ -42,8 +52,12 @@ export function AppHeaderView({
   onManualDocumentOpen?: () => void
   onSettings: () => void
   onHome: () => void
+  /** Owner-facing work report; styled apart from the staff tools. */
+  onWorkReport: () => void
   /** The robot popup: its status, and stopping or starting it. */
   onRobotStatus: () => void
+  /** The robot's state in a word, coloured as on the idle screen. */
+  robotStatus: { label: string; tone: "moving" | "rest" | "cause" }
   /** Status shown after the logo (scanner state). */
   leading?: ReactNode
 }) {
@@ -90,6 +104,23 @@ export function AppHeaderView({
             <span className="hidden sm:inline">{t("offlineMode")}</span>
           </span>
         )}
+        {SHOW_WORK_REPORT && (
+          <Button
+            variant="unstyled"
+            size="unstyled"
+            type="button"
+            onClick={onWorkReport}
+            className={cn(
+              "flex min-h-11 items-center gap-2 rounded-full border-2 border-strong px-3 text-sm font-bold sm:px-4",
+              isSamePathname(pathname, ROUTES.workReport().pathname) &&
+                "ring-2 ring-primary"
+            )}
+            aria-label={t("workReport")}
+          >
+            <CalendarCheck className="size-5" />
+            <span className="hidden sm:inline">{t("workReport")}</span>
+          </Button>
+        )}
         {/* The one way into the robot: its status, and stop or start. No
             power icon of its own, so it does not invite "stop first". */}
         <Button
@@ -97,13 +128,18 @@ export function AppHeaderView({
           size="unstyled"
           type="button"
           onClick={onRobotStatus}
-          className="flex min-h-11 items-center gap-2 rounded-full bg-subtle px-3 text-sm font-bold sm:px-4"
-          aria-label={t("workflow.home.showIdle")}
+          className={cn(
+            "flex min-h-11 items-center gap-2 rounded-full px-3 text-sm font-bold sm:px-4",
+            robotStatus.tone === "moving"
+              ? "bg-success text-inverse"
+              : robotStatus.tone === "cause"
+                ? "bg-error text-inverse"
+                : "bg-subtle text-primary"
+          )}
+          aria-label={`${t("workflow.home.showIdle")}: ${robotStatus.label}`}
         >
           <Bot className="size-5" />
-          <span className="hidden sm:inline">
-            {t("workflow.home.showIdle")}
-          </span>
+          <span className="hidden sm:inline">{robotStatus.label}</span>
         </Button>
         <Button
           variant="unstyled"

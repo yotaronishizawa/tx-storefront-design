@@ -6,6 +6,7 @@ import { AppScreen } from "~/components/layout/app-screen"
 import { FEATURES } from "~/config/feature"
 import { ROUTES } from "~/config/routes"
 import {
+  useIdleScreenShown,
   useIsDialogOpen,
   useOpenDialog,
   useOpenVideoTutorial,
@@ -22,6 +23,7 @@ import { getVideoTutorialCategory } from "~/utils/video-tutorials"
 import { AppHeaderView } from "~/views/store/app-header"
 
 import { AppDialogs } from "./_components/app-dialogs"
+import { useRobotStatusBadge } from "./_hooks/use-robot-status-badge"
 
 /** Signed-in pages: a header (with scanner status) over one full-width content panel. */
 export default function ChromeLayout() {
@@ -41,47 +43,57 @@ export default function ChromeLayout() {
   const openVideoTutorial = useOpenVideoTutorial()
   const navigate = useNavigate()
   const { pathname } = useLocation()
+  // The idle screen is read from across the walk-in: no header, nothing to
+  // press but the screen itself (Yotaro 2026-11-04).
+  const idleScreenShown = useIdleScreenShown()
+  const robotStatus = useRobotStatusBadge()
 
   return (
     <AppScreen>
-      <AppHeaderView
-        isOnline={isOnline}
-        isVideoTutorialOpen={isVideoTutorialOpen}
-        selectedStoreName={selectedStoreName}
-        pathname={pathname}
-        onDrinkRefundOpen={
-          FEATURES.drinkRefundFormUrl
-            ? () =>
-                window.open(
-                  FEATURES.drinkRefundFormUrl,
-                  "_blank",
-                  "noopener,noreferrer"
-                )
-            : undefined
-        }
-        onHome={() => navigate(ROUTES.home().pathname)}
-        onHowToUse={() => openVideoTutorial(getVideoTutorialCategory(pathname))}
-        onLanguageChange={changeLanguage}
-        onManualDocumentOpen={openManualDocument}
-        onSettings={() => {
-          if (!isSamePathname(pathname, ROUTES.settings().pathname)) {
-            void navigate(ROUTES.settings().pathname)
-            return
+      {!idleScreenShown && (
+        <AppHeaderView
+          isOnline={isOnline}
+          isVideoTutorialOpen={isVideoTutorialOpen}
+          selectedStoreName={selectedStoreName}
+          pathname={pathname}
+          onDrinkRefundOpen={
+            FEATURES.drinkRefundFormUrl
+              ? () =>
+                  window.open(
+                    FEATURES.drinkRefundFormUrl,
+                    "_blank",
+                    "noopener,noreferrer"
+                  )
+              : undefined
           }
-          // Pressed again on Settings: close it, back to where staff were.
-          const idx = (window.history.state as { idx?: number } | null)?.idx
-          void (idx ? navigate(-1) : navigate(ROUTES.home().pathname))
-        }}
-        onRobotStatus={() => openDialog("robot-power")}
-        leading={
-          <AppHeaderScannerStatus
-            scannerConnected={scannerConnected}
-            battery={scannerBattery}
-            onOpenScannerRecovery={() => openDialog("scanner-recovery")}
-            onOpenScannerHelp={() => openDialog("scanner-help")}
-          />
-        }
-      />
+          onHome={() => navigate(ROUTES.home().pathname)}
+          onHowToUse={() =>
+            openVideoTutorial(getVideoTutorialCategory(pathname))
+          }
+          onLanguageChange={changeLanguage}
+          onManualDocumentOpen={openManualDocument}
+          onSettings={() => {
+            if (!isSamePathname(pathname, ROUTES.settings().pathname)) {
+              void navigate(ROUTES.settings().pathname)
+              return
+            }
+            // Pressed again on Settings: close it, back to where staff were.
+            const idx = (window.history.state as { idx?: number } | null)?.idx
+            void (idx ? navigate(-1) : navigate(ROUTES.home().pathname))
+          }}
+          onRobotStatus={() => openDialog("robot-power")}
+          robotStatus={robotStatus}
+          onWorkReport={() => navigate(ROUTES.workReport().pathname)}
+          leading={
+            <AppHeaderScannerStatus
+              scannerConnected={scannerConnected}
+              battery={scannerBattery}
+              onOpenScannerRecovery={() => openDialog("scanner-recovery")}
+              onOpenScannerHelp={() => openDialog("scanner-help")}
+            />
+          }
+        />
+      )}
 
       <section
         className={cn(

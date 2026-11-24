@@ -238,8 +238,11 @@ export function useRestockingActions() {
       return false
     }
     const ok = await execute("start-restocking", () => start("Restock", true))
-    if (ok) readAppShellState().closeDialog("restocking-start")
-    else void pauseRestocking()
+    if (ok) {
+      readAppShellState().closeDialog("restocking-start")
+      // Just started: the restocking screen must not run the start again on entry.
+      markRestockJustStarted()
+    } else void pauseRestocking()
     return ok
   }
 
@@ -302,15 +305,7 @@ export function useRestockingActions() {
         }
       }
     )
-    if (ok && target === "Restock") {
-      const request = readOperationsState().requests.find(
-        (request) =>
-          request.requestType === "Restock" && request.status === "InProgress"
-      )
-      readRestockingState().setContinuedRestockingRequestId(
-        request?.requestId ?? ""
-      )
-    }
+    if (ok && target === "Restock") markRestockJustStarted()
     if (ok)
       readAppShellState().closeDialog(
         source === "Restock" ? "restocking-end" : "manual-finish"
@@ -336,4 +331,15 @@ function noteRestart(blocker: RobotDetector | null) {
   if (blocker) operations.setRestartHeldBy(blocker)
   // A failed restart already left its reason; do not clear it.
   else if (!operations.resumeFailure) operations.markRestarted()
+}
+
+/**
+ * Marks the restock now in progress as started here, so the restocking
+ * screen's entry does not ask to resume it (see `useRestockingResumeOnEntry`).
+ */
+function markRestockJustStarted() {
+  const request = readOperationsState().requests.find(
+    (item) => item.requestType === "Restock" && item.status === "InProgress"
+  )
+  readRestockingState().setContinuedRestockingRequestId(request?.requestId ?? "")
 }

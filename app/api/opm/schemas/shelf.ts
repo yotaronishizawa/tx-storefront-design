@@ -32,6 +32,8 @@ const shelfLocationSchema = z.looseObject({
     })
   ),
   isBlackList: maybe(z.boolean()),
+  // Display lanes: drinks left in the facing, as the robot's camera estimates them.
+  leftCount: optionalNumber,
   // Stock lanes: OPM turns a lane off when the robot cannot pick from it, and
   // `hiccup` says why. The hiccup stays after the lane is turned back on.
   isAvailable: maybe(z.boolean()),

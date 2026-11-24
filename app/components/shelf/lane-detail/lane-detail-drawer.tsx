@@ -56,6 +56,7 @@ export function LaneDetailDrawer({
   checkingLane,
   columnLabel,
   errorLaneCount,
+  heading,
   isMisplacedSku = isNeverMisplaced,
   matchConfirmMessage,
   now,
@@ -70,6 +71,11 @@ export function LaneDetailDrawer({
   columnLabel: number
   /** Red lanes on the whole board, for the "N lanes with errors" heading. */
   errorLaneCount: number
+  /**
+   * Names the lane in place of its cabinet-row-lane numbers, e.g. the restock
+   * study's "左の棚、緑茶の右どなり", which staff can find on the real shelf.
+   */
+  heading?: string
   isMisplacedSku?: (skuId: string) => boolean
   /** The question before "Already matches"; each screen words it its own way. */
   matchConfirmMessage?: string
@@ -196,9 +202,10 @@ export function LaneDetailDrawer({
         <header className="flex items-start justify-between gap-3">
           <div className="min-w-0">
             <Drawer.Title render={<h3 />}>
-              {cell ? `${cell.cabinet}-${cell.row}-${columnLabel}` : ""}
+              {heading ??
+                (cell ? `${cell.cabinet}-${cell.row}-${columnLabel}` : "")}
             </Drawer.Title>
-            {cell && (
+            {cell && !heading && (
               <p className="mt-1 pl-4 text-xs text-secondary">
                 {t("laneDrinksTitle", {
                   cabinet: cell.cabinet,

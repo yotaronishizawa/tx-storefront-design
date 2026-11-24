@@ -9,6 +9,7 @@ import {
 } from "~/api/opm/schemas"
 import { showScannedDrinkToast } from "~/components/product/scanned-drink-toast"
 import { createLogger } from "~/config/logger"
+import { isRestockStudy } from "~/config/restock-study"
 import { Toast } from "~/core"
 import { readOperationsState, selectRestockRequest } from "~/domains/operations"
 import { readSessionState } from "~/domains/session"
@@ -22,11 +23,7 @@ import {
   isHubMisread,
   type ScannerScan,
 } from "~/model/scanner-scan"
-import {
-  hasLaneErrors,
-  type MisplacementCheck,
-  type ShelfLocation,
-} from "~/model/shelf"
+import type { MisplacementCheck, ShelfLocation } from "~/model/shelf"
 import {
   getLocalizedSkuName,
   getSkuJanCode,
@@ -40,6 +37,7 @@ import {
   type AppliedSkuScan,
   type ScanAlert,
 } from "../restocking-store"
+import { announceGuideOnScan } from "./restock-guide-voice"
 import { playRestockingRecommendationCountAudio } from "./restocking-audio"
 import { isRestockingScanContextActive } from "./restocking-event-context"
 
@@ -314,7 +312,9 @@ function announceAppliedSku(
     onAlert({ kind: "not-on-display", skuId })
     return
   }
-  if (hasLaneErrors(stockLocations)) {
+  // The study says the drink and where it goes instead of a count.
+  if (isRestockStudy()) {
+    announceGuideOnScan(skuId)
     return
   }
   void playRestockingRecommendationCountAudio({

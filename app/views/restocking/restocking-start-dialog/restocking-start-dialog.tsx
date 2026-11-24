@@ -6,7 +6,7 @@ import { RuleSection } from "~/components/dialog/rule-section"
 import { RulesConfirmCheckbox } from "~/components/dialog/rules-confirm-checkbox"
 import { Button, Dialog, Notice } from "~/core"
 
-const RESTOCKING_RULE_ASSETS = {
+export const RESTOCKING_RULE_ASSETS = {
   longSideFront: "/assets/restocking/long-side-front.png",
   removeAndMove: "/assets/restocking/remove-and-move.png",
   shortSideFront: "/assets/restocking/short-side-front.png",
@@ -92,30 +92,42 @@ export function RestockingStartDialog({
     >
       {shelfSafety && <Notice tone="warning">{t(shelfSafety)}</Notice>}
 
-      <div className="grid gap-4 md:grid-cols-[2fr_1fr]">
-        <RuleSection
-          subtitle={t("restockingRuleTopView")}
-          title={t("restockingRuleShortSideTitle")}
-        >
-          <div className="grid grid-cols-2 gap-3">
-            <RuleFigure
-              caption={t("restockingRuleShortSideGood")}
-              src={RESTOCKING_RULE_ASSETS.shortSideFront}
-            />
-            <RuleFigure
-              caption={t("restockingRuleLongSideBad")}
-              src={RESTOCKING_RULE_ASSETS.longSideFront}
-            />
-          </div>
-        </RuleSection>
-        <RuleSection title={t("restockingRuleKeepStockTitle")}>
-          <RuleFigure
-            caption={t("restockingRuleKeepStockBad")}
-            src={RESTOCKING_RULE_ASSETS.removeAndMove}
-          />
-        </RuleSection>
-      </div>
+      <RestockingRules />
     </Dialog.Popup>
+  )
+}
+
+/**
+ * The restocking rules, as pictures: short side to the front, and leave the
+ * stock already there.
+ */
+function RestockingRules() {
+  const { t } = useTranslation("app")
+  return (
+    // The right column never narrows below its title's one line.
+    <div className="grid gap-4 md:grid-cols-[minmax(0,2fr)_minmax(20rem,1fr)]">
+      <RuleSection
+        subtitle={t("restockingRuleTopView")}
+        title={t("restockingRuleShortSideTitle")}
+      >
+        <div className="grid grid-cols-2 gap-3">
+          <RuleFigure
+            caption={t("restockingRuleShortSideGood")}
+            src={RESTOCKING_RULE_ASSETS.shortSideFront}
+          />
+          <RuleFigure
+            caption={t("restockingRuleLongSideBad")}
+            src={RESTOCKING_RULE_ASSETS.longSideFront}
+          />
+        </div>
+      </RuleSection>
+      <RuleSection title={t("restockingRuleKeepStockTitle")}>
+        <RuleFigure
+          caption={t("restockingRuleKeepStockBad")}
+          src={RESTOCKING_RULE_ASSETS.removeAndMove}
+        />
+      </RuleSection>
+    </div>
   )
 }
 
@@ -131,7 +143,7 @@ function getShelfSafetyKey(resuming: boolean, shelvesFlat: boolean) {
 }
 
 // The illustrations carry their own good/bad frame and badge.
-function RuleFigure({ caption, src }: { caption: string; src: string }) {
+export function RuleFigure({ caption, src }: { caption: string; src: string }) {
   return (
     <figure className="flex min-w-0 flex-col">
       <img

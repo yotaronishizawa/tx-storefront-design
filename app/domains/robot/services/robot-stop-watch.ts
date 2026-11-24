@@ -7,6 +7,8 @@ type RobotStopWatch = {
   shelves: boolean
   /** The robot never reached the stop position. */
   failed: boolean
+  /** A restock start in the study: once stopped, ask staff to take the iPad in. */
+  carryIn: boolean
 }
 
 /**
@@ -19,14 +21,26 @@ const useRobotStopWatchStore = create<RobotStopWatch>(() => ({
   since: null,
   shelves: false,
   failed: false,
+  carryIn: false,
 }))
 
 export function useRobotStopWatch(): RobotStopWatch {
   return useRobotStopWatchStore()
 }
 
-export function beginRobotStopWatch({ shelves }: { shelves: boolean }): void {
-  useRobotStopWatchStore.setState({ since: Date.now(), shelves, failed: false })
+export function beginRobotStopWatch({
+  shelves,
+  carryIn = false,
+}: {
+  shelves: boolean
+  carryIn?: boolean
+}): void {
+  useRobotStopWatchStore.setState({
+    since: Date.now(),
+    shelves,
+    failed: false,
+    carryIn,
+  })
 }
 
 export function failRobotStopWatch(): void {
@@ -39,5 +53,6 @@ export function endRobotStopWatch(): void {
     since: null,
     shelves: false,
     failed: false,
+    carryIn: false,
   })
 }

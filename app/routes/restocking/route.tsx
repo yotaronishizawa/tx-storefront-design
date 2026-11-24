@@ -8,10 +8,15 @@ import {
   useRestockRequest,
 } from "~/domains/operations"
 import {
+  readRestockingState,
+  useErrorFixRequest,
   useErrorLaneGuide,
   useLaneDrawer,
+  useLaneFixedNotice,
   useRequestRestockingEnd,
   useRequestRestockingStart,
+  useRestockEntryPlan,
+  useRestockGuide,
   useRestockingLaneAdditions,
   useRestockingPlacement,
   useRestockingResumeOnEntry,
@@ -42,7 +47,9 @@ import { RestockingBoardView } from "~/views/restocking/restocking-board"
 
 import { LeaveConfirmDialog } from "../_components/leave-confirm-dialog"
 import { useRobotArm } from "../_hooks/use-robot-arm"
+import { useWiSimBridge } from "../_hooks/use-wi-sim-bridge"
 import { LaneErrorDialog } from "./_components/lane-error-dialog"
+import { RestockRecoveryWizard } from "./_components/restock-recovery-wizard"
 
 export default function RestockingPage() {
   const robotArm = useRobotArm()
@@ -71,6 +78,7 @@ export default function RestockingPage() {
   const requestRestockingEnd = useRequestRestockingEnd()
   const { checkLaneMatched } = useLaneMatchCheck()
   const errorLaneIds = useErrorLaneIds()
+  const errorFixRequest = useErrorFixRequest()
   const laneDrawer = useLaneDrawer()
 
   useVisibleRefresh(refreshRequests)
@@ -78,6 +86,10 @@ export default function RestockingPage() {
   useRestockingResumeOnEntry()
   useRestockingScannedSkuRestore()
   useErrorLaneGuide()
+  useLaneFixedNotice()
+  const guide = useRestockGuide(isRequestInProgress(restockRequest))
+  useWiSimBridge(guide, stockBoard)
+  const entryItems = useRestockEntryPlan()
 
   return (
     <>
@@ -86,6 +98,7 @@ export default function RestockingPage() {
         agedStockRule={getAgedStockRule(selectedStore)}
         board={stockBoard}
         busyAction={busyAction}
+        errorFixRequest={errorFixRequest}
         errorLaneIds={errorLaneIds}
         isMisplacedSku={(skuId) => misplacedStock.skuIds.has(skuId)}
         laneAddedCounts={laneAdditions.countsByLaneId}
@@ -100,12 +113,17 @@ export default function RestockingPage() {
         removalBlock={stockDrinkRemoval.block}
         restockingPlacement={restockingPlacement}
         restockRequest={restockRequest}
+        guide={guide}
+        entryItems={entryItems}
         focusedCell={focusedCell}
         selectedCell={selectedCell}
         selectedCellScrollSignal={selectedCellScrollSignal}
         skuById={skuById}
         onCancelLaneSwitch={laneDrawer.cancelLaneSwitch}
         onCheckLaneMatched={checkLaneMatched}
+        onRecoverLane={(laneId) =>
+          readRestockingState().setRecoveryLaneId(laneId)
+        }
         onCloseLane={laneDrawer.closeLane}
         onEndRestocking={requestRestockingEnd}
         onFinishLaneRemoval={(locationId, removals) =>
@@ -119,6 +137,10 @@ export default function RestockingPage() {
         onStartRestocking={requestRestockingStart}
       />
       <LaneErrorDialog />
+      <RestockRecoveryWizard
+        checking={busyAction === "check-lane"}
+        onCheckLaneMatched={checkLaneMatched}
+      />
       {/* The pause itself is sent by useRestockingSessionTracking. */}
       <LeaveConfirmDialog
         cancelLabel={t("common:boolean.no")}

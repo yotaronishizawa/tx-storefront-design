@@ -155,13 +155,15 @@
     animation: tx-lane-flash 1.2s ease-out 2;
   }
 
-  /* "Needs attention" pill, in step with the in-trouble robot's red lamp (1.2 s). */
+  /* "Needs attention" pill: a gentler pulse, so it draws the eye without
+     nagging, in step with the in-trouble robot's red lamp (1.6 s,
+     Yotaro 2026-11-12). */
   .attention-blink {
-    animation: tx-attention-blink 1.2s ease-in-out infinite;
+    animation: tx-attention-blink 1.6s ease-in-out infinite;
   }
 
   /* Idle screen "touch to start": rings spread from a dot like a touch on
-     water. Paused while the robot needs attention. */
+     water. */
   .idle-wake-ripple {
     animation: tx-idle-wake-ripple 4s ease-out infinite;
   }
@@ -186,7 +188,7 @@
   }
 
   50% {
-    background-color: #ec7f7b;
+    background-color: color-mix(in srgb, var(--color-error) 73%, white);
   }
 }
 

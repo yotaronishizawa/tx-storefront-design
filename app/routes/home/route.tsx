@@ -3,6 +3,7 @@ import { useEffect, useState } from "react"
 import { useTranslation } from "react-i18next"
 import { useNavigate, useSearchParams } from "react-router"
 
+import { isRestockStudy } from "~/config/restock-study"
 import { ROUTES } from "~/config/routes"
 import {
   readAppShellState,
@@ -40,6 +41,7 @@ import { hasShelfClient } from "~/model/store-display"
 import { HomeDashboardView } from "~/views/store/home-dashboard"
 
 import { useOpenEditLayout } from "../_hooks/use-open-edit-layout"
+import { useOpenRestocking } from "../_hooks/use-open-restocking"
 import { useRobotRunning } from "../_hooks/use-robot-running"
 
 /** Home has been shown since the page loaded. */
@@ -139,6 +141,9 @@ export default function HomePage() {
   const navigate = useNavigate()
   const { t } = useTranslation("app")
   const openEditLayout = useOpenEditLayout()
+  const openRestocking = useOpenRestocking()
+  // The drinks-to-restock list exists only in the restock study.
+  const [stockListShown] = useState(isRestockStudy)
   const requestManualStart = useRequestManualStart()
   const robotRunning = useRobotRunning()
   const manualReplenishmentAvailable = hasShelfClient(useSelectedStore())
@@ -215,7 +220,13 @@ export default function HomePage() {
       onShowEdit={openEditLayout}
       onShowManualReplenishment={showManualReplenishment}
       onShowRecommendations={() => navigate(ROUTES.recommendations().pathname)}
-      onShowRestocking={() => navigate(ROUTES.restocking().pathname)}
+      onShowRestocking={openRestocking}
+      onShowStock={
+        // Federico's restocking screen as it is before starting (Yotaro 2026-11-04).
+        stockListShown
+          ? () => navigate(ROUTES.restocking().pathname)
+          : undefined
+      }
       idle={idle && idleScreenEnabled}
       idleScreenEnabled={idleScreenEnabled}
       onWake={() => setIdle(false)}

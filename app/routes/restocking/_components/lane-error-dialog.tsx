@@ -2,6 +2,7 @@ import { useEffect, useRef } from "react"
 
 import { useTranslation } from "react-i18next"
 
+import { isRestockStudy } from "~/config/restock-study"
 import { Button, Dialog } from "~/core"
 import {
   readRestockingState,
@@ -12,6 +13,8 @@ import {
 import { useErrorLaneIds } from "~/domains/shelf"
 import { AudioCues, playStoreAudioAfterCurrent } from "~/utils/audio"
 
+import { RestockErrorPopup } from "./restock-error-popup"
+
 /** The popup a blocking lane error raises. Closing a size-constraint popup opens the next lane to fix. */
 export function LaneErrorDialog() {
   const { t } = useTranslation(["app", "common"])
@@ -19,7 +22,9 @@ export function LaneErrorDialog() {
   const errorLaneIds = useErrorLaneIds()
   const errorLaneCount = errorLaneIds.length
   const scanAlert = useCurrentScanAlert()
-  useLaneErrorVoiceOnReturn(open, prompt?.kind, errorLaneIds)
+  // The study says every red lane its own way, with no voice replayed.
+  const study = isRestockStudy()
+  useLaneErrorVoiceOnReturn(open && !study, prompt?.kind, errorLaneIds)
   useLaneErrorOverlayReport()
 
   const promptKey = prompt?.key ?? ""
@@ -44,6 +49,10 @@ export function LaneErrorDialog() {
     if (promptKind === "constraint") {
       restocking.setNextErrorLaneRequested(true)
     }
+  }
+
+  if (study) {
+    return <RestockErrorPopup />
   }
 
   return (

@@ -12,7 +12,11 @@ export function useLaneMatchCheck() {
   const context = useStoreContext()
   const runAction = useStoreActionRunner()
 
-  async function checkLaneMatched(locationId: string): Promise<boolean> {
+  /** `quiet` leaves the outcome to the caller's own screen (the restock study's recovery steps). */
+  async function checkLaneMatched(
+    locationId: string,
+    { quiet = false }: { quiet?: boolean } = {}
+  ): Promise<boolean> {
     if (!context || !locationId) {
       return false
     }
@@ -33,7 +37,7 @@ export function useLaneMatchCheck() {
     }
 
     applyLaneMatchResult(locationId, response)
-    if (response.isLaneDisabled) {
+    if (response.isLaneDisabled && !quiet) {
       readAppShellState().setNotice(translate("laneCheckDisabledNotice"))
     }
     return true

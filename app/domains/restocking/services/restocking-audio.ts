@@ -1,5 +1,6 @@
 import type { SkuRecommendationCounts } from "~/api/opm/schemas"
 import { createLogger } from "~/config/logger"
+import { isRestockStudy } from "~/config/restock-study"
 import {
   findExtraSkuId,
   getLocationLaneErrors,
@@ -13,6 +14,8 @@ import {
   type ShelfLocation,
 } from "~/model/shelf"
 import { AudioCues, playStoreAudioAfterCurrent } from "~/utils/audio"
+
+import { announceGuideOnPlacement } from "./restock-guide-voice"
 
 const logger = createLogger("Restocking Audio")
 
@@ -82,6 +85,20 @@ export function playRestockingPlacementRecommendationAudio({
     logger.debug("recommendation count skipped: SKU not resolved", {
       update: summarizeLaneUpdate(update),
     })
+    return
+  }
+
+  // The study answers a placement with a chime and the next lane instead.
+  if (
+    added &&
+    isRestockStudy() &&
+    announceGuideOnPlacement({
+      nextStockLocations,
+      previousStockLocations,
+      skuId: currentScannedSkuId || skuId,
+      update,
+    })
+  ) {
     return
   }
 

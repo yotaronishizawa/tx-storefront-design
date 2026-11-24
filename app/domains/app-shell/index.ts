@@ -22,6 +22,8 @@ export {
   useVideoTutorialCategory,
 } from "./use-app-shell"
 export {
+  IDLE_TIMEOUT_MAX_MINUTES,
+  IDLE_TIMEOUT_MIN_MINUTES,
   IDLE_TIMEOUT_OPTIONS_MS,
   setIdleScreenEnabled,
   setIdleScreenShown,
