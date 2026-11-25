@@ -183,7 +183,7 @@ export function HomeObjectAction({
         </span>
       </span>
       <span className="relative order-first flex w-full min-w-0 shrink-0 flex-col items-start px-4 pt-4 lg:px-5 lg:pt-5">
-        <span className="flex items-center gap-2 text-[2rem]/tight font-bold">
+        <span className="flex items-center gap-2 text-2xl/tight font-bold">
           {label}
         </span>
         {inProgress && (

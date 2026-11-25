@@ -23,7 +23,7 @@ export function HomeLayoutAction({
       onClick={onClick}
       className="relative size-full min-h-64 min-w-0 flex-col items-start justify-start overflow-hidden rounded-lg border-2 border-control bg-default text-left whitespace-normal text-primary lg:min-h-56"
     >
-      <span className="flex w-full min-w-0 shrink-0 px-4 pt-4 text-[2rem]/tight font-bold lg:px-5 lg:pt-5">
+      <span className="flex w-full min-w-0 shrink-0 px-4 pt-4 text-2xl/tight font-bold lg:px-5 lg:pt-5">
         {label}
       </span>
       <span

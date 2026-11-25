@@ -61,6 +61,10 @@
   --color-info: #0a66c2;
   --color-info-subtle: #eef4ff;
 
+  /* The dashed box the robot draws round what it detected, on its camera
+     images. Not ours to choose: the key beside the image matches it. */
+  --color-detection-box: #ff2d20;
+
   /* Line heights are Tailwind's defaults until design decides them. */
   --text-*: initial;
   --text-xs: 0.875rem;
@@ -73,6 +77,10 @@
   --text-lg--line-height: 1.75rem;
   --text-xl: 1.5rem;
   --text-xl--line-height: 2rem;
+  /* Large labels on Home: the entry buttons and the attention title
+     (Yotaro 2026-11-25). */
+  --text-2xl: 2rem;
+  --text-2xl--line-height: 2.5rem;
 
   --font-weight-*: initial;
   --font-weight-normal: 400;

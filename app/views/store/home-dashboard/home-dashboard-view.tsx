@@ -288,7 +288,7 @@ export function HomeDashboardView({
           {cause && (
             <div
               className={cn(
-                "flex shrink-0 items-center justify-between gap-3 rounded-md px-4 py-2 text-sm font-bold",
+                "flex shrink-0 items-center justify-between gap-3 rounded-md px-4 py-2 text-base font-bold",
                 assist
                   ? "bg-primary-subtle text-primary-text"
                   : "bg-error-subtle text-error"

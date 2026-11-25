@@ -95,12 +95,10 @@ export function AttentionHeading({
         </span>
       </span>
       <div className="min-w-0">
-        {/* One line wherever it can: as large as 48px, smaller when the
-            longest titles (about 22 characters) would wrap. */}
-        <h2
-          id={titleId}
-          className="text-[min(3rem,calc((100cqw-5rem)/22))]/tight font-bold"
-        >
+        {/* A fixed step on the type scale (32px), not shrunk to fit: on the
+            iPad the old fit-to-one-line size fell to 26px, off the scale
+            (Yotaro 2026-11-25). The longest titles may wrap to two lines. */}
+        <h2 id={titleId} className="text-2xl font-bold">
           {title}
         </h2>
         <p className="mt-3 text-xl whitespace-pre-line text-secondary">
@@ -131,7 +129,7 @@ function AttentionCamera({
             <svg
               aria-hidden="true"
               viewBox="0 0 36 4"
-              className="h-1 w-9 text-[#FF2D20]"
+              className="h-1 w-9 text-detection-box"
             >
               {/* Four equal dashes, ending on a dash at both ends. */}
               <line

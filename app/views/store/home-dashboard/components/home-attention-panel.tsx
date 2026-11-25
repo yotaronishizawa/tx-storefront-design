@@ -174,7 +174,7 @@ export function HomeAttentionPanel({
         size="unstyled"
         type="button"
         onClick={onOtherWork}
-        className="self-center px-4 py-2 text-sm font-bold text-secondary underline underline-offset-4"
+        className="self-center px-4 py-2 text-base font-bold text-secondary underline underline-offset-4"
       >
         {t(
           cause === "teleopFixable"
@@ -292,7 +292,9 @@ export function HomeRecoveredPanel() {
         </p>
         <div className="mt-6">
           <CloseCountdown
-            label={(seconds) => t("workflow.home.recovered.backIn", { seconds })}
+            label={(seconds) =>
+              t("workflow.home.recovered.backIn", { seconds })
+            }
             seconds={RECOVERED_SECONDS}
           />
         </div>

@@ -118,7 +118,7 @@ function WalkInCard({
       className="relative size-full min-h-64 min-w-0 flex-col items-start justify-start overflow-hidden rounded-lg border-2 border-control bg-default text-left whitespace-normal text-primary lg:min-h-56"
     >
       <span className="flex w-full min-w-0 shrink-0 flex-col items-start px-4 pt-4 lg:px-5 lg:pt-5">
-        <span className="text-[2rem]/tight font-bold">ウォークインに入る</span>
+        <span className="text-2xl/tight font-bold">ウォークインに入る</span>
         {inProgress && (
           <span className="mt-2 inline-flex items-center gap-2.5 rounded-full bg-subtle px-5 py-2 text-xl font-bold text-primary">
             <span className="size-3.5 animate-pulse rounded-full bg-success" />
@@ -160,16 +160,9 @@ function PurposeButton({
       onClick={onClick}
       className="min-h-40 flex-col items-start justify-between gap-4 rounded-lg border-2 border-control bg-default p-5 text-left whitespace-normal text-primary active:bg-subtle"
     >
-      {/* Inline sizes: the popup's body text size wins over class sizes here. */}
-      <span className="font-bold" style={{ fontSize: 28, lineHeight: 1.2 }}>
-        {title}
-      </span>
-      <span
-        className="text-secondary"
-        style={{ fontSize: 20, lineHeight: 1.3 }}
-      >
-        {note}
-      </span>
+      {/* `!`: the popup's body text size would win over class sizes here. */}
+      <span className="text-2xl/tight! font-bold">{title}</span>
+      <span className="text-lg/snug! text-secondary">{note}</span>
     </Button>
   )
 }

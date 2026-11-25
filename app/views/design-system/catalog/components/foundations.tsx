@@ -228,6 +228,14 @@ const COLOUR_GROUPS: { title: DocText; swatches: Swatch[] }[] = [
         className: "bg-info-subtle",
         use: { en: "Info message background", ja: "情報のお知らせの地" },
       },
+      {
+        name: "detection-box",
+        className: "bg-detection-box",
+        use: {
+          en: "Only the key to the dashed box the robot draws on its camera images. The robot picks this red, not us",
+          ja: "ロボットがカメラの画像に描く点線の枠の凡例だけ。色はロボット側が決めたもの",
+        },
+      },
     ],
   },
 ]
@@ -238,6 +246,15 @@ const TYPE_SCALE: {
   className: string
   use: DocText
 }[] = [
+  {
+    name: "text-2xl",
+    px: "32px",
+    className: "text-2xl",
+    use: {
+      en: "Home: the labels of the big entry buttons, the attention title",
+      ja: "ホーム：大きな入口のボタンの名前、要対応の見出し",
+    },
+  },
   {
     name: "text-xl",
     px: "24px",
@@ -269,15 +286,18 @@ const TYPE_SCALE: {
     name: "text-sm",
     px: "16px",
     className: "text-sm",
-    use: { en: "Row labels, secondary info", ja: "行のラベル、補足情報" },
+    use: {
+      en: "Row labels, secondary info. Not in new screens (18px minimum)",
+      ja: "行のラベル、補足情報。新しい画面では使わない（18px 以上）",
+    },
   },
   {
     name: "text-xs",
     px: "14px",
     className: "text-xs",
     use: {
-      en: "Small labels, dates, support codes, product names, chips",
-      ja: "小さなラベル、日付、サポートコード、商品名、チップ",
+      en: "Small labels, dates, support codes, product names, chips. Not in new screens (18px minimum)",
+      ja: "小さなラベル、日付、サポートコード、商品名、チップ。新しい画面では使わない（18px 以上）",
     },
   },
 ]
@@ -422,8 +442,8 @@ export function Foundations() {
         id="type"
         title={{ en: "Typography", ja: "文字" }}
         lead={{
-          en: "Inter; Japanese falls back to the system font for now. text-base (18px) is the default. text-2xl and text-2xs are not defined yet; line height is not decided yet.",
-          ja: "フォントは Inter（日本語は当面システムのフォント）。基本は text-base（18px）。text-2xl と text-2xs はまだ決まっていません。行の高さも未定です。",
+          en: "Inter; Japanese falls back to the system font for now. text-base (18px) is the default. New screens use nothing under 18px. text-2xs is not defined; line height is not decided yet.",
+          ja: "フォントは Inter（日本語は当面システムのフォント）。基本は text-base（18px）で、新しい画面では18px未満を使いません。text-2xs は決めていません。行の高さも未定です。",
         }}
       >
         <div className="flex flex-col divide-y divide-default overflow-hidden rounded-lg border border-default bg-default">
@@ -445,8 +465,8 @@ export function Foundations() {
         </div>
         <p className="text-base text-secondary">
           {tx({
-            en: "Weights: Regular 400, Medium 500, Bold 700. Bold for titles, labels and anything tappable; regular for sentences. The display sizes (text-display…) predate this scale: do not use them in new screens.",
-            ja: "太さ：Regular 400 / Medium 500 / Bold 700。見出し・ラベル・押せるものは太字、文章は通常。text-display などの大きな文字はこの段階より前のもので、新しい画面では使いません。",
+            en: "Weights: Regular 400, Medium 500, Bold 700. Bold for titles, labels and anything tappable; regular for sentences. The display sizes (text-display…) are only for screens read from a distance, like the idle screen (display-lg 48px, display-xl 72px).",
+            ja: "太さ：Regular 400 / Medium 500 / Bold 700。見出し・ラベル・押せるものは太字、文章は通常。text-display などの大きな文字は、待機画面のように離れて見る画面だけで使います（display-lg 48px、display-xl 72px）。",
           })}
         </p>
       </DocSection>

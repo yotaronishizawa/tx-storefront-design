@@ -116,7 +116,7 @@ export function HomeRobotStatus({
   return (
     <aside className="flex min-h-0 min-w-0 flex-col bg-subtle p-4 lg:p-5">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-sm font-bold text-secondary lg:text-base">
+        <h2 className="text-base font-bold text-secondary">
           {t("robotStatus")}
         </h2>
         <p
@@ -135,7 +135,7 @@ export function HomeRobotStatus({
           {statusLabel}
         </p>
       </div>
-      <p className="mt-3 text-xs text-secondary lg:hidden">
+      <p className="mt-3 text-base text-secondary lg:hidden">
         {t("workflow.home.v5.detectorsSummary")}
       </p>
       <div className="mt-4 hidden shrink-0 grid-cols-2 gap-x-4 gap-y-2 rounded-xl border-2 bg-default p-4 lg:grid">
@@ -187,7 +187,7 @@ function DetectorRow({
   return (
     <div
       className={cn(
-        "-mx-1.5 flex shrink-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-sm font-bold whitespace-nowrap",
+        "-mx-1.5 flex shrink-0 items-center gap-1.5 rounded-md px-1.5 py-1 text-base font-bold whitespace-nowrap",
         state === "ok" && "text-success",
         state === "alert" && "bg-error-subtle text-error",
         state === "unknown" && "text-disabled"
@@ -277,7 +277,7 @@ function IdleStatusLayout({
         <p
           role="status"
           className={cn(
-            "flex items-start gap-6 self-start text-[4.875rem]/[1.1] font-bold tracking-tight break-keep",
+            "flex items-start gap-6 self-start text-display-xl/[1.1] font-bold tracking-tight break-keep",
             loud
               ? "attention-blink rounded-xl bg-error px-8 py-5 text-inverse"
               : tone === "moving"
@@ -311,7 +311,7 @@ function IdleStatusLayout({
               >
                 <Icon className="size-9 shrink-0" />
                 <span className="grid min-w-0 flex-1 gap-1">
-                  <span className="text-[1.625rem]/tight font-bold whitespace-nowrap">
+                  <span className="text-xl/tight font-bold whitespace-nowrap">
                     {label}
                   </span>
                   {/* The mark sits with the state's words, not on its own

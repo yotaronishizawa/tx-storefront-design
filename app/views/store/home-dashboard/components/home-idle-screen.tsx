@@ -31,7 +31,7 @@ export function HomeIdleScreen({
       {robotStatus}
       {/* The instruction as the bottom strip, white with a hairline over it so
           it reads as its own place to press. */}
-      <div className="flex items-center justify-center gap-6 border-t border-black/10 bg-default px-14 text-[3rem]/none font-bold tracking-wide text-primary">
+      <div className="flex items-center justify-center gap-6 border-t border-black/10 bg-default px-14 text-display-lg font-bold tracking-wide text-primary">
         {/* A touch rippling out: a dot with rings that spread and fade. */}
         <span
           aria-hidden="true"
