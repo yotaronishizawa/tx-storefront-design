@@ -137,8 +137,8 @@ export function DialogDoc() {
       <SubTitle>{{ en: "Fixed values", ja: "固定の値" }}</SubTitle>
       <p className="text-base text-secondary">
         {tx({
-          en: "The same in every popup; nobody chooses them. Ethan drew them on the old 1920×1440 canvas (in brackets); the values here are for the 1180×820 screen.",
-          ja: "どのポップアップでも同じで、選ぶものではありません。Ethan は旧 1920×1440 のキャンバスで決めています（括弧内）。ここの値は 1180×820 の画面用に直したものです。",
+          en: "The same in every popup; nobody chooses them. Ethan drew them on the old 1920×1440 canvas (in brackets).",
+          ja: "どのポップアップでも同じで、選ぶものではありません。Ethan は旧 1920×1440 のキャンバスで決めています（括弧内）。",
         })}
       </p>
       <FixedValues />
@@ -332,7 +332,7 @@ function FixedValues() {
               {tx({ en: "Item", ja: "項目" })}
             </th>
             <th className="px-4 py-2 font-bold">
-              {tx({ en: "Value (1180×820)", ja: "値（1180×820）" })}
+              {tx({ en: "Value", ja: "値" })}
             </th>
             <th className="px-4 py-2 font-bold">
               {tx({ en: "Unity canvas", ja: "旧キャンバス" })}

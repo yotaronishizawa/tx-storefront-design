@@ -376,19 +376,6 @@ export function Foundations() {
   return (
     <>
       <DocSection
-        id="ui-size"
-        title={{ en: "Screen size", ja: "画面サイズ" }}
-        lead={{
-          en: "Design at 1180×820: the iPad screen in CSS px, at 1x, so every value in Figma is the same in code.",
-          ja: "1180×820 でデザインします。iPad の画面を CSS px で表した大きさ（1倍）なので、Figma の数値がそのままコードの数値になります。",
-        }}
-      >
-        <div className="grid aspect-1180/820 w-full max-w-xl place-items-center rounded-xl border-2 border-dashed border-strong bg-default">
-          <span className="text-display-lg font-bold">1180×820</span>
-        </div>
-      </DocSection>
-
-      <DocSection
         id="colour"
         title={{ en: "Colour", ja: "色" }}
         lead={{

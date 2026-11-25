@@ -33,7 +33,6 @@ const NAV: { title: DocText; items: { id: string; label: DocText }[] }[] = [
   {
     title: { en: "Foundations", ja: "基本" },
     items: [
-      { id: "ui-size", label: { en: "Screen size", ja: "画面サイズ" } },
       { id: "colour", label: { en: "Colour", ja: "色" } },
       { id: "type", label: { en: "Typography", ja: "文字" } },
       { id: "spacing", label: { en: "Spacing", ja: "余白" } },
