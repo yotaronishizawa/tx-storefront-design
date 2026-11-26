@@ -4,6 +4,7 @@ import { cn } from "~/utils/cn"
 
 import { useDocText, type DocText } from "./doc-lang"
 import { DocSection, SubTitle, UseWhen } from "./doc-parts"
+import { PrincipleRef } from "./principles-doc"
 
 /*
  * Values and usage follow the Figma "Store App (Web) Styles" page (Ethan,
@@ -396,12 +397,18 @@ export function Foundations() {
         <UseWhen
           dos={[
             {
-              en: "Red only when the robot cannot move or something failed",
-              ja: "赤はロボットが動けない時・何かが失敗した時だけ",
+              text: {
+                en: "Red only when the robot cannot move or something failed",
+                ja: "赤はロボットが動けない時・何かが失敗した時だけ",
+              },
+              why: [1],
             },
             {
-              en: "Yellow (primary) for the single main action on a screen",
-              ja: "黄色（primary）は画面にひとつの主な操作に",
+              text: {
+                en: "Yellow (primary) for the single main action on a screen",
+                ja: "黄色（primary）は画面にひとつの主な操作に",
+              },
+              why: [1],
             },
             {
               en: "Tinted backgrounds (-subtle) with near-black text on top",
@@ -428,6 +435,7 @@ export function Foundations() {
       <DocSection
         id="type"
         title={{ en: "Typography", ja: "文字" }}
+        leadWhy={[1]}
         lead={{
           en: "Inter; Japanese falls back to the system font for now. text-base (18px) is the default. New screens use nothing under 18px. text-2xs is not defined; line height is not decided yet.",
           ja: "フォントは Inter（日本語は当面システムのフォント）。基本は text-base（18px）で、新しい画面では18px未満を使いません。text-2xs は決めていません。行の高さも未定です。",
@@ -455,6 +463,7 @@ export function Foundations() {
             en: "Weights: Regular 400, Medium 500, Bold 700. Bold for titles, labels and anything tappable; regular for sentences. The display sizes (text-display…) are only for screens read from a distance, like the idle screen (display-lg 48px, display-xl 72px).",
             ja: "太さ：Regular 400 / Medium 500 / Bold 700。見出し・ラベル・押せるものは太字、文章は通常。text-display などの大きな文字は、待機画面のように離れて見る画面だけで使います（display-lg 48px、display-xl 72px）。",
           })}
+          <PrincipleRef no={1} />
         </p>
       </DocSection>
 

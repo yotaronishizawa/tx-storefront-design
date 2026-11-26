@@ -7,7 +7,14 @@ import { cn } from "~/utils/cn"
 
 import { DialogWriting } from "./dialog-writing"
 import { useDocText } from "./doc-lang"
-import { DocSection, Example, SubTitle } from "./doc-parts"
+import {
+  DocSection,
+  Example,
+  RuleBody,
+  ruleText,
+  SubTitle,
+  type DocRule,
+} from "./doc-parts"
 
 /** A dialog drawn in place (not modal), to show the spec on the page. */
 function DialogPreview({
@@ -128,9 +135,18 @@ export function DialogDoc() {
               en: "Title text-xl bold, with an icon only for error, info or warning; close icon at the top right.",
               ja: "見出しは text-xl の太字。アイコンはエラー・情報・注意の時だけ。閉じる（×）は右上。",
             },
-          ] as const
+            {
+              text: {
+                en: "A dialog gets attention; it never moves staff to another screen on its own. Going to fix it is their own tap.",
+                ja: "ポップアップは気づかせるだけで、勝手に別の画面へ移らない。直す画面へ行くのは本人の1タップ。",
+              },
+              why: [4],
+            },
+          ] satisfies DocRule[]
         ).map((rule) => (
-          <RuleItem key={rule.en} rule={rule} />
+          <li key={tx(ruleText(rule))}>
+            <RuleBody rule={rule} />
+          </li>
         ))}
       </ul>
       <DialogWriting />
@@ -245,11 +261,6 @@ export function DialogDoc() {
       </Example>
     </DocSection>
   )
-}
-
-function RuleItem({ rule }: { rule: { en: string; ja: string } }) {
-  const tx = useDocText()
-  return <li>{tx(rule)}</li>
 }
 
 const FIXED: {

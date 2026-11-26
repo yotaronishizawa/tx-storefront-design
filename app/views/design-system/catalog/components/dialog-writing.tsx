@@ -1,10 +1,13 @@
 import { useDocText } from "./doc-lang"
 import { SubTitle } from "./doc-parts"
+import { PrincipleRef, type PrincipleNo } from "./principles-doc"
 
 /** How the words in a popup are written: decided once, not per popup. */
 const WRITING: {
   rule: { en: string; ja: string }
   example?: { en: string; ja: string }
+  /** The principles the rule comes from. */
+  why?: PrincipleNo[]
 }[] = [
   {
     rule: {
@@ -53,6 +56,7 @@ const WRITING: {
       en: "No “are you sure?” in front of an action that can be undone. Ask only for safety (is anyone in the walk-in?) or when it cannot be undone. Put the explanation where it is read before pressing: right above the button.",
       ja: "取り消せる操作の前に「本当に〜しますか？」を挟まない。聞くのは安全のため（中に人がいないか）か、取り消せない時だけ。説明は押す前に読める場所、ボタンのすぐ上に置く。",
     },
+    why: [4],
     example: {
       en: "Robot power popup: the note on what stops the robot sits above “Stop the robot”, with no second question.",
       ja: "ロボット電源：「押すとロボットが止まります…」の注釈を「ロボットを止める」の上に置き、2回目の確認はしない。",
@@ -63,12 +67,14 @@ const WRITING: {
       en: "The words do not change with time or progress. They change only when the state itself changes (stopped, failed).",
       ja: "経過時間や進み具合で文言を変えない。変えるのは状態そのものが変わった時（止まった・失敗した）だけ。",
     },
+    why: [1],
   },
   {
     rule: {
       en: "A phone number (SupportContact) only when calling is the next thing to do. Never in a popup that only waits.",
       ja: "電話番号（SupportContact）は、連絡することが次の行動の時だけ。待つだけのポップアップには出さない。",
     },
+    why: [2],
   },
 ]
 
@@ -78,9 +84,12 @@ export function DialogWriting() {
     <>
       <SubTitle>{{ en: "Writing", ja: "文言" }}</SubTitle>
       <ul className="flex max-w-4xl list-disc flex-col gap-3 ps-6 text-base">
-        {WRITING.map(({ rule, example }) => (
+        {WRITING.map(({ rule, example, why }) => (
           <li key={rule.en}>
             {tx(rule)}
+            {why?.map((no) => (
+              <PrincipleRef key={no} no={no} />
+            ))}
             {example && (
               <span className="block text-sm text-secondary">
                 {tx(example)}

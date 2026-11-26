@@ -5,6 +5,28 @@ import { Check, X } from "lucide-react"
 import { cn } from "~/utils/cn"
 
 import { useDocText, type DocText } from "./doc-lang"
+import { PrincipleRef, type PrincipleNo } from "./principles-doc"
+
+/** A rule, optionally with the principles it comes from. */
+export type DocRule = DocText | { text: DocText; why: PrincipleNo[] }
+
+export function ruleText(rule: DocRule): DocText {
+  return typeof rule === "object" && "text" in rule ? rule.text : rule
+}
+
+/** The rule's words followed by links to its principles. */
+export function RuleBody({ rule }: { rule: DocRule }) {
+  const tx = useDocText()
+  const why = typeof rule === "object" && "why" in rule ? rule.why : []
+  return (
+    <>
+      {tx(ruleText(rule))}
+      {why.map((no) => (
+        <PrincipleRef key={no} no={no} />
+      ))}
+    </>
+  )
+}
 
 /** One entry of the catalog: a foundation or a component. */
 export function DocSection({
@@ -12,6 +34,7 @@ export function DocSection({
   title,
   lead,
   importLine,
+  leadWhy,
   children,
 }: {
   id: string
@@ -20,6 +43,8 @@ export function DocSection({
   lead: DocText
   /** How to import it, for components. */
   importLine?: string
+  /** Principles the lead's rule comes from. */
+  leadWhy?: PrincipleNo[]
   children: ReactNode
 }) {
   const tx = useDocText()
@@ -27,7 +52,9 @@ export function DocSection({
     <section id={id} className="flex scroll-mt-6 flex-col gap-6">
       <header className="flex flex-col gap-2">
         <h2 className="text-display/tight font-bold">{tx(title)}</h2>
-        <p className="max-w-3xl text-lg text-secondary">{tx(lead)}</p>
+        <p className="max-w-3xl text-lg text-secondary">
+          <RuleBody rule={{ text: lead, why: leadWhy ?? [] }} />
+        </p>
         {importLine && (
           <code className="self-start rounded-md bg-subtle px-3 py-1.5 font-mono text-sm">
             {importLine}
@@ -45,7 +72,7 @@ export function SubTitle({ children }: { children: DocText }) {
 }
 
 /** When to reach for it, and when to reach for something else. */
-export function UseWhen({ dos, donts }: { dos: DocText[]; donts: DocText[] }) {
+export function UseWhen({ dos, donts }: { dos: DocRule[]; donts: DocRule[] }) {
   return (
     <div className="grid grid-cols-2 gap-4">
       <List tone="do" items={dos} />
@@ -54,7 +81,7 @@ export function UseWhen({ dos, donts }: { dos: DocText[]; donts: DocText[] }) {
   )
 }
 
-function List({ tone, items }: { tone: "do" | "dont"; items: DocText[] }) {
+function List({ tone, items }: { tone: "do" | "dont"; items: DocRule[] }) {
   const tx = useDocText()
   const Icon = tone === "do" ? Check : X
   return (
@@ -73,7 +100,10 @@ function List({ tone, items }: { tone: "do" | "dont"; items: DocText[] }) {
       </p>
       <ul className="flex flex-col gap-2">
         {items.map((item) => (
-          <li key={tx(item)} className="flex items-start gap-2 text-base">
+          <li
+            key={tx(ruleText(item))}
+            className="flex items-start gap-2 text-base"
+          >
             <Icon
               aria-hidden="true"
               className={cn(
@@ -81,7 +111,9 @@ function List({ tone, items }: { tone: "do" | "dont"; items: DocText[] }) {
                 tone === "do" ? "text-success" : "text-error"
               )}
             />
-            {tx(item)}
+            <span>
+              <RuleBody rule={item} />
+            </span>
           </li>
         ))}
       </ul>

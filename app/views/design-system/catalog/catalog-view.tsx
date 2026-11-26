@@ -16,6 +16,7 @@ import {
 import { DocSection } from "./components/doc-parts"
 import { Foundations } from "./components/foundations"
 import { NoticeDoc } from "./components/notice-doc"
+import { PrinciplesDoc } from "./components/principles-doc"
 import { RadioCardDoc } from "./components/radio-card-doc"
 import { SearchFieldDoc } from "./components/search-field-doc"
 import { StatusListDoc } from "./components/status-list-doc"
@@ -28,6 +29,10 @@ const NAV: { title: DocText; items: { id: string; label: DocText }[] }[] = [
     title: { en: "Start here", ja: "はじめに" },
     items: [
       { id: "how-to-use", label: { en: "How to use this", ja: "使い方" } },
+      {
+        id: "principles",
+        label: { en: "Principles (Draft)", ja: "原則（下書き）" },
+      },
     ],
   },
   {
@@ -246,6 +251,8 @@ function Catalog({
               ))}
             </ol>
           </DocSection>
+
+          <PrinciplesDoc />
 
           <Foundations />
 

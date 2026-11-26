@@ -38,6 +38,13 @@ export function NoticeDoc() {
             ja: "一瞬の確認（保存した、送信した）→ Toast",
           },
           { en: "Coloured text without a background", ja: "地のない色文字" },
+          {
+            text: {
+              en: "Something operators or OPM can fix: staff don't need to know",
+              ja: "オペレーターや OPM で直せること → 店員には知らせない",
+            },
+            why: [4],
+          },
         ]}
       />
       <SubTitle>{{ en: "Tones", ja: "トーン" }}</SubTitle>
